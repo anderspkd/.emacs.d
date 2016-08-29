@@ -38,9 +38,6 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
 *** Helper for =add-to-list=.
 
-    TODO: make it possible to add arguments on a per-item basis
-
-    Definition
     #+begin_src emacs-lisp :tangle yes
       (defmacro cf/add-to-list-lots (l &rest extra)
         `(when (boundp ',l)
@@ -49,19 +46,8 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
                  (list ,@extra))))
     #+end_src
 
-** Package repo
-
-   Melpa. Use SSL so I don't get hacked by the NSA B-)
-
-   Consider putting the =(require 'package)= and
-   =(package-initialize)= in =init.el=.
-
-   #+BEGIN_SRC emacs-lisp :tangle no
-     (require 'package)
-     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-     ;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t) ;; melpa is fugged
-     (package-initialize)
-   #+END_SRC
+    It should be possible to enable the above macro to accept per
+    list-item settings for the call to =add-to-list=.
 
 ** Remove toolbar, menubar and so on
 
@@ -107,8 +93,6 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
 ** 'y' or 'n' instead of 'yes' or 'no'
 
-   Because no one has time to type 'yes' every time....
-
    #+BEGIN_SRC emacs-lisp
      (fset 'yes-or-no-p 'y-or-n-p)
    #+END_SRC
@@ -135,9 +119,15 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
            browse-url-browser-function 'browse-url-chromium)
    #+END_SRC
 
+** Yasnippet
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'yasnippet)
+     (yas-global-mode 1)
+   #+END_SRC
+
 ** Autocomplete
 
-   Auto-complete mode
    #+begin_src emacs-lisp :tangle yes
      (require 'auto-complete)
      (require 'auto-complete-config)
@@ -147,7 +137,8 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
 ** smart-mode-line
 
-   Unclutter the mode line
+   Unclutter the mode line. Also add some nifty abbreviations for
+   common directories.
    #+begin_src emacs-lisp :tangle yes
      (require 'smart-mode-line)
      (sml/setup)
@@ -173,28 +164,19 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
 ** Themes and fonts
 
-   Use DejaVu Sans Mono as the font face
+   Use DejaVu Sans Mono as the font face.
    #+BEGIN_SRC emacs-lisp
      (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
    #+END_SRC
 
-   Use the light version of solarized as the default theme
+   Use the light version of solarized as the default theme. Emacs
+   doesn't respect these settings in new frames (frames opened by
+   =emacsclient=), should probably fix this.
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/color-theme-solarized-20160626.743/")
 
      (set-frame-parameter nil 'background-mode 'light)
      (load-theme 'solarized)
-
-     ;; (when (display-graphic-p)
-     ;;   (set-frame-parameter nil 'background-mode 'light))
-     ;; (enable-theme 'solarized)
-
-     ;; (add-hook 'after-make-frame-functions
-     ;;           (lambda (frame)
-     ;;             (let ((mode (if (display-graphic-p) 'light 'dark)))
-     ;;               (set-frame-parameter nil 'background-mode mode)
-     ;;               (set-terminal-parameter nil 'background-mode mode))
-     ;;             (enable-theme 'solarized)))
    #+END_SRC
 
 ** Status bar stuff
@@ -213,8 +195,6 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
    #+END_SRC
 
 ** Syntax highlighting
-
-   Obviously.
 
    #+BEGIN_SRC emacs-lisp
      (when (fboundp 'global-font-lock-mode)
@@ -238,6 +218,13 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
    #+END_SRC
 
 ** Unique buffer names
+
+   Reverse the unique part of buffer names when multiple buffers with
+   the same name exists. E.g., if I visit files =foo/name= and
+   =bar/name= then the buffer names of these will be displayed as
+   =name\foo= and =name\bar=, respectively.
+
+   Might be somewhat redundent when using =helm=.
    #+BEGIN_SRC emacs-lisp
      (require 'uniquify)
 
@@ -261,12 +248,15 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
 ** Automatically delete trailing whitespace upon save
 
-   Perhaps this shouldn't happen in all modes...
+   Automatically delete trailing whitespace characters when saving a
+   file with =C-x C-s=.
    #+BEGIN_SRC emacs-lisp
      (advice-add 'save-buffer :before
                  #'(lambda (&rest args)
                      (delete-trailing-whitespace)))
    #+END_SRC
+   It might be worth considering whether or not this should happen in
+   every mode.
 
 ** Ask if I really want to kill emacs
 
@@ -304,28 +294,10 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
      (put 'upcase-region 'disabled nil)
    #+end_src
 
-** Shrink buffer
-
-   Use =M-n= and =M-p= to shrink frames vertically and horizontally,
-   respectivly.
-   #+BEGIN_SRC emacs-lisp
-     ;; Vertically
-     (global-set-key (kbd "M-n")
-                     (lambda (&optional arg)
-                       (interactive "P")
-                       (shrink-window (or arg 1) t)))
-
-     ;; Horizontally
-     (global-set-key (kbd "M-p")
-                     (lambda (&optional arg)
-                       (interactive "P")
-                       (shrink-window (or arg 1))))
-   #+END_SRC
-
 ** Some form of completion at point
 
    #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C--") 'hippie-expand)
+     (global-set-key (kbd "C--") 'dabbrev-expand)
    #+END_SRC
 
 * Languages
@@ -340,24 +312,22 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
    #+END_SRC
 
    Enable math-mode, automatic line wrapping and spell checking in
-   latex
+   latex.
    #+BEGIN_SRC emacs-lisp
      (add-hook 'LaTeX-mode-hook 'visual-line-mode)
      (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
      (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
    #+END_SRC
 
-   Still need to make evince the default viewer....
 ** Markdown
 
-   Spellchecking
    #+BEGIN_SRC emacs-lisp
      (add-hook 'markdown-mode-hook 'turn-on-flyspell)
    #+END_SRC
 ** C
 
    #+begin_src emacs-lisp :tangle yes
-     ;; (add-to-list 'c-default-style '(c-mode . "linux"))
+     (add-hook 'c-mode-hook #'(lambda () (c-set-style "linux")))
    #+end_src
 
 ** Common lisp
@@ -370,22 +340,22 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
    Slime settings.
    #+BEGIN_SRC emacs-lisp
      (require 'slime)
-     ;; (require 'auto-complete)
-     ;; (ac-config-default)
+     (require 'auto-complete)
+     (ac-config-default)
      (slime-setup '(slime-fancy))
      (add-hook 'slime-mode-hook 'set-up-slime-ac)
    #+END_SRC
 
 ** Python
 
-   elpy
+   Use elpy. Not currently enabled.
    #+begin_src emacs-lisp :tangle no
      (elpy-enable)
    #+end_src
 
 ** Web-mode
 
-   Everything pertaining to web related languages
+   Everything pertaining to web related languages.
 
    Use =web-mode=
    #+BEGIN_SRC emacs-lisp
@@ -397,14 +367,18 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
      (setq web-mode-engines-alist
            '(("jinja" . "\\.djhtml?\\'")))
 
+   #+END_SRC
+
+   Disable =smartparens-mode= as it interfers with =web-mode='s way of
+   dealing with parenthesis.
+   #+begin_src emacs-lisp :tangle yes
      (add-hook 'web-mode-hook #'(lambda ()
                                   (smartparens-mode 0)))
-   #+END_SRC
+   #+end_src
 
 ** Java
 
-   Enable eclim. Should probably only be in *.java files
-
+   Use [[https://github.com/emacs-eclim/emacs-eclim][eclim]].
    #+begin_src emacs-lisp :tangle yes
      (require 'eclim)
      (global-eclim-mode)
@@ -414,17 +388,19 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
    Some other helpful settings from the project page.
    #+begin_src emacs-lisp :tangle no
-     ;; (setq help-at-pt-display-when-idle t)
-     ;; (setq help-at-pt-timer-delay 0.1)
-     ;; (help-at-pt-set-timer)
+     (setq help-at-pt-display-when-idle t)
+     (setq help-at-pt-timer-delay 0.1)
+     (help-at-pt-set-timer)
 
      ;; Auto complete
-     ;; (require 'ac-emacs-eclim-source)
-     ;; (ac-emacs-eclim-config)
+     (require 'ac-emacs-eclim-source)
+     (ac-emacs-eclim-config)
    #+end_src
 
 ** PHP
 
+   For the sole purpose of syntax highlighting when browsing =.php=
+   files.
    #+BEGIN_SRC emacs-lisp
      (require 'php-mode)
      (add-to-list 'auto-mode-alist '("\\.php" . php-mode))
@@ -434,17 +410,9 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
   Settings for modes that does not involve programming (e.g., =dired=)
 
-** Yasnippet
-
-   Could probably be placed somewhere else...
-   #+BEGIN_SRC emacs-lisp
-     (require 'yasnippet)
-     (yas-global-mode 1)
-   #+END_SRC
-
 ** Helm
 
-   Load helm, and set some general settings
+   Load helm, and set some general settings.
    #+begin_src emacs-lisp :tangle yes
      (require 'helm)
      (require 'helm-config)
@@ -462,7 +430,7 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
      (define-key helm-map (kbd "C-z") 'helm-select-action)
    #+end_src
 
-   helmify some common commands.
+   Helmify some common commands.
    #+begin_src emacs-lisp :tangle yes
      (global-set-key (kbd "M-x") 'helm-M-x)
      (global-set-key (kbd "M-y") 'helm-show-kill-ring)
@@ -472,7 +440,8 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
 ** Elfeed
 
-   Start Elfeed and ensure that we use curl.
+   Load =elfeed= and ensure that =curl= is used (eventhough it's the
+   default).
    #+begin_src emacs-lisp :tangle yes
      (require 'elfeed)
 
@@ -484,41 +453,59 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
      (require 'user-feeds)
    #+end_src
 
-   Some convenience functionality. Allow us to open links (either URLs
-   inside a feed or the URL of a feed) in mpv (for e.g., YouTube
-   videos). Switch bindings of =n= and =C-n= (and =p=, =C-p=) in show
-   mode. I keep pressing =n= whenever I want to scroll down inside a
-   feed. Makes it consistent with bindings in =elfeed-search-mode=, I
-   believe. Switch meaning of =C-n=, =C-p= such that doing "next"
-   (i.e., =C-n=) moves forward in time, not backwards.
-
+   I find it more intuitive that =n= and =p= scroll the currently
+   showing feed, rather than jump to the next. I also find it more
+   intuitive for the "previous" key (bound to =C-p=) to actually show
+   the previous feed with respect to time, rather than order. Same
+   with =C-n= and =elfeed-show-next=.
    #+begin_src emacs-lisp :tangle yes
      (define-key elfeed-show-mode-map "n" #'scroll-up-line)
      (define-key elfeed-show-mode-map (kbd "C-p") #'elfeed-show-next)
      (define-key elfeed-show-mode-map "p" #'scroll-down-line)
      (define-key elfeed-show-mode-map (kbd "C-n") #'elfeed-show-prev)
+   #+end_src
+
+   Some functionallity and keybinds which allows me to easially open
+   video links in =mpv=, or send them to be displayed on my TV.
+   #+begin_src emacs-lisp :tangle yes
+     (require 'nicwh)
 
      (defmacro cf/mpv-proc (&rest args)
        `(start-process "mpv-emacs" nil "mpv" ,@args))
 
-     (defun cf/open-in-mpv--search ()
-       (interactive)
-       (let ((entry (elfeed-search-selected :single)))
-         (elfeed-search-untag-all 'unread) ;; mark as read
-         (cf/mpv-proc (elfeed-entry-link entry))))
+     (defun cf/open-in-something--search (&optional tv)
+       "If [something] is supplied, open elfeed-entry-link on
+     TV. Otherwise just open in mpv locally."
+       (lexical-let ((tv tv))
+         (lambda ()
+           (interactive)
+           (let* ((entry (elfeed-search-selected :single))
+                  (url (elfeed-entry-link entry)))
+             (elfeed-search-untag-all 'unread) ;; mark entry as read
+             (if tv
+                 (nicwh--play url t)
+               (cf/mpv-proc url))))))
 
-     (defun cf/open-in-mpv--show ()
-       (interactive)
-       (let ((url (thing-at-point 'url)))
-         (cf/mpv-proc url)))
+     (defun cf/open-in-something--show (&optional tv)
+       "If [something] is supplied, open thing at point on
+     TV. Otherwise just open in mpv locally."
+       (lexical-let ((tv tv))
+         (lambda ()
+           (interactive)
+           (let ((url (thing-at-point 'url)))
+             (if remote
+                 (nicwh--play url t)
+               (cf/mpv-proc url))))))
 
-     (define-key elfeed-show-mode-map "x" #'cf/open-in-mpv--show)
-     (define-key elfeed-search-mode-map "x" #'cf/open-in-mpv--search)
+     (define-key elfeed-show-mode-map "x" (cf/open-in-something--show))
+     (define-key elfeed-show-mode-map "X" (cf/open-in-something--show t))
+     (define-key elfeed-search-mode-map "x" (cf/open-in-something--search))
+     (define-key elfeed-search-mode-map "X" (cf/open-in-something--search t))
    #+end_src
 
 ** Dired
 
-   Lets us move up one level with backspace
+   Lets us move up one level with backspace.
    #+BEGIN_SRC emacs-lisp
      (add-hook 'dired-mode-hook
                #'(lambda ()
