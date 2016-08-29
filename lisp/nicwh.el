@@ -1,7 +1,6 @@
 (require 'json)
 (require 'user-secrets)
 
-
 (defmacro nicwh-curl-arglist (method &rest args)
   `(list "nicwh-curl" " nicwh-output"
          "curl" "-X" ,method "-H" "Content-Type: application/json" ,@args))
@@ -13,8 +12,8 @@
   `(start-process ,@(nicwh-curl-arglist "GET" url)))
 
 (defmacro nicwh-endpoint (ep)
-  `(when (boundp ,secret/pi-uri)
-     `(concat ,secret/pi-uri "/" ,ep)))
+  `(when (boundp 'secret/pi-uri)
+     (concat ,secret/pi-uri "/" ,ep)))
 
 (defun nicwh--play (url &optional f)
   (let ((d (json-encode (list :url url :fetch (if f "True" "False")))))
