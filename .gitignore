@@ -1,0 +1,11 @@
+*.elc
+/kkcrc
+/recentf
+/tramp
+auto-save-list/
+eshell/
+/emacs.el
+/ac-comphist.dat
+elpa/
+lisp/*.elc
+/super-secret-directory/
