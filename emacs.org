@@ -177,6 +177,14 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
 
      (set-frame-parameter nil 'background-mode 'light)
      (load-theme 'solarized)
+
+     (defun cf/switch-theme-mode ()
+       (interactive)
+       (let ((curr-mode (frame-parameter nil 'background-mode)))
+         (if (eq curr-mode 'light)
+             (set-frame-parameter nil 'background-mode 'dark)
+           (set-frame-parameter nil 'background-mode 'light)))
+       (enable-theme 'solarized))
    #+END_SRC
 
 ** Status bar stuff
@@ -344,6 +352,10 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
      (ac-config-default)
      (slime-setup '(slime-fancy))
      (add-hook 'slime-mode-hook 'set-up-slime-ac)
+
+     ;; Slime helper
+     (load (expand-file-name "~/Code/cl/quicklisp/slime-helper.el"))
+     (setq inferior-lisp-program "sbcl")
    #+END_SRC
 
 ** Python
