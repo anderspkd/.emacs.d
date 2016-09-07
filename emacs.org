@@ -399,13 +399,13 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
    #+end_src
 
    Some other helpful settings from the project page.
-   #+begin_src emacs-lisp :tangle no
+   #+begin_src emacs-lisp :tangle yes
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
 
      ;; Auto complete
-     (require 'ac-emacs-eclim-source)
+     (require 'ac-emacs-eclim)
      (ac-emacs-eclim-config)
    #+end_src
 
