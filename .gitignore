@@ -9,3 +9,4 @@ eshell/
 elpa/
 lisp/*.elc
 /super-secret-directory/
+url/
