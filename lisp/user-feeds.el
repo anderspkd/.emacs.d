@@ -2,7 +2,7 @@
 
 ;; Don't tag old entries
 (add-hook 'elfeed-new-entry-hook
-          (elfeed-make-tagger :before "1 month ago"
+          (elfeed-make-tagger :before "2 weeks ago"
                               :remove 'unread))
 
 ;;; Some settings relating to faces
