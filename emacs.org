@@ -478,41 +478,23 @@ Inspired in large parts by [[https://github.com/ckruse/Emacs.d/blob/fcdd24e41377
    #+end_src
 
    Some functionallity and keybinds which allows me to easially open
-   video links in =mpv=, or send them to be displayed on my TV.
+   video links in =mpv=, or send them to be displayed on my TV (not
+   currently working, of course)
    #+begin_src emacs-lisp :tangle yes
      (require 'nicwh)
 
      (defmacro cf/mpv-proc (&rest args)
        `(start-process "mpv-emacs" nil "mpv" ,@args))
 
-     ;; (defun cf/open-in-something--search (&optional tv)
-     ;;   "If [something] is supplied, open elfeed-entry-link on
-     ;; TV. Otherwise just open in mpv locally."
-     ;;   (lexical-let ((tv tv))
-     ;;     (lambda ()
-     ;;       (interactive)
-     ;;       (let* ((entry (elfeed-search-selected :single))
-     ;;              (url (elfeed-entry-link entry)))
-     ;;         (elfeed-search-untag-all 'unread) ;; mark entry as read
-     ;;         (if tv
-     ;;             (nicwh--play url t)
-     ;;           (cf/mpv-proc url))))))
-
-     ;; (defun cf/open-in-something--show (&optional tv)
-     ;;   "If [something] is supplied, open thing at point on
-     ;; TV. Otherwise just open in mpv locally."
-     ;;   (lexical-let ((tv tv))
-     ;;     (lambda ()
-     ;;       (interactive)
-     ;;       (let ((url (thing-at-point 'url)))
-     ;;         (if remote
-     ;;             (nicwh--play url t)
-     ;;           (cf/mpv-proc url))))))
-
-     ;; (define-key elfeed-show-mode-map "x" (cf/open-in-something--show))
-     ;; (define-key elfeed-show-mode-map "X" (cf/open-in-something--show t))
-     ;; (define-key elfeed-search-mode-map "x" (cf/open-in-something--search))
-     ;; (define-key elfeed-search-mode-map "X" (cf/open-in-something--search t))
+     (define-key elfeed-show-mode-map "x" '(lambda ()
+                                             (interactive)
+                                             (cf/mpv-proc (thing-at-point 'url))))
+     (define-key elfeed-search-mode-map "x" '(lambda ()
+                                               (interactive)
+                                               (let* ((entry (elfeed-search-selected :single))
+                                                      (url (elfeed-entry-link entry)))
+                                                 (elfeed-search-untag-all 'unread)
+                                                 (cf/mpv-proc url))))
    #+end_src
 
 ** Dired
