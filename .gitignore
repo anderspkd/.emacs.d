@@ -10,3 +10,5 @@ elpa/
 lisp/*.elc
 /super-secret-directory/
 url/
+/image-dired/*
+/.python-environments/*
