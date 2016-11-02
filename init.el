@@ -6,7 +6,9 @@
   (require 'use-package))
 (require 'bind-key)
 
+;;;;;;
 ;;;; Themes, fonts and other stuff related to looks and default behaviour
+;;;;;;
 (when (eq window-system 'x)
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
   (load-theme 'leuven t))
@@ -66,7 +68,9 @@
   :init
   (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on))
 
+;;;;;;
 ;;;; Misc functions
+;;;;;;
 (defun recreate-scratch ()
   "Recreate scratch buffer"
   (interactive)
@@ -74,6 +78,7 @@
   (lisp-interaction-mode))
 
 (defun kill-all-buffers ()
+  "Kill all buffers and open *scratch* -- basically resets the session."
   (interactive)
   (when (y-or-n-p "Kill all buffers?")
     (mapc 'kill-buffer (buffer-list))
@@ -84,13 +89,16 @@
   (interactive)
   (load "~/.emacs.d/init.el"))
 
-;;;; Keybinds
+;;;;;;
+;;;; Keybinds (non mode specific)
+;;;;;;
 (put 'upcase-region 'disabled nil)
 
 (bind-key "C-x K" #'kill-all-buffers)
 
+;;;;;;
 ;;;; Package configs
-
+;;;;;;
 (use-package yasnippet
   :config
   (yas-reload-all))
