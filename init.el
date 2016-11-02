@@ -202,7 +202,7 @@
 	 ("C-c C-l" . org-insert-link))
   :init
   (setq org-log-done t
-	org-agenda-files (directory-files "~/Documents/org/agenda files/" t "\\.org\\'")
+	org-agenda-files (directory-files "~/Documents/org/agenda files/" t "^[^#].+\\.org\\'")
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
 			    (sequence "SOME DAY" "|")
@@ -216,3 +216,4 @@
     (sp-local-pair "_" "_")
     (sp-local-pair "~" "~")
     (sp-local-pair "=" "=")))
+
