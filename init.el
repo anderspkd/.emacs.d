@@ -28,6 +28,12 @@
 (display-time)
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(when (fboundp 'global-font-lock-mode)
+  (global-font-lock-mode t)
+  (setq font-lock-maximum-decoration t))
+
+(use-package smartparens-config)
+
 (use-package iso-transl) ;; fix dead keys
 
 ;; Place backups in a specific directory
@@ -74,10 +80,9 @@
     (delete-other-windows)
     (recreate-scratch)))
 
-;; (defmacro yas-minor-mode-for (mode)
-;;   `(lambda ()
-;;      (yas-reload-all)
-;;      (add-hook ',mode 'yas-minor-mode)))
+(defun reload-dotemacs ()
+  (interactive)
+  (load "~/.emacs.d/init.el"))
 
 ;;;; Keybinds
 (put 'upcase-region 'disabled nil)
@@ -91,6 +96,7 @@
   (yas-reload-all))
 
 (use-package tex
+  :mode ("\\.tex\\'" . tex-mode)
   :init
   (setq TeX-auto-save t
 	TeX-parse-self t
@@ -100,12 +106,14 @@
   (setq reftex-plug-into-AUCTeX t)
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
+  (add-hook 'LaTeX-mode-hook 'smartparens-mode)
+  (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
-  :bind ([ret] . newline-and-indent) 
+  :bind ([ret] . newline-and-indent)
   :init
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux")))
   (add-hook 'c-mode-hook 'yas-minor-mode))
@@ -116,10 +124,12 @@
 	      ("C-c C-q" . hs-toggle-hiding))
   :init
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
-  (add-hook 'python-mode-hook 'ansi-color-for-comint-mode-on)
   (add-hook 'python-mode-hook 'jedi:setup)
+  (add-hook 'python-mode-hook 'run-python)
+  (add-hook 'python-mode-hook 'smartparens-mode)
+  (add-hook 'python-mode-hook 'turn-on-eldoc-mode)
   (add-hook 'python-mode-hook 'yas-minor-mode)
-  (setq python-indent 4)
+  (add-hook 'python-mode-hook 'linum-mode)
   ;; FIXME: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
   (setq python-shell-interpreter "python2"))
 
@@ -129,7 +139,7 @@
 	 ("C-x b" . helm-mini)
 	 ("C-x C-f" . helm-find-files)
 	 :map helm-map
-	 ([tab] . helm.execute-persistent-action)
+	 ([tab] . helm-execute-persistent-action)
 	 ("C-z" . helm-select-action))
   :init
   (setq helm-split-window-in-side-p t
@@ -150,12 +160,18 @@
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t)
+
+  (setq browse-url-chromium-arguments '("-incognito")
+      browse-url-generic-program "chromium"
+      browse-url-browser-function 'browse-url-chromium)
+
   (defun elfeed-open-entry-in-mpv ()
     (interactive)
     (let* ((entry (elfeed-search-selected :single))
 	   (url (elfeed-entry-link entry)))
       (elfeed-search-untag-all 'unread)
       (start-process "mpv-emacs" nil "mpv" url)))
+
   :config
   (use-package user-feeds))
 
@@ -171,14 +187,23 @@
   :bind ("C-x g" . magit-status))
 
 (use-package org
-  :bind ("C-c a" . org-agenda)
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c a" . org-agenda)
+	 ("C-c l" . org-store-link)
+	 ("C-c C-l" . org-insert-link))
   :init
   (setq org-log-done t
-	org-agenda-files (directory-files "~/Documents/org/agenda files/")
+	org-agenda-files (directory-files "~/Documents/org/agenda files/" t "\\.org\\'")
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
+			    (sequence "SOME DAY" "|")
 			    (sequence "|" "CANCELED(c)"))
 	org-todo-keyword-faces '(("WAITING" . "yellow")
-				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
-	      
-
+				 ("CANCELED" . (:foreground "grey" :weight "bold"))))
+  (add-hook 'org-mode-hook 'smartparens-mode)
+  :config
+  (sp-with-modes 'org-mode
+    (sp-local-pair "*" "*" :unless '(sp-point-after-word-p sp-point-at-bol-p))
+    (sp-local-pair "_" "_")
+    (sp-local-pair "~" "~")
+    (sp-local-pair "=" "=")))
