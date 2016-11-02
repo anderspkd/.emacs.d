@@ -11,6 +11,7 @@
 ;;;;;;
 (when (eq window-system 'x)
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
+  (setq leuven-scale-outline-headlines nil)
   (load-theme 'leuven t))
 
 (tooltip-mode -1)
