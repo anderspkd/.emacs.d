@@ -31,6 +31,8 @@
 (display-time)
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(window-numbering-mode 1)
+
 (when (fboundp 'global-font-lock-mode)
   (global-font-lock-mode t)
   (setq font-lock-maximum-decoration t))
