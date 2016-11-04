@@ -127,6 +127,7 @@
   :bind ([ret] . newline-and-indent)
   :init
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux")))
+  (add-hook 'c-mode-hook 'smartparens-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode))
 
 (use-package python
