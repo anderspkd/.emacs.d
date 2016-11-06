@@ -189,7 +189,8 @@
 
 (use-package dired
   :bind (:map dired-mode-map
-	      ([backspace] . dired-up-directory)))
+	      ([backspace] . dired-up-directory)
+	      ("b" . browse-url-of-dired-file)))
 
 (use-package tramp
   :init
@@ -219,4 +220,3 @@
     (sp-local-pair "_" "_")
     (sp-local-pair "~" "~")
     (sp-local-pair "=" "=")))
-
