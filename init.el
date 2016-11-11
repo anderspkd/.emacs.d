@@ -116,6 +116,7 @@
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (setq reftex-plug-into-AUCTeX t)
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  (add-hook 'LaTeX-mode-hook (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore)))))
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
   (add-hook 'LaTeX-mode-hook 'smartparens-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
