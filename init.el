@@ -130,6 +130,15 @@
   (add-hook 'c-mode-hook 'smartparens-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode))
 
+(use-package slime
+  :mode ("\\.lisp\\'" . common-lisp-mode)
+  :init
+  (setq inferior-lisp-program "/usr/bin/sbcl"
+	slime-contribs '(slime-fancy))
+  (add-hook 'lisp-mode-hook 'slime-mode)
+  (add-hook 'lisp-mode-hook 'smartparens-mode)
+  (add-hook 'lisp-mode-hook 'yas-minor-mode))
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :bind (:map python-mode-map
