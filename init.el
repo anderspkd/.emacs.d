@@ -221,6 +221,7 @@
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
 			    (sequence "SOME DAY" "|")
+			    (sequence "|" "DID NOT DO")
 			    (sequence "|" "CANCELED(c)"))
 	org-todo-keyword-faces '(("WAITING" . "yellow")
 				 ("CANCELED" . (:foreground "grey" :weight "bold"))))
