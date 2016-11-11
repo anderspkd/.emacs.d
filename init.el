@@ -181,7 +181,8 @@
 	 ("x" . elfeed-open-entry-in-mpv))
   :init
   (setq elfeed-curl-program-name "curl"
-	elfeed-use-curl t)
+	elfeed-use-curl t
+	elfeed-search-filter "@2-weeks-ago +unread ")
 
   (setq browse-url-chromium-arguments '("-incognito")
       browse-url-generic-program "chromium"
