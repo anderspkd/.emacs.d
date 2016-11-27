@@ -147,7 +147,7 @@
   :init
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'run-python)
+  ;; (add-hook 'python-mode-hook 'run-python)
   (add-hook 'python-mode-hook 'smartparens-mode)
   (add-hook 'python-mode-hook 'turn-on-eldoc-mode)
   (add-hook 'python-mode-hook 'yas-minor-mode)
@@ -178,7 +178,7 @@
 	 ("C-p" . elfeed-show-next)
 	 ("C-n" . elfeed-show-prev)
 	 :map elfeed-search-mode-map
-	 ("x" . elfeed-open-entry-in-mpv))
+	 ("x" . elfeed-search-open-entry-in-mpv))
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t
@@ -188,7 +188,7 @@
       browse-url-generic-program "chromium"
       browse-url-browser-function 'browse-url-chromium)
 
-  (defun elfeed-open-entry-in-mpv ()
+  (defun elfeed-search-open-entry-in-mpv ()
     (interactive)
     (let* ((entry (elfeed-search-selected :single))
 	   (url (elfeed-entry-link entry)))
