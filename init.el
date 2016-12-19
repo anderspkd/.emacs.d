@@ -106,6 +106,10 @@
   :config
   (yas-reload-all))
 
+(use-package web-mode
+  :mode ("\\.html\\'"
+	 "\\.php\\'"))
+
 (use-package tex
   :mode ("\\.tex\\'" . tex-mode)
   :init
