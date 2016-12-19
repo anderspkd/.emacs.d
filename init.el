@@ -229,10 +229,11 @@
 			    (sequence "|" "CANCELED(c)"))
 	org-todo-keyword-faces '(("WAITING" . "yellow")
 				 ("CANCELED" . (:foreground "grey" :weight "bold"))))
-  (add-hook 'org-mode-hook 'smartparens-mode)
-  :config
-  (sp-with-modes 'org-mode
-    (sp-local-pair "*" "*" :unless '(sp-point-after-word-p sp-point-at-bol-p))
-    (sp-local-pair "_" "_")
-    (sp-local-pair "~" "~")
-    (sp-local-pair "=" "=")))
+  )
+  ;; (add-hook 'org-mode-hook 'smartparens-mode)
+  ;; :config
+  ;; (sp-with-modes 'org-mode
+  ;;   (sp-local-pair "*" "*" :unless '(sp-point-after-word-p sp-point-at-bol-p))
+  ;;   (sp-local-pair "_" "_")
+  ;;   (sp-local-pair "~" "~")
+  ;;   (sp-local-pair "=" "=")))
