@@ -154,7 +154,7 @@
   ;; (add-hook 'python-mode-hook 'run-python)
   (add-hook 'python-mode-hook 'smartparens-mode)
   (add-hook 'python-mode-hook 'turn-on-eldoc-mode)
-  (add-hook 'python-mode-hook 'yas-minor-mode)
+  ;; (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'linum-mode)
   ;; FIXME: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
   (setq python-shell-interpreter "python2"))
