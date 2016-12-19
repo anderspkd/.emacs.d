@@ -92,6 +92,11 @@
   (interactive)
   (load "~/.emacs.d/init.el"))
 
+(defun byte-recompile-everything ()
+  "Force recompile everything in .emacs.d"
+  (interactive)
+  (byte-recompile-directory "~/.emacs.d/" 0 t))
+
 ;;;;;;
 ;;;; Keybinds (non mode specific)
 ;;;;;;
