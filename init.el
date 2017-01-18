@@ -162,7 +162,8 @@
   ;; (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'linum-mode)
   ;; FIXME: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
-  (setq python-shell-interpreter "python2"))
+  (setq python-shell-interpreter "python2")
+  )
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
