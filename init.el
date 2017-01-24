@@ -113,6 +113,7 @@
 (add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
 
 ;; Delete trailing whitespaces before saving a file.
+;; TODO: should be applied on a per-mode basis
 (advice-add 'save-buffer :before
 	    #'(lambda (&rest args)
 		(delete-trailing-whitespace)))
