@@ -142,7 +142,9 @@
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
   (add-hook 'LaTeX-mode-hook 'smartparens-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode))
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  :config
+  (sp-local-pair 'latex-mode "``" "''" :trigger "\"" :actions :rem))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
