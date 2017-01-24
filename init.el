@@ -228,7 +228,7 @@
 	 ("C-c C-l" . org-insert-link))
   :init
   (setq org-log-done t
-	org-agenda-files (directory-files "~/Documents/org/agenda files/" t "^[^#].+\\.org\\'")
+	org-agenda-files '("~/Documents/org/agenda.org")
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
 			    (sequence "SOME DAY" "|")
@@ -236,7 +236,7 @@
 			    (sequence "|" "CANCELED(c)"))
 	org-todo-keyword-faces '(("WAITING" . "yellow")
 				 ("CANCELED" . (:foreground "grey" :weight "bold"))))
-  )
+  (add-hook 'org-mode-hook 'yas-minor-mode))
   ;; (add-hook 'org-mode-hook 'smartparens-mode)
   ;; :config
   ;; (sp-with-modes 'org-mode
