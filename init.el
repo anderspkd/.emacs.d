@@ -30,6 +30,7 @@
       display-time-default-load-average nil)
 (display-time)
 (fset 'yes-or-no-p 'y-or-n-p)
+(delete-selection-mode 1) ;; Delete selection on typing
 
 (window-numbering-mode 1)
 
