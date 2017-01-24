@@ -106,6 +106,17 @@
 (bind-key "C-x K" #'kill-all-buffers)
 
 ;;;;;;
+;;;; Hooks and advices for non-specific modes
+;;;;;;
+
+;; yeah yeah, this is mode-specific, fight me.
+(add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
+
+;; Delete trailing whitespaces before saving a file.
+(advice-add 'save-buffer :before
+	    #'(lambda (&rest args)
+		(delete-trailing-whitespace)))
+;;;;;;
 ;;;; Package configs
 ;;;;;;
 (use-package yasnippet
