@@ -106,6 +106,15 @@
   (interactive)
   (byte-recompile-directory "~/.emacs.d/" 0 t))
 
+(defun base64-string-length (beg end)
+  "Decode region as base64 (stripping quotes) and output the
+length in the message buffer"
+  (interactive "r")
+  (if (and beg end)
+      (let* ((selection (buffer-substring-no-properties beg end))
+	     (b64-decoded (base64-decode-string (replace-regexp-in-string "'" "" selection))))
+	(message "decoded length: %d bytes" (length b64-decoded)))))
+
 ;;;;;;
 ;;;; Keybinds (non mode specific)
 ;;;;;;
