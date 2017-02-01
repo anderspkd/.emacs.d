@@ -225,11 +225,6 @@ human readable representation in the minibuffer."
 (use-package elfeed
   :load-path ("lisp/" "super-secret-directory/")
   :bind (("C-x w" . elfeed)
-	 :map elfeed-show-mode-map
-	 ("n" . scroll-up-line)
-	 ("p" . scroll-down-line)
-	 ("C-p" . elfeed-show-next)
-	 ("C-n" . elfeed-show-prev)
 	 :map elfeed-search-mode-map
 	 ("x" . elfeed-search-open-entry-in-mpv))
   :init
