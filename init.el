@@ -30,9 +30,17 @@
       display-time-default-load-average nil)
 (display-time)
 (fset 'yes-or-no-p 'y-or-n-p)
-(delete-selection-mode 1) ;; Delete selection on typing
 
+;; Delete selection on typing. Behaviour can be feel wonky if one is
+;; used to electric-pair like modes, when used in modes without such
+;; modes.
+(delete-selection-mode 1)
+
+;; Number windows so we can switch between them with M-<n>
 (window-numbering-mode 1)
+
+;; Set frame title to <user>@<machine>:<buffer name>
+(setq frame-title-format (concat (user-login-name) "@" (system-name) ":%b"))
 
 (when (fboundp 'global-font-lock-mode)
   (global-font-lock-mode t)
