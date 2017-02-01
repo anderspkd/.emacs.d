@@ -118,6 +118,14 @@ length in the message buffer"
 	     (b64-decoded (base64-decode-string (replace-regexp-in-string "'" "" selection))))
 	(message "decoded length: %d bytes" (length b64-decoded)))))
 
+(defun unixtime->readable (beg end)
+  "Intepret selection as a unix timestamp and output a (more)
+human readable representation in the minibuffer."
+  (interactive "r")
+  (when (and beg end)
+    (let ((selected (buffer-substring-no-properties beg end)))
+      (message (format-time-string "%F %T%z" (string-to-int selected))))))
+
 ;;;;;;
 ;;;; Keybinds (non mode specific)
 ;;;;;;
