@@ -46,6 +46,9 @@
   (global-font-lock-mode t)
   (setq font-lock-maximum-decoration t))
 
+;; especially for 'flop-frame
+(use-package transpose-frame)
+
 (use-package smartparens-config)
 
 (use-package iso-transl) ;; fix dead keys
