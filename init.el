@@ -126,12 +126,22 @@ human readable representation in the minibuffer."
     (let ((selected (buffer-substring-no-properties beg end)))
       (message (format-time-string "%F %T%z" (string-to-int selected))))))
 
+(defun back-to-indentation-or-beginning ()
+  "Go back to indentation or, if already there, beginning of
+line"
+  (interactive)
+  (when (= (point)
+	   (progn (back-to-indentation) (point)))
+    (beginning-of-line)))
+
 ;;;;;;
-;;;; Keybinds (non mode specific)
+;;;; Keybinds, modification of keybinds, and so on
 ;;;;;;
 (put 'upcase-region 'disabled nil)
 
 (bind-key "C-x K" #'kill-all-buffers)
+
+(bind-key "C-a" #'back-to-indentation-or-beginning)
 
 ;;;;;;
 ;;;; Hooks and advices for non-specific modes
