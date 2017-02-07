@@ -31,6 +31,9 @@
 (display-time)
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; Should this really be here? Can I defer the loading somewhere?
+(pdf-tools-install)
+
 ;; Delete selection on typing. Behaviour can be feel wonky if one is
 ;; used to electric-pair like modes, when used in modes without such
 ;; modes.
