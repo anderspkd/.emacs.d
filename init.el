@@ -133,8 +133,7 @@
   :diminish flycheck-mode
   :config
   (global-flycheck-mode)
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-  (setq sentence-end-double-space nil)) ; no thx
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 (use-package tex
   ;; no `:ensure` for this as it is installed by the distro
