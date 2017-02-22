@@ -252,4 +252,8 @@
 	org-todo-keyword-faces '(("WAITING" . "yellow")
 				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
 
+;; put that junk somewhere out of the way.
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
 ;;; init.el ends here
