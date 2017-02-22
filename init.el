@@ -1,62 +1,54 @@
+;;; init.el --- Emacs configuration
+;;
+;; Author: Anders Dalskov
+;; Copyright: (C) 2017, Anders Dalskov, all rights reserved
+;;
+;;; Commentary:
+;;
+;; Emacs configuration file. Inspired in some part by <that guy>
+;;
+;;; Code:
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+
+(add-to-list 'load-path (concat user-emacs-directory "lisp"))
+
+;; Ensure `use-packge` is installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 (eval-when-compile
   (require 'use-package))
 (require 'bind-key)
 
-;;;;;;
-;;;; Themes, fonts and other stuff related to looks and default behaviour
-;;;;;;
-(when (eq window-system 'x)
-  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
-  (setq leuven-scale-outline-headlines nil)
-  (load-theme 'leuven t))
+;;; Some general settings related to visuals
 
-(tooltip-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(blink-cursor-mode 0)
+(tool-bar-mode -1)     ; no toolbar,
+(menu-bar-mode -1)     ; no menu bar,
+(scroll-bar-mode -1)   ; no scroll bar,
+(blink-cursor-mode -1) ; no cursor blinking, (fox only, final destination)
+
+;; Enable line and column numbers in the modeline
 (line-number-mode t)
 (column-number-mode t)
-(setq ring-bell-function 'ignore
-      inhibit-splash-screen t
-      initial-scratch-message nil
-      scroll-step 1)
+
+(setq ring-bell-function 'ignore ; no bell
+      inhibit-splash-screen t    ; shows *scratch* on startup
+      scroll-step 1)             ; make scrolling sane
+
+;; Display time as `weekday month day hour:minutes` in the modeline
 (setq display-time-24hr-format t
       display-time-day-and-date t
       display-time-default-load-average nil)
 (display-time)
+
+;; `y` or `n` instead of `yes` or `no`
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Should this really be here? Can I defer the loading somewhere?
-(pdf-tools-install)
-
-;; Delete selection on typing. Behaviour can be feel wonky if one is
-;; used to electric-pair like modes, when used in modes without such
-;; modes.
-(delete-selection-mode 1)
-
-;; Number windows so we can switch between them with M-<n>
-(window-numbering-mode 1)
-
-;; Set frame title to <user>@<machine>:<buffer name>
-(setq frame-title-format (concat (user-login-name) "@" (system-name) ":%b"))
-
-(when (fboundp 'global-font-lock-mode)
-  (global-font-lock-mode t)
-  (setq font-lock-maximum-decoration t))
-
-;; especially for 'flop-frame
-(use-package transpose-frame)
-
-(use-package smartparens-config)
-
-(use-package iso-transl) ;; fix dead keys
-
-;; Place backups in a specific directory
+;; Place backups somewhere else than everywhere
 (setq backup-by-copying t
       backup-directory-alist '(("." . "~/.emacs_backups"))
       delete-old-versions t
@@ -64,237 +56,200 @@
       kept-old-versions 2
       version-control t)
 
-(use-package uniquify
-  :config
-  (setq uniquify-buffer-name-style 'post-forward))
+(use-package iso-transl) ; fixes dead keys e.g., tilde
 
-(use-package smart-mode-line
-  :init
-  (setq sml/no-confirm-load-theme t
-	sml/theme 'light)
-  :config
-  (sml/setup)
-  (mapc (lambda (x) (add-to-list 'sml/replacer-regexp-list x))
-  	'(("^~/Code/" ":CODE:")
-	  ("^~/.config/" ":CONF:")
-	  ("^~/.emacs.d/" ":EMACS:")
-	  ("^~/Documents/" ":DOC:")
-	  ("^~/Documents/org/" ":ORG:")
-	  ("^~/Documents/uni" ":UNI:"))))
+;; Settings that are relevant when running in X
+(when (eq window-system 'x)
+  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
+  (use-package leuven-theme
+    :ensure t
+    :init (setq leuven-scale-outline-headlines nil))
+  ;; (use-package smart-mode-line
+  ;;   :ensure t
+  ;;   :init
+  ;;   (setq sml/no-confirm-load-theme t
+  ;; 	  sml/theme 'dark)
+  ;;   :config
+  ;;   (sml/setup)
+  ;;   (dolist (pattern '(("^~/Code/" ":CODE:")
+  ;; 		       ("^~/.config/" ":CONF:")
+  ;; 		       ("^~/.emacs.d" ":EMACS:")
+  ;; 		       ("^~/Documents/" ":DOC:")
+  ;; 		       ("^~/Documents/org/" ":ORG:")
+  ;; 		       ("^~/Documents/uni/" ":UNI:")))
+  ;;     (add-to-list 'sml/replacer-regexp-list pattern)))
+  )
 
-(use-package ansi-color
-  :init
-  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on))
+;;; Settings for keybindings and whatnot
 
-;;;;;;
-;;;; Misc functions
-;;;;;;
-(defun recreate-scratch ()
-  "Recreate scratch buffer"
-  (interactive)
-  (switch-to-buffer (get-buffer-create "*scratch*"))
-  (lisp-interaction-mode))
-
-(defun kill-all-buffers ()
-  "Kill all buffers and open *scratch* -- basically resets the session."
-  (interactive)
-  (when (y-or-n-p "Kill all buffers?")
-    (mapc 'kill-buffer (buffer-list))
-    (delete-other-windows)
-    (recreate-scratch)))
-
-(defun reload-dotemacs ()
-  (interactive)
-  (load "~/.emacs.d/init.el"))
-
-(defun byte-recompile-everything ()
-  "Force recompile everything in .emacs.d"
-  (interactive)
-  (byte-recompile-directory "~/.emacs.d/" 0 t))
-
-(defun base64-string-length (beg end)
-  "Decode region as base64 (stripping quotes) and output the
-length in the message buffer"
-  (interactive "r")
-  (if (and beg end)
-      (let* ((selection (buffer-substring-no-properties beg end))
-	     (b64-decoded (base64-decode-string (replace-regexp-in-string "'" "" selection))))
-	(message "decoded length: %d bytes" (length b64-decoded)))))
-
-(defun unixtime->readable (beg end)
-  "Intepret selection as a unix timestamp and output a (more)
-human readable representation in the minibuffer."
-  (interactive "r")
-  (when (and beg end)
-    (let ((selected (buffer-substring-no-properties beg end)))
-      (message (format-time-string "%F %T%z" (string-to-int selected))))))
-
-(defun back-to-indentation-or-beginning ()
-  "Go back to indentation or, if already there, beginning of
-line"
-  (interactive)
-  (when (= (point)
-	   (progn (back-to-indentation) (point)))
-    (beginning-of-line)))
-
-;;;;;;
-;;;; Keybinds, modification of keybinds, and so on
-;;;;;;
 (put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
-(bind-key "C-x K" #'kill-all-buffers)
+(use-package hydra
+  :ensure t)
 
-(bind-key "C-a" #'back-to-indentation-or-beginning)
+(use-package asd-funcs
+  :demand t ; make sure we load `asd-funcs`
+  :bind (("C-x K" . asd/kill-all-buffers)
+	 ("C-a" . asd/back-to-indent-or-beg)))
 
-;;;;;;
-;;;; Hooks and advices for non-specific modes
-;;;;;;
+(use-package transpose-frame
+  :ensure t
+  :config
+  (defhydra hydra-flop-frame (global-map "C-c f")
+    "Flopping and flipping frames"
+    ("j" flop-frame "Flip horizontally")
+    ("k" flip-frame "Flip vertically")))
 
-;; yeah yeah, this is mode-specific, fight me.
-(add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
+;;; More settings
 
-;; Delete trailing whitespaces before saving a file.
-;; TODO: should be applied on a per-mode basis
-(advice-add 'save-buffer :before
-	    #'(lambda (&rest args)
-		(delete-trailing-whitespace)))
-;;;;;;
-;;;; Package configs
-;;;;;;
+(defsubst asd/remove-ws-hook ()
+  "Auto delete trailing whitespace before saving in some modes."
+  (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
+
+(use-package nlinum
+  :defer t
+  :ensure t)
+
+(use-package pdf-tools
+  :defer t
+  :ensure t
+  :config
+  (pdf-tools-install))
+
 (use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :defer t
   :config
   (yas-reload-all))
 
-(use-package web-mode
-  :mode ("\\.html\\'"
-	 "\\.php\\'"))
+(use-package magit
+  :bind ("C-x g" . magit-status)
+  :ensure t)
+
+(use-package flycheck
+  :ensure t
+  :diminish flycheck-mode
+  :config
+  (global-flycheck-mode)
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  (setq sentence-end-double-space nil)) ; no thx
 
 (use-package tex
+  ;; no `:ensure` for this as it is installed by the distro
   :mode ("\\.tex\\'" . tex-mode)
   :init
   (setq TeX-auto-save t
 	TeX-parse-self t
 	TeX-source-correlate-method-active 'synctex
-	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
   (setq-default TeX-master nil)
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (setq reftex-plug-into-AUCTeX t)
-  (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
-  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-  (add-hook 'LaTeX-mode-hook 'tex-source-correlate-mode)
-  (add-hook 'LaTeX-mode-hook (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore)))))
-  (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-  (add-hook 'LaTeX-mode-hook 'smartparens-mode)
-  (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  :config
-  (sp-local-pair 'latex-mode "``" "''" :trigger "\"" :actions :rem))
-
+  (dolist (fun '((lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools")))
+		 #'visual-line-mode
+		 #'tex-source-correlate-mode
+		 (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore))))
+		 #'turn-on-flyspell
+		 #'LaTeX-math-mode
+		 #'turn-on-reftex))
+    (add-hook 'LaTeX-mode-hook fun)))
+      
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
   :bind ([ret] . newline-and-indent)
   :init
-  (add-hook 'c-mode-hook (lambda () (c-set-style "linux")))
-  (add-hook 'c-mode-hook 'smartparens-mode)
-  (add-hook 'c-mode-hook 'yas-minor-mode))
+  (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
 
-(use-package slime
-  :mode ("\\.lisp\\'" . common-lisp-mode)
+(use-package rust-mode
+  :ensure t
+  :mode (("\\.rs\\'" . rust-mode))
   :init
-  (setq inferior-lisp-program "/usr/bin/sbcl"
-	slime-contribs '(slime-fancy))
-  (add-hook 'lisp-mode-hook 'slime-mode)
-  (add-hook 'lisp-mode-hook 'smartparens-mode)
-  (add-hook 'lisp-mode-hook 'yas-minor-mode))
-
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :bind (:map python-mode-map
-	      ("C-c C-q" . hs-toggle-hiding))
-  :init
-  (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
-  (add-hook 'python-mode-hook 'jedi:setup)
-  ;; (add-hook 'python-mode-hook 'run-python)
-  (add-hook 'python-mode-hook 'smartparens-mode)
-  (add-hook 'python-mode-hook 'turn-on-eldoc-mode)
-  ;; (add-hook 'python-mode-hook 'yas-minor-mode)
-  (add-hook 'python-mode-hook 'linum-mode)
-  ;; FIXME: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
-  (setq python-shell-interpreter "python2")
-  )
-
-(use-package helm
-  :bind (("M-x" . helm-M-x)
-	 ("M-y" . helm-show-kill-ring)
-	 ("C-x b" . helm-mini)
-	 ("C-x C-f" . helm-find-files)
-	 :map helm-map
-	 ([tab] . helm-execute-persistent-action)
-	 ("C-z" . helm-select-action))
-  :init
-  (setq helm-split-window-in-side-p t
-	helm-M-x-fuzzy-match t
-	helm-buffers-fuzzy-matching t
-	helm-recentf-fuzzy-match t))
+  (use-package flycheck-rust
+    :ensure t)
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  (add-hook 'rust-mode-hook #'asd/remove-ws-hook))
 
 (use-package elfeed
-  :load-path ("lisp/" "super-secret-directory/")
+  :ensure t
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
-	 ("x" . elfeed-search-open-entry-in-mpv))
+	 ("x" . open-search-entry-in-mpv))
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t
-	elfeed-search-filter "@2-weeks-ago +unread ")
+	elfeed-search-filter "@2-weeks-ago +unread "
 
-  (setq browse-url-chromium-arguments '("-incognito")
-      browse-url-generic-program "chromium"
-      browse-url-browser-function 'browse-url-chromium)
+	browse-url-chromium-arguments '("-incognito")
+	browse-url-generic-program "chromium"
+	browse-url-browser-function 'browse-url-chromium)
 
-  (defun elfeed-search-open-entry-in-mpv ()
+  (defun open-search-entry-in-mpv ()
+    "Opens a search entry in mpv and marks said entry as read."
     (interactive)
     (let* ((entry (elfeed-search-selected :single))
 	   (url (elfeed-entry-link entry)))
-      (elfeed-search-untag-all 'unread)
-      (start-process "mpv-emacs" nil "mpv" url)))
-
+      (asd/send-to-mpv url)))
+  
   :config
-  (use-package user-feeds))
+  ;; remove `unread` tag from old entries.
+  (add-hook 'elfeed-new-entry-hook (elfeed-make-tagger :before "2 weeks ago" :remove 'unread)))
+
+  ;; (defface reddit-elfeed-entry
+  ;;   '((t :foreground
+
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+  :interpreter ("python" . python-mode)
+  :bind (:map python-mode-map
+	      ("C-c b t" . hs-toggle-hiding))
+  :init
+  (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
+  ;; (add-hook 'python-mode-hook 'jedi:setup)
+  (add-hook 'python-mode-hook #'eldoc-mode)
+  (add-hook 'python-mode-hook #'yas-minor-mode)
+  (add-hook 'python-mode-hook #'asd/remove-ws-hook)
+  (add-hook 'python-mode-hook #'nlinum-mode))
 
 (use-package dired
+  :defer t
   :bind (:map dired-mode-map
 	      ([backspace] . dired-up-directory)
-	      ("b" . browse-url-of-dired-file)))
+	      ("b" . browse-url-of-dired-file)
+	      ("W" . play-in-mpv))
+  :init
+  (add-hook 'dired-mode-hook (lambda () (toggle-truncate-lines)))
+  (defun play-in-mpv ()
+    (interactive)
+    (let ((file (dired-get-filename)))
+      (when file
+	(asd/send-to-mpv file))))
+  :config
+  (setq dired-auto-revert-buffer t
+	dired-listing-switches "-alhFv --group-directories-first"))
 
 (use-package tramp
+  :ensure t
+  :defer t
   :init
   (setq tramp-default-method "ssh"))
 
-(use-package magit
-  :bind ("C-x g" . magit-status))
-
 (use-package org
+  :ensure t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
 	 ("C-c l" . org-store-link)
 	 ("C-c C-l" . org-insert-link))
   :init
+  (add-hook 'org-mode-hook 'yas-minor-mode)
+  :config
   (setq org-log-done t
 	org-agenda-files '("~/Documents/org/agenda.org")
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
-			    (sequence "SOME DAY" "|")
-			    (sequence "|" "DID NOT DO")
 			    (sequence "|" "CANCELED(c)"))
 	org-todo-keyword-faces '(("WAITING" . "yellow")
-				 ("CANCELED" . (:foreground "grey" :weight "bold"))))
-  (add-hook 'org-mode-hook 'yas-minor-mode))
-  ;; (add-hook 'org-mode-hook 'smartparens-mode)
-  ;; :config
-  ;; (sp-with-modes 'org-mode
-  ;;   (sp-local-pair "*" "*" :unless '(sp-point-after-word-p sp-point-at-bol-p))
-  ;;   (sp-local-pair "_" "_")
-  ;;   (sp-local-pair "~" "~")
-  ;;   (sp-local-pair "=" "=")))
+				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
+
+;;; init.el ends here
