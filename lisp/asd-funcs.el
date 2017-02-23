@@ -59,6 +59,14 @@ of line."
   (when (= (point) (progn (back-to-indentation) (point)))
     (beginning-of-line)))
 
+(defun asd/file-size-human-readable (beg end)
+  "Super thin wrapper around `file-size-human-readable. Converts
+selection into something readable and messages it."
+  (interactive "r")
+  (let ((thing (buffer-substring-no-properties beg end)))
+    (if thing
+	(message "%s" (file-size-human-readable (string-to-number thing) 'iec)))))
+
 (defsubst asd/send-to-mpv (url)
   "Open URL in mpv. Useful for youtube entries in elfeed."
   (when (stringp url)
