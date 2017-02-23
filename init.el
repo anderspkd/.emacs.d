@@ -220,7 +220,26 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
 
   :config
   ;; remove `unread` tag from old entries.
-  (add-hook 'elfeed-new-entry-hook (elfeed-make-tagger :before "2 weeks ago" :remove 'unread)))
+  (add-hook 'elfeed-new-entry-hook
+	    (elfeed-make-tagger :before "2 weeks ago"
+				:remove 'unread))
+  (defface reddit-entry
+    '((t :foreground "#2874a6"))
+    "Colors for reddit entries.")
+
+  (defface advisory-entry
+    '((t :foreground "#58d68d"))
+    "Colors for security advisories.")
+
+  (defface youtube-entry
+    '((t :foreground "#e74c3c"))
+    "Colors for Youtube entries.")
+
+  (dolist (tag-and-face '((reddit reddit-entry)
+			  (advisory advisory-entry)
+			  (youtube youtube-entry)))
+    (push tag-and-face elfeed-search-face-alist)))
+
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
