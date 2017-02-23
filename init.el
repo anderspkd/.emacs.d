@@ -104,6 +104,34 @@
     ("j" flop-frame "Flip horizontally")
     ("k" flip-frame "Flip vertically")))
 
+(use-package ace-window
+  :ensure t
+  :bind ("C-x o" . ace-window))
+
+; (global-map "C-c r")
+
+(defhydra hydra-resize-windows (:hint nil)
+  "
+Use shift to increase shrinkage :^)
+_h_:left _j_:down _k_:up _l_:right _q_:quit
+"
+  ("h" (shrink-window 3 t))
+  ("l" (shrink-window -3 t))
+  ("j" (shrink-window -3))
+  ("k" (shrink-window 3))
+  ("H" (shrink-window 9 t))
+  ("L" (shrink-window -9 t))
+  ("J" (shrink-window -9))
+  ("K" (shrink-window 9))
+  ("q" nil))
+
+(bind-key "C-c r" 'hydra-resize-windows/body)
+
+;; Some settings to ensure stuff is opened in the right browser
+(setq browse-url-chromium-arguments '("-incognito")
+      browse-url-generic-program "chromium"
+      browse-url-browser-function 'browse-url-chromium)
+
 ;;; More settings
 
 (defsubst asd/remove-ws-hook ()
@@ -181,11 +209,7 @@
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t
-	elfeed-search-filter "@2-weeks-ago +unread "
-
-	browse-url-chromium-arguments '("-incognito")
-	browse-url-generic-program "chromium"
-	browse-url-browser-function 'browse-url-chromium)
+	elfeed-search-filter "@2-weeks-ago +unread ")
 
   (defun open-search-entry-in-mpv ()
     "Opens a search entry in mpv and marks said entry as read."
