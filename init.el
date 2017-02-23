@@ -276,6 +276,7 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
 (use-package emacs-lisp-mode
   :mode "\\.el\\'"
   :init
+  (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
   (add-hook 'emacs-lisp-mode-hook #'asd/remove-ws-hook))
 
 (use-package tramp
@@ -293,8 +294,9 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   :config
+  (unless org-agenda-files
+      (setq org-agenda-files '("~/Documents/org/agenda.org")))
   (setq org-log-done t
-	org-agenda-files '("~/Documents/org/agenda.org")
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
 			    (sequence "|" "CANCELED(c)"))
