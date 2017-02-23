@@ -35,6 +35,9 @@
 (line-number-mode t)
 (column-number-mode t)
 
+;; No *scratch* comment
+(setq initial-scratch-message nil)
+
 (setq ring-bell-function 'ignore ; no bell
       inhibit-splash-screen t    ; shows *scratch* on startup
       scroll-step 1)             ; make scrolling sane
