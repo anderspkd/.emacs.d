@@ -61,27 +61,31 @@
 
 (use-package iso-transl) ; fixes dead keys e.g., tilde
 
+;; Some settings to ensure stuff is opened in the right browser
+(setq browse-url-chromium-arguments '("-incognito")
+      browse-url-generic-program "chromium"
+      browse-url-browser-function 'browse-url-chromium)
+
 ;; Settings that are relevant when running in X
 (when (eq window-system 'x)
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
   (use-package leuven-theme
     :ensure t
     :init (setq leuven-scale-outline-headlines nil))
-  ;; (use-package smart-mode-line
-  ;;   :ensure t
-  ;;   :init
-  ;;   (setq sml/no-confirm-load-theme t
-  ;; 	  sml/theme 'dark)
-  ;;   :config
-  ;;   (sml/setup)
-  ;;   (dolist (pattern '(("^~/Code/" ":CODE:")
-  ;; 		       ("^~/.config/" ":CONF:")
-  ;; 		       ("^~/.emacs.d" ":EMACS:")
-  ;; 		       ("^~/Documents/" ":DOC:")
-  ;; 		       ("^~/Documents/org/" ":ORG:")
-  ;; 		       ("^~/Documents/uni/" ":UNI:")))
-  ;;     (add-to-list 'sml/replacer-regexp-list pattern)))
-  )
+  (use-package smart-mode-line
+    :ensure t
+    :init
+    (setq sml/no-confirm-load-theme t
+  	  sml/theme 'dark)
+    :config
+    (sml/setup)
+    (dolist (pattern '(("^~/Code/" ":CODE:")
+  		       ("^~/.config/" ":CONF:")
+  		       ("^~/.emacs.d" ":EMACS:")
+  		       ("^~/Documents/" ":DOC:")
+  		       ("^~/Documents/org/" ":ORG:")
+  		       ("^~/Documents/uni/" ":UNI:")))
+      (add-to-list 'sml/replacer-regexp-list pattern))))
 
 ;;; Settings for keybindings and whatnot
 
@@ -108,8 +112,6 @@
   :ensure t
   :bind ("C-x o" . ace-window))
 
-; (global-map "C-c r")
-
 (defhydra hydra-resize-windows (:hint nil)
   "
 Use shift to increase shrinkage :^)
@@ -126,11 +128,6 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   ("q" nil))
 
 (bind-key "C-c r" 'hydra-resize-windows/body)
-
-;; Some settings to ensure stuff is opened in the right browser
-(setq browse-url-chromium-arguments '("-incognito")
-      browse-url-generic-program "chromium"
-      browse-url-browser-function 'browse-url-chromium)
 
 ;;; More settings
 
@@ -201,6 +198,7 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   (add-hook 'rust-mode-hook #'asd/remove-ws-hook))
 
+;;; TODO: actual make this usable (i.e., add feeds)
 (use-package elfeed
   :ensure t
   :bind (("C-x w" . elfeed)
@@ -221,9 +219,6 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   :config
   ;; remove `unread` tag from old entries.
   (add-hook 'elfeed-new-entry-hook (elfeed-make-tagger :before "2 weeks ago" :remove 'unread)))
-
-  ;; (defface reddit-elfeed-entry
-  ;;   '((t :foreground
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
