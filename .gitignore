@@ -12,3 +12,4 @@ lisp/*.elc
 url/
 /image-dired/*
 /.python-environments/*
+/custom.el
