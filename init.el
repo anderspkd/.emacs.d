@@ -1,4 +1,4 @@
-;;; init.el --- Emacs configuration
+;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
 ;;
 ;; Author: Anders Dalskov
 ;; Copyright: (C) 2017, Anders Dalskov, all rights reserved
@@ -153,7 +153,7 @@
 		 #'LaTeX-math-mode
 		 #'turn-on-reftex))
     (add-hook 'LaTeX-mode-hook fun)))
-      
+
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
@@ -190,7 +190,7 @@
     (let* ((entry (elfeed-search-selected :single))
 	   (url (elfeed-entry-link entry)))
       (asd/send-to-mpv url)))
-  
+
   :config
   ;; remove `unread` tag from old entries.
   (add-hook 'elfeed-new-entry-hook (elfeed-make-tagger :before "2 weeks ago" :remove 'unread)))
