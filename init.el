@@ -235,6 +235,7 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   ;; (add-hook 'python-mode-hook 'jedi:setup)
   (add-hook 'python-mode-hook #'eldoc-mode)
   (add-hook 'python-mode-hook #'yas-minor-mode)
+  ;; TODO: find some way to toggle this on/off.
   (add-hook 'python-mode-hook #'asd/remove-ws-hook)
   (add-hook 'python-mode-hook #'nlinum-mode))
 
@@ -253,7 +254,13 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
 	(asd/send-to-mpv file))))
   :config
   (setq dired-auto-revert-buffer t
+	;; `-v` and `-group-directories-first` are GNU ls specific afaik
 	dired-listing-switches "-alhFv --group-directories-first"))
+
+(use-package emacs-lisp-mode
+  :mode "\\.el\\'"
+  :init
+  (add-hook 'emacs-lisp-mode-hook #'asd/remove-ws-hook))
 
 (use-package tramp
   :ensure t
