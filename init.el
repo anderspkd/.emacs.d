@@ -112,6 +112,8 @@
   :ensure t
   :bind ("C-x o" . ace-window))
 
+;;; Use `hjkl` to shrink window. Behaviour is a little inconsistent,
+;;; depending on which window the cursor is currently in.
 (defhydra hydra-resize-windows (:hint nil)
   "
 Use shift to increase shrinkage :^)
