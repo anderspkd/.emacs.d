@@ -103,10 +103,19 @@
 (use-package transpose-frame
   :ensure t
   :config
-  (defhydra hydra-flop-frame (global-map "C-c f")
-    "Flopping and flipping frames"
-    ("j" flop-frame "Flip horizontally")
-    ("k" flip-frame "Flip vertically")))
+  (defhydra hydra-flop-frame (:hint nil)
+    "
+Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
+(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit.
+"
+("s" transpose-frame)
+("f" flip-frame)
+("F" flop-frame)
+("r" rotate-frame-clockwise)
+("R" rotate-frame-anticlockwise)
+("q" nil))
+(bind-key "C-c f" 'hydra-flop-frame/body))
+
 
 (use-package ace-window
   :ensure t
@@ -116,7 +125,7 @@
 ;;; depending on which window the cursor is currently in.
 (defhydra hydra-resize-windows (:hint nil)
   "
-Use shift to increase shrinkage :^)
+Use shift to increase shrinkage ;-)
 _h_:left _j_:down _k_:up _l_:right _q_:quit
 "
   ("h" (shrink-window 3 t))
