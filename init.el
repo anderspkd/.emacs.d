@@ -285,6 +285,12 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   :init
   (setq tramp-default-method "ssh"))
 
+(use-package web-mode
+  :ensure t
+  :mode (("\\.html\\'" . web-mode)
+	 ("\\.js\\'" . web-mode)
+	 ("\\.css\\'" . web-mode)))
+
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
