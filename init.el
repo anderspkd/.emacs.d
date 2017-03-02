@@ -298,7 +298,9 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   :ensure t
   :mode (("\\.html\\'" . web-mode)
 	 ("\\.js\\'" . web-mode)
-	 ("\\.css\\'" . web-mode)))
+	 ("\\.css\\'" . web-mode))
+  :config
+  (add-hook 'web-mode-hook 'auto-revert-mode))
 
 (use-package org
   :ensure t
