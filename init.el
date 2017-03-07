@@ -96,7 +96,9 @@
   :ensure t)
 
 (use-package asd-funcs
-  :demand t ; make sure we load `asd-funcs`
+  ;; `demand t` is neccessary here since some of the functions it
+  ;; provides are used elsewhere (e.g., elfeed and dired).
+  :demand t
   :bind (("C-x K" . asd/kill-all-buffers)
 	 ("C-a" . asd/back-to-indent-or-beg)))
 
@@ -104,16 +106,15 @@
   :ensure t
   :config
   (defhydra hydra-flop-frame (:hint nil)
+    "Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
+     (_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit.
     "
-Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
-(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit.
-"
-("s" transpose-frame)
-("f" flip-frame)
-("F" flop-frame)
-("r" rotate-frame-clockwise)
-("R" rotate-frame-anticlockwise)
-("q" nil))
+    ("s" transpose-frame)
+    ("f" flip-frame)
+    ("F" flop-frame)
+    ("r" rotate-frame-clockwise)
+    ("R" rotate-frame-anticlockwise)
+    ("q" nil))
 (bind-key "C-c f" 'hydra-flop-frame/body))
 
 
