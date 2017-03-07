@@ -5,7 +5,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; Emacs configuration file. Inspired in some part by <that guy>
+;; Emacs configuration file.
 ;;
 ;;; Code:
 
@@ -106,9 +106,10 @@
   :ensure t
   :config
   (defhydra hydra-flop-frame (:hint nil)
-    "Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
-     (_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit.
     "
+Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
+(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit.
+"
     ("s" transpose-frame)
     ("f" flip-frame)
     ("F" flop-frame)
