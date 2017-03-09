@@ -68,7 +68,7 @@ selection into something readable and messages it."
 	(message "%s" (file-size-human-readable (string-to-number thing) 'iec)))))
 
 (defsubst asd/send-to-mpv (url)
-  "Open URL in mpv. Useful for youtube entries in elfeed."
+  "Open URL in mpv."
   (when (stringp url)
     (start-process "mpv-emacs" nil "mpv" url)))
 
