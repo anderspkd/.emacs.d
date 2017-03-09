@@ -100,7 +100,8 @@
   ;; provides are used elsewhere (e.g., elfeed and dired).
   :demand t
   :bind (("C-x K" . asd/kill-all-buffers)
-	 ("C-a" . asd/back-to-indent-or-beg)))
+	 ("C-a" . asd/back-to-indent-or-beg)
+	 ("C-x r a" . asd/insert-around-rectangle)))
 
 (use-package transpose-frame
   :ensure t

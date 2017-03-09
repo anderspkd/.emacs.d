@@ -72,6 +72,23 @@ selection into something readable and messages it."
   (when (stringp url)
     (start-process "mpv-emacs" nil "mpv" url)))
 
+(defun asd/insert-around-rectangle (start end string)
+  "Insert STRING before and after each line in a selected
+rectangle."
+  (interactive
+   (let ((string (read-string (format "String-padding (default %s): "
+				      (or (car string-rectangle-history) " "))
+			      nil 'string-rectangle-history
+			      (car string-rectangle-history))))
+     (list (region-beginning) (region-end) string)))
+  (save-excursion
+    (apply-on-rectangle (lambda (startcol endcol)
+			  (dolist (col `(,endcol ,startcol))
+			    (move-to-column col)
+			    (insert string)))
+			start end)))
+
+
 (provide 'asd-funcs)
 
 ;;; asd-funcs.el ends here
