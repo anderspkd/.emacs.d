@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: smallverbatim
+# key: smallverbatim
+# --
+\begin{small}
+\begin{verbatim}
+$0
+\end{verbatim}
+\end{small}

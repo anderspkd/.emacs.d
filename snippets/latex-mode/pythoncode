@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: pythoncode
+# key: pythoncode
+# --
+\begin{python}[caption={$1},
+  label={lst:$2}]
+$0
+\end{python}
