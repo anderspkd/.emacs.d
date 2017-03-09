@@ -154,10 +154,10 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   :ensure t)
 
 (use-package pdf-tools
-  :defer t
+  :demand t
   :ensure t
   :init
-  (add-hook 'web-mode-hook 'auto-revert-mode)
+  (add-hook 'pdf-view-mode-hook 'auto-revert-mode)
   :config
   (pdf-tools-install))
 
