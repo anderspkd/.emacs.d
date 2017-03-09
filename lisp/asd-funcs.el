@@ -11,6 +11,8 @@
 ;;
 ;;; Code:
 
+(require 'rect)
+
 (defun asd/recreate-scratch ()
   "Recreates the scratch buffer."
   (interactive)
@@ -90,5 +92,4 @@ rectangle."
 
 
 (provide 'asd-funcs)
-
 ;;; asd-funcs.el ends here
