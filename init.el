@@ -180,23 +180,24 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 (use-package tex
-  ;; no `:ensure` for this as it is installed by the distro
   :mode ("\\.tex\\'" . tex-mode)
   :init
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  (add-hook 'LaTeX-mode-hook 'tex-source-correlate-mode)
+  (add-hook 'LaTeX-mode-hook (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore)))))
+  (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
+  (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  :config
   (setq TeX-auto-save t
 	TeX-parse-self t
 	TeX-source-correlate-method-active 'synctex
+	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
   (setq-default TeX-master nil)
-  (setq reftex-plug-into-AUCTeX t)
-  (dolist (fun '((lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools")))
-		 #'visual-line-mode
-		 #'tex-source-correlate-mode
-		 (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore))))
-		 #'turn-on-flyspell
-		 #'LaTeX-math-mode
-		 #'turn-on-reftex))
-    (add-hook 'LaTeX-mode-hook fun)))
+  (setq reftex-plug-into-AUCTeX t))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
