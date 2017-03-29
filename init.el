@@ -317,6 +317,7 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
+  (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
   :config
   (unless org-agenda-files
       (setq org-agenda-files '("~/Documents/org/agenda.org")))
