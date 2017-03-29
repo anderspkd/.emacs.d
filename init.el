@@ -186,7 +186,7 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'tex-source-correlate-mode)
-  (add-hook 'LaTeX-mode-hook (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore)))))
+  ;; (add-hook 'LaTeX-mode-hook (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore)))))
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
@@ -197,7 +197,8 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
 	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
   (setq-default TeX-master nil)
-  (setq reftex-plug-into-AUCTeX t))
+  (setq reftex-plug-into-AUCTeX t)
+  (setq reftex-ref-style-default-list '("Default" "Hyperref")))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)

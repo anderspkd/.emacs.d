@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: so-scheme
+# key: so-scheme
+# --
+\begin{scheme}
+\caption{$1}
+\label{sch:$2}
+\begin{algorithm}[H]
+\DontPrintSemicolon{}
+$0
+\end{algorithm}
+\end{scheme}
