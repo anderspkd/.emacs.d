@@ -11,7 +11,7 @@
 ;;
 ;;; Code:
 
-(require 'rect)
+(require 'rect) ; rectangle
 
 (defun asd/recreate-scratch ()
   "Recreates the scratch buffer."

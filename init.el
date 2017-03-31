@@ -149,6 +149,16 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
   "Auto delete trailing whitespace before saving in some modes."
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
 
+(use-package ivy
+  :ensure t
+  :bind (("C-s" . swiper)
+	 ("C-c C-r" . ivy-resume))
+  :init
+  (ivy-mode 1)
+  :config
+  (setq ivy-use-virtual-buffers t
+	ivy-count-format "(%d/%d) "))
+
 (use-package nlinum
   :defer t
   :ensure t)
