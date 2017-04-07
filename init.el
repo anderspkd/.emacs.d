@@ -119,29 +119,32 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
     ("q" nil))
 (bind-key "C-c f" 'hydra-flop-frame/body))
 
-
 (use-package ace-window
   :ensure t
   :bind ("C-x o" . ace-window))
 
-;;; Use `hjkl` to shrink window. Behaviour is a little inconsistent,
-;;; depending on which window the cursor is currently in.
+;; use `hjkl' to shrink/expand current window in a variety of ways.
 (defhydra hydra-resize-windows (:hint nil)
   "
-Use shift to increase shrinkage ;-)
-_h_:left _j_:down _k_:up _l_:right _q_:quit
+Shrink/expand window -- use `hjkl'.
+_q_:quit
 "
-  ("h" (shrink-window 3 t))
-  ("l" (shrink-window -3 t))
-  ("j" (shrink-window -3))
-  ("k" (shrink-window 3))
-  ("H" (shrink-window 9 t))
-  ("L" (shrink-window -9 t))
-  ("J" (shrink-window -9))
-  ("K" (shrink-window 9))
+  ("h" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3 t))))
+  ("l" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3 t))))
+  ("j" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3))))
+  ("k" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3))))
   ("q" nil))
-
 (bind-key "C-c r" 'hydra-resize-windows/body)
+
+(defhydra hydra-jump-around (:hint nil)
+  "
+jump to either `.,!' in text (C-u for reverse direction)
+_q_:quit
+"
+  ("." (lambda (b) (interactive "P") (if b (search-backward ".") (search-forward "."))))
+  ("," (lambda (b) (interactive "P") (if b (search-backward ",") (search-forward ","))))
+  ("!" (lambda (b) (interactive "P") (if b (search-backward "!") (search-forward "!"))))
+  ("q" nil))
 
 ;;; More settings
 
@@ -191,6 +194,7 @@ _h_:left _j_:down _k_:up _l_:right _q_:quit
 
 (use-package tex
   :mode ("\\.tex\\'" . tex-mode)
+  :bind ("C-c j" . hydra-jump-around/body)
   :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
