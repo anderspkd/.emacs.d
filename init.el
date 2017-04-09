@@ -39,8 +39,17 @@
 (setq initial-scratch-message nil)
 
 (setq ring-bell-function 'ignore ; no bell
-      inhibit-splash-screen t    ; shows *scratch* on startup
       scroll-step 1)             ; make scrolling sane
+
+(use-package marisa-mode
+  :demand t
+  :config
+  ;; pick a random image from the specified folder
+  (setq mm/image (lambda ()
+		   (let ((files (directory-files "~/Pictures/marisas" t ".*.png")))
+		     (nth (random (length files)) files))))
+  (setq initial-buffer-choice #'mm/make-buffer))
+
 
 ;; Display time as `weekday month day hour:minutes` in the modeline
 (setq display-time-24hr-format t
