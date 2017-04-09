@@ -39,16 +39,10 @@
 (setq initial-scratch-message nil)
 
 (setq ring-bell-function 'ignore ; no bell
+      inhibit-startup-screen t
       scroll-step 1)             ; make scrolling sane
 
-(use-package marisa-mode
-  :demand t
-  :config
-  ;; pick a random image from the specified folder
-  (setq mm/image (lambda ()
-		   (let ((files (directory-files "~/Pictures/marisas" t ".*.png")))
-		     (nth (random (length files)) files))))
-  (setq initial-buffer-choice #'mm/make-buffer))
+
 
 
 ;; Display time as `weekday month day hour:minutes` in the modeline
@@ -94,7 +88,15 @@
   		       ("^~/Documents/" ":DOC:")
   		       ("^~/Documents/org/" ":ORG:")
   		       ("^~/Documents/uni/" ":UNI:")))
-      (add-to-list 'sml/replacer-regexp-list pattern))))
+      (add-to-list 'sml/replacer-regexp-list pattern)))
+  (use-package marisa-mode
+    :demand t
+    :config
+    ;; pick a random image from the specified folder
+    (setq mm/image (lambda ()
+		     (let ((files (directory-files "~/Pictures/marisas" t ".*.png")))
+		       (nth (random (length files)) files))))
+    (setq initial-buffer-choice #'mm/make-buffer)))
 
 ;;; Settings for keybindings and whatnot
 
@@ -262,6 +264,12 @@ _q_:quit
   (add-hook 'elfeed-new-entry-hook
 	    (elfeed-make-tagger :before "2 weeks ago"
 				:remove 'unread))
+
+  ;; macro to ease creation of youtube and reddit feeds. 1
+  ;; (defun expand-feed (feed)
+  ;;   (cl-destructuring-bind (link . tags) feed
+  ;;     (cond ((member '
+
   (defface reddit-entry
     '((t :foreground "#2874a6"))
     "Colors for reddit entries.")
