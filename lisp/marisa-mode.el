@@ -6,18 +6,28 @@
 ;;; Commentary:
 ;;
 ;; Shows content of `recentf-list' and makes them clickable
-;; (via. enter). If `mm/image' is set, use it to determine an image
+;; (via. return). If `mm/image' is set, use it to determine an image
 ;; that is shown as well.
 ;;
 ;; Use case is obviously ftso. of being greeted by your favorite 2hu
 ;; (Marisa Kirisame), when Emacs is started :-)
 ;;
+;; To use, put
+;;
+;;   (setq initial-buffer-choice #'mm/make-buffer)
+;;
+;; somewhere in your Emacs init file. If you want an image, set
+;;
+;;   (setq mm/image "path/to/image")
+;;
+;; Can also be a function that returns a string. This can be used to
+;; pick a random image from a folder, for example.
+;;
 ;;; Code:
 
 (require 'recentf)
 
-;; Should be either a string (location of an image) or a function. In
-;; case of the latter, it should return a string point to an image.
+;; Must be a string or function that returns a string
 (defvar mm/image nil)
 (defvar mm/buffer-name " mm")
 
