@@ -12,16 +12,8 @@
 ;; Use case is obviously ftso. of being greeted by your favorite 2hu
 ;; (Marisa Kirisame), when Emacs is started :-)
 ;;
-;; To use, put
-;;
-;;   (setq initial-buffer-choice #'mm/make-buffer)
-;;
-;; somewhere in your Emacs init file. If you want an image, set
-;;
-;;   (setq mm/image "path/to/image")
-;;
-;; Can also be a function that returns a string. This can be used to
-;; pick a random image from a folder, for example.
+;; To use simply call `mm/init' somewhere in your Emacs init file. If
+;; you want an image as well, `mm/image' to something.
 ;;
 ;;; Code:
 
@@ -45,7 +37,8 @@
 	  (scale (or scale 0.6)))
       (create-image image-loc image-typ nil
 		    :max-height (truncate (* scale (frame-pixel-height)))
-		    :max-width (truncate (* scale (frame-pixel-width)))))))
+		    ;; :max-width (truncate (* scale (frame-pixel-width))) ;no need to constrain on width, i think.
+		    ))))
 
 (defun mm/goto-file-from-line ()
   (interactive)
@@ -67,7 +60,8 @@
       (put-image image 0)
       (newline))
 
-    ;; header "Recent Files"
+    ;; header "Recent Files". Inserting the heading this way ensures
+    ;; it only occupies 1 character.
     (insert (propertize "H" 'display (propertize "Recent Files" 'face '((:height 120) bold))))
     (newline)
 
@@ -79,7 +73,14 @@
 
     (marisa-mode)
     (local-set-key [return] #'mm/goto-file-from-line)
+    (local-set-key "n" #'next-line)
+    (local-set-key "p" #'previous-line)
     buffer))
+
+(defun mm/init ()
+  (when (and (= (length command-line-args) 1)
+	     (string= (car command-line-args) "emacs")) ; can != even happen here?
+    (switch-to-buffer (mm/make-buffer))))
 
 (provide 'marisa-mode)
 

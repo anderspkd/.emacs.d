@@ -42,9 +42,6 @@
       inhibit-startup-screen t
       scroll-step 1)             ; make scrolling sane
 
-
-
-
 ;; Display time as `weekday month day hour:minutes` in the modeline
 (setq display-time-24hr-format t
       display-time-day-and-date t
@@ -94,9 +91,9 @@
     :config
     ;; pick a random image from the specified folder
     (setq mm/image (lambda ()
-		     (let ((files (directory-files "~/Pictures/marisas" t ".*.png")))
+		     (let ((files (directory-files "~/Pictures/marisas" t ".*.png\\|.*.jpg")))
 		       (nth (random (length files)) files))))
-    (setq initial-buffer-choice #'mm/make-buffer)))
+    (mm/init)))
 
 ;;; Settings for keybindings and whatnot
 
