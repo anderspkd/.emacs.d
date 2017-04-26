@@ -13,7 +13,11 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(add-to-list 'load-path (concat user-emacs-directory "lisp"))
+;; I use this twice, so that justifies abstraction :^)
+(defsubst emacsdir (f)
+  (expand-file-name (concat user-emacs-directory f)))
+
+(add-to-list 'load-path (emacsdir "lisp"))
 
 ;; Ensure `use-packge` is installed
 (unless (package-installed-p 'use-package)
@@ -34,6 +38,9 @@
 ;; Enable line and column numbers in the modeline
 (line-number-mode t)
 (column-number-mode t)
+
+;; Auto parenthesis stuff
+(electric-pair-mode t)
 
 ;; No *scratch* comment
 (setq initial-scratch-message nil)
