@@ -107,7 +107,7 @@
     :config
     ;; pick a random image from the specified folder
     (setq mm/image (lambda ()
-		     (let ((files (directory-files "~/Pictures/marisas" t ".*.png\\|.*.jpg")))
+		     (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
 		       (nth (random (length files)) files))))
     (mm/init)))
 
