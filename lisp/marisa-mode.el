@@ -13,7 +13,7 @@
 ;; (Marisa Kirisame), when Emacs is started :-)
 ;;
 ;; To use simply call `mm/init' somewhere in your Emacs init file. If
-;; you want an image as well, `mm/image' to something.
+;; you want an image as well, `mm/image' set to something.
 ;;
 ;;; Code:
 
@@ -77,6 +77,8 @@
     (local-set-key "p" #'previous-line)
     buffer))
 
+;; TODO: should not run when init.el is reloaded from within an emacs
+;; session
 (defun mm/init ()
   (when (and (= (length command-line-args) 1)
 	     (string= (car command-line-args) "emacs")) ; can != even happen here?
