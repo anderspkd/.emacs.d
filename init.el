@@ -73,6 +73,15 @@
       browse-url-generic-program "chromium"
       browse-url-browser-function 'browse-url-chromium)
 
+;; For the sake of excluding certain files from recentf.
+(use-package recentf
+  :ensure t
+  :config
+  (add-to-list 'recentf-exclude
+	       ".*\\.synctex\\.gz\\'"
+	       ".*\\.aux\\'"
+	       (emacsdir "recentf")))
+
 ;; Settings that are relevant when running in X
 (when (eq window-system 'x)
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
