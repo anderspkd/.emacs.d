@@ -349,6 +349,7 @@ _q_:quit
   :ensure t
   :mode (("\\.html\\'" . web-mode)
 	 ("\\.js\\'" . web-mode)
+	 ("\\.php\\'" . web-mode)
 	 ("\\.css\\'" . web-mode))
   :config
   (add-hook 'web-mode-hook 'auto-revert-mode))
@@ -362,10 +363,12 @@ _q_:quit
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
+  (add-hook 'org-mode-hook #'asd/remove-ws-hook)
   :config
   (unless org-agenda-files
       (setq org-agenda-files '("~/Documents/org/agenda.org")))
-  (setq org-log-done t
+  (setq org-log-reschedule t
+	org-log-done t
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "WAITING(w)" "|")
 			    (sequence "|" "CANCELED(c)"))
