@@ -13,3 +13,4 @@ url/
 /image-dired/*
 /.python-environments/*
 /custom.el
+/profile-dotemacs.el
