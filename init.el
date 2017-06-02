@@ -160,6 +160,12 @@ _q_:quit
   ("q" nil))
 (bind-key "C-c r" 'hydra-resize-windows/body)
 
+;; Zoom functionality, from the github page of Hydra.
+(defhydra hydra-zoom (global-map "<f2>")
+  "zoom"
+  ("+" text-scale-increase "in")
+  ("-" text-scale-decrease "out"))
+
 (defhydra hydra-jump-around (:hint nil)
   "
 jump to either `.,!' in text (C-u for reverse direction)
@@ -175,16 +181,6 @@ _q_:quit
 (defsubst asd/remove-ws-hook ()
   "Auto delete trailing whitespace before saving in some modes."
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
-
-(use-package ivy
-  :ensure t
-  :bind (("C-s" . swiper)
-	 ("C-c C-r" . ivy-resume))
-  :init
-  (ivy-mode 1)
-  :config
-  (setq ivy-use-virtual-buffers t
-	ivy-count-format "(%d/%d) "))
 
 (use-package nlinum
   :defer t
@@ -224,7 +220,6 @@ _q_:quit
   (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'tex-source-correlate-mode)
-  ;; (add-hook 'LaTeX-mode-hook (lambda () (TeX-add-symbols '("eqref" TeX-arg-ref (ignore)))))
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
@@ -308,11 +303,9 @@ _q_:quit
 	      ("C-c b t" . hs-toggle-hiding))
   :init
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
-  ;; (add-hook 'python-mode-hook 'jedi:setup)
   (add-hook 'python-mode-hook #'eldoc-mode)
   (add-hook 'python-mode-hook #'yas-minor-mode)
-  ;; TODO: find some way to toggle this on/off.
-  (add-hook 'python-mode-hook #'asd/remove-ws-hook)
+  (add-hook 'python-mode-hook #'asd/remove-ws-hook) ; maybe someway to turn this on/off
   (add-hook 'python-mode-hook #'nlinum-mode))
 
 (use-package dired
