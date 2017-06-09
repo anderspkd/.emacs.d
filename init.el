@@ -74,13 +74,14 @@
       browse-url-browser-function 'browse-url-chromium)
 
 ;; For the sake of excluding certain files from recentf.
+;; Bugs when `:ensure t` is present
 (use-package recentf
-  :ensure t
   :config
   (add-to-list 'recentf-exclude
-	       ".*\\.synctex\\.gz\\'"
-	       ".*\\.aux\\'"
-	       (emacsdir "recentf")))
+  	       ".*\\.synctex\\.gz\\'"
+  	       ".*\\.aux\\'"
+  	       (emacsdir "recentf"))
+  (recentf-mode t))
 
 ;; Settings that are relevant when running in X
 (when (eq window-system 'x)
