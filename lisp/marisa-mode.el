@@ -62,7 +62,8 @@
 
 (defun mm/make-buffer ()
   (let ((buffer (get-buffer-create mm/buffer-name))
-	(image (mm/make-image nil 0.5)))
+	(image (mm/make-image nil 0.5))
+	additional-keys)
     (set-buffer buffer)
 
     ;; show image
@@ -77,14 +78,23 @@
 
     ;; recent files
     (save-excursion
-      (dolist (f recentf-list)
-	(insert f)
-	(newline)))
+      (let* ((quick-keys (split-string "1 2 3 4 5 6 7 8 9 0 a s d f g h"))
+	     (quick-keys-len (length quick-keys)))
+	(dotimes (i (length recentf-list) additional-keys)
+	  (let ((e (mm/create-entry (nth i recentf-list)
+				    (and (< i quick-keys-len) (nth i quick-keys)))))
+	    (insert (car e))
+	    (newline)
+	    (setq additional-keys (cons (cdr e) additional-keys))))))
 
     (marisa-mode)
     (local-set-key [return] #'mm/goto-file-from-line)
     (local-set-key "n" #'next-line)
     (local-set-key "p" #'previous-line)
+    (dolist (kc additional-keys)
+      (when kc
+	(cl-destructuring-bind (key . cmd) kc
+	  (local-set-key key cmd))))
     buffer))
 
 ;; TODO: should not run when init.el is reloaded from within an emacs
