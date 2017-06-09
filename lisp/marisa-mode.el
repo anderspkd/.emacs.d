@@ -40,11 +40,21 @@
 		    ;; :max-width (truncate (* scale (frame-pixel-width))) ;no need to constrain on width, i think.
 		    ))))
 
-(defun mm/goto-file-from-line ()
+(defun mm/goto-file-from-line (&optional file)
   (interactive)
-  (let ((thing (thing-at-point 'filename)))
-    (when (and thing (file-exists-p thing))
-      (find-file thing))))
+  (let ((thing (or file (thing-at-point 'filename))))
+    (if (and thing (file-exists-p thing))
+	(find-file thing)
+      ;; for lines of the form `[k] filepath'
+      (mm/goto-file-from-line (cadr (split-string (thing-at-point 'line)))))))
+
+(defun mm/create-entry (file &optional key)
+  (let ((entry file)
+	(key-cmd (when key `(,key . (lambda () (interactive) (find-file ,file))))))
+    (if key
+	(setq entry (concat "[" key "] " entry))
+      (setq entry (concat "... " entry)))
+    (cons entry key-cmd)))
 
 ;; Do this in order to not screw with other modes' keymaps when
 ;; binding the above function to return.
