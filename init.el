@@ -253,6 +253,17 @@ _q_:quit
   (add-hook 'rust-mode-hook #'asd/remove-ws-hook))
 
 ;;; TODO: actual make this usable (i.e., add feeds)
+(use-package elfeed
+  :ensure t
+  :bind (("C-x w" . elfeed))
+  :init
+  (setq elfeed-curl-program-name "curl"
+	elfeed-use-curl t)
+  :config
+  (require 'asd-feeds)
+  (load-rss-feeds))
+
+
 ;; (use-package elfeed
 ;;   :ensure t
 ;;   :bind (("C-x w" . elfeed)
