@@ -252,7 +252,6 @@ _q_:quit
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   (add-hook 'rust-mode-hook #'asd/remove-ws-hook))
 
-;;; TODO: actual make this usable (i.e., add feeds)
 (use-package elfeed
   :ensure t
   :bind (("C-x w" . elfeed))
@@ -262,53 +261,6 @@ _q_:quit
   :config
   (require 'asd-feeds)
   (load-rss-feeds))
-
-
-;; (use-package elfeed
-;;   :ensure t
-;;   :bind (("C-x w" . elfeed)
-;; 	 :map elfeed-search-mode-map
-;; 	 ("x" . open-search-entry-in-mpv))
-;;   :init
-;;   (setq elfeed-curl-program-name "curl"
-;; 	elfeed-use-curl t
-;; 	elfeed-search-filter "@2-weeks-ago +unread ")
-
-;;   (defun open-search-entry-in-mpv ()
-;;     "Opens a search entry in mpv and marks said entry as read."
-;;     (interactive)
-;;     (let* ((entry (elfeed-search-selected :single))
-;; 	   (url (elfeed-entry-link entry)))
-;;       (asd/send-to-mpv url)))
-
-;;   :config
-;;   ;; remove `unread` tag from old entries.
-;;   (add-hook 'elfeed-new-entry-hook
-;; 	    (elfeed-make-tagger :before "2 weeks ago"
-;; 				:remove 'unread))
-
-;;   ;; macro to ease creation of youtube and reddit feeds. 1
-;;   ;; (defun expand-feed (feed)
-;;   ;;   (cl-destructuring-bind (link . tags) feed
-;;   ;;     (cond ((member '
-
-;;   (defface reddit-entry
-;;     '((t :foreground "#2874a6"))
-;;     "Colors for reddit entries.")
-
-;;   (defface advisory-entry
-;;     '((t :foreground "#58d68d"))
-;;     "Colors for security advisories.")
-
-;;   (defface youtube-entry
-;;     '((t :foreground "#e74c3c"))
-;;     "Colors for Youtube entries.")
-
-;;   (dolist (tag-and-face '((reddit reddit-entry)
-;; 			  (advisory advisory-entry)
-;; 			  (youtube youtube-entry)))
-;;     (push tag-and-face elfeed-search-face-alist)))
-
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
