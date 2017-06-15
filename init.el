@@ -76,11 +76,13 @@
 ;; For the sake of excluding certain files from recentf.
 ;; Bugs when `:ensure t` is present
 (use-package recentf
+  :bind ("C-x C-r" . recentf-open-files)
   :config
-  (add-to-list 'recentf-exclude
-  	       ".*\\.synctex\\.gz\\'"
-  	       ".*\\.aux\\'"
-  	       (emacsdir "recentf"))
+  (dolist (e (list ".*\\.synctex\\.gz\\'"
+		   ".*\\.aux\\'"
+		   (expand-file-name "~/.elfeed/index")
+		   (emacsdir "recentf")))
+    (add-to-list 'recentf-exclude e))
   (recentf-mode t))
 
 ;; Settings that are relevant when running in X
