@@ -266,11 +266,18 @@ _q_:quit
 
 (use-package elfeed
   :ensure t
-  :bind (("C-x w" . elfeed))
+  :bind (("C-x w" . elfeed)
+	 :map elfeed-search-mode-map
+	 ("x" . open-in-mpv))
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t)
-  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory")
+  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
+  (defun open-in-mpv ()
+    (interactive)
+    (let ((entry (elfeed-search-selected :single)))
+      (elfeed-search-untag-all 'unread) ;; mark as read
+      (asd/send-to-mpv (elfeed-entry-link entry))))
   :config
   (require 'asd-feeds)
   (load-rss-feeds))

@@ -65,6 +65,7 @@
 (defun mm/make-buffer ()
   (let ((buffer (get-buffer-create mm/buffer-name))
 	(image (mm/make-image nil 0.5))
+	(header-str "Recent Files\n[w] RSS, [t] TODOs")
 	additional-keys)
     (set-buffer buffer)
 
@@ -75,7 +76,7 @@
 
     ;; header "Recent Files". Inserting the heading this way ensures
     ;; it only occupies 1 character.
-    (insert (propertize "H" 'display (propertize "Recent Files" 'face '((:height 120) bold))))
+    (insert (propertize "H" 'display (propertize header-str 'face '((:height 120) bold))))
     (newline)
 
     ;; recent files
@@ -93,6 +94,8 @@
     (local-set-key [return] #'mm/goto-file-from-line)
     (local-set-key "n" #'next-line)
     (local-set-key "p" #'previous-line)
+    (local-set-key "w" #'elfeed)
+    (local-set-key "t" #'org-todo-list)
     (dolist (kc additional-keys)
       (when kc
 	(cl-destructuring-bind (key . cmd) kc
