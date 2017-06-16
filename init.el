@@ -195,7 +195,19 @@ _q_:quit
   :init
   (add-hook 'pdf-view-mode-hook 'auto-revert-mode)
   :config
-  (pdf-tools-install))
+  (pdf-tools-install)
+  (bind-key "C-f" (lambda (n) (interactive "p")
+		    (image-forward-hscroll (if (= n 1) 5 n)))
+	    pdf-view-mode-map)
+  (bind-key "C-b" (lambda (n) (interactive "p")
+		    (image-backward-hscroll (if (= n 1) 5 n)))
+	    pdf-view-mode-map)
+  (bind-key "C-n" (lambda (n) (interactive "p")
+		    (pdf-view-next-line-or-next-page (if (= n 1) 5 n)))
+	    pdf-view-mode-map)
+  (bind-key "C-p" (lambda (n) (interactive "p")
+		    (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))
+	    pdf-view-mode-map))
 
 (use-package yasnippet
   :ensure t
