@@ -78,11 +78,11 @@
 (use-package recentf
   :bind ("C-x C-r" . recentf-open-files)
   :config
-  (dolist (e (list ".*\\.synctex\\.gz\\'"
+  (dolist (p (list ".*\\.synctex\\.gz\\'"
 		   ".*\\.aux\\'"
 		   (expand-file-name "~/.elfeed/index")
 		   (emacsdir "recentf")))
-    (add-to-list 'recentf-exclude e))
+    (add-to-list 'recentf-exclude p))
   (recentf-mode t))
 
 ;; Settings that are relevant when running in X
@@ -258,6 +258,7 @@ _q_:quit
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t)
+  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory")
   :config
   (require 'asd-feeds)
   (load-rss-feeds))

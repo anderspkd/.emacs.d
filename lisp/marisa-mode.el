@@ -19,8 +19,10 @@
 
 (require 'recentf)
 
-;; Must be a string or function that returns a string
-(defvar mm/image nil)
+(defvar mm/image nil
+  "image to be displayed. Can be `nil', a `string' (in which case
+  it should be a path to an image) or a `function' (in which
+  case it should return a path to an image)")
 (defvar mm/buffer-name " mm")
 
 ;; Ensure recentf-list is populated
