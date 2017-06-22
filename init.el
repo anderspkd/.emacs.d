@@ -81,6 +81,8 @@
   (dolist (p (list ".*\\.synctex\\.gz\\'"
 		   ".*\\.aux\\'"
 		   (expand-file-name "~/.elfeed/index")
+		   (emacsdir "custom.el")
+		   (emacsdir "elpa/.*")
 		   (emacsdir "recentf")))
     (add-to-list 'recentf-exclude p))
   (recentf-mode t))
@@ -344,14 +346,14 @@ _q_:quit
   (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
   (add-hook 'org-mode-hook #'asd/remove-ws-hook)
   :config
-  (unless org-agenda-files
-      (setq org-agenda-files '("~/Documents/org/agenda.org")))
+  ;; (unless org-agenda-files
+  (setq org-agenda-files '("~/Documents/org/agenda.org"))
   (setq org-log-reschedule t
 	org-log-done t
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
-			    (sequence "WAITING(w)" "|")
+			    (sequence "|" "WAITING(w)" "|")
 			    (sequence "|" "CANCELED(c)"))
-	org-todo-keyword-faces '(("WAITING" . "yellow")
+	org-todo-keyword-faces '(("WAITING" . "blue")
 				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
 
 ;; put that junk somewhere out of the way.

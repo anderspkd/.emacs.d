@@ -65,7 +65,7 @@
 (defun mm/make-buffer ()
   (let ((buffer (get-buffer-create mm/buffer-name))
 	(image (mm/make-image nil 0.5))
-	(header-str "Recent Files\n[w] RSS, [t] TODOs")
+	(header-str "[R] RSS, [T] TODOs, [A] Agenda\nRecent Files")
 	additional-keys)
     (set-buffer buffer)
 
@@ -94,8 +94,9 @@
     (local-set-key [return] #'mm/goto-file-from-line)
     (local-set-key "n" #'next-line)
     (local-set-key "p" #'previous-line)
-    (local-set-key "w" #'elfeed)
-    (local-set-key "t" #'org-todo-list)
+    (local-set-key "R" #'elfeed)
+    (local-set-key "T" #'org-todo-list)
+    (local-set-key "A" #'org-agenda-list)
     (dolist (kc additional-keys)
       (when kc
 	(cl-destructuring-bind (key . cmd) kc
