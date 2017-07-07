@@ -34,6 +34,51 @@
 (defface-elfeed-face
   news '((t :foreground "#996633")))
 
+;;; Some hooks
+
+(defvar asd/feeds/max-string-length 90)
+
+;; TODO: Smarter detection of sentence/paragraph delimiters (reuse
+;; fill-column/paragraph in some way?)
+
+(defun asd/feeds/fill-string (content html-p)
+  (let ((new "")
+	(nl (if html-p "<br>" "\r\n"))) ;; has to be this kind of newline?
+    (dolist (paragraph (split-string content nl) new)
+      (if (> (length paragraph) 0)
+	  (let ((l 0)
+		(new-str ""))
+	    (dolist (str (split-string paragraph) new-str)
+	      (setq l (+ l (length str)))
+	      ;; break line
+	      (setq new-str (concat new-str str))
+	      (if (> l asd/feeds/max-string-length)
+		  (setq new-str (concat new-str nl)
+			l 0)
+		(setq new-str (concat new-str " "))))
+	    (setq new (concat new (substring new-str 0 (1- (length new-str))))))
+	(setq new (concat new nl nl))))
+    new))
+
+;; (defun asd/feeds/fill-string2 (content html-p)
+;;   (let (new)
+;;     (with-temp-buffer
+;;       (insert content)
+;;       (let ((s (or (beginning-of-buffer) (point)))
+;; 	    (e (or (end-of-buffer) (point))))
+;; 	(fill-region s e)
+;; 	(setq new (buffer-string))))
+;;     new))
+
+(defun asd/feeds/fill-entry (entry)
+  (when (intersection asd/feeds/fill-tags (elfeed-entry-tags entry))
+    (let* ((original (elfeed-deref (elfeed-entry-content entry)))
+	   (new (asd/feeds/fill-string original (eq 'html (elfeed-entry-content-type entry))))
+	   (new-ref (elfeed-ref new)))
+      (setf (elfeed-entry-content entry) new-ref))))
+
+(add-hook 'elfeed-new-entry-hook #'asd/feeds/fill-entry)
+
 ;;; Setup feeds
 
 (defun asd/feeds/expand-feed (feed)
