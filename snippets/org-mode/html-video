@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: html-video
+# key: <video
+# --
+#+NAME: $1
+#+BEGIN_HTML
+<figure id="$1">
+<video controls>
+<source src="$2" type="${3:video/webm}">
+Your browser does not support HTML5 videos.
+</video>
+<figcaption>
+<span class="figure-number">Video $4: </span>$5
+</figcaption>
+</figure>
+#+END_HTML
+$0
