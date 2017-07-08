@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: blog
+# key: <b
+# --
+#+TITLE: $1
+#+AUTHOR: ${2:Anders Dalskov}
+#+BEGIN_PREVIEW
+$0
+#+END_PREVIEW

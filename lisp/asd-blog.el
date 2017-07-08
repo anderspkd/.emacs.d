@@ -22,10 +22,8 @@
 
 (defsubst asd/blog/base-dir (&rest subdirs)
   (let ((d "~/Documents/blog/"))
-    (if (null subdirs)
-	d
-      (dolist (sd subdirs d)
-	(setq d (concat (file-name-as-directory d) sd))))))
+    (dolist (sd subdirs d)
+      (setq d (concat (file-name-as-directory d) sd)))))
 
 (defsubst asd/blog/pub-dir (&rest subdirs)
   (apply #'asd/blog/base-dir `("www" ,@subdirs)))
@@ -33,7 +31,7 @@
 (defun asd/blog/postamble (options)
   (with-temp-buffer
     (insert "<hr>")
-    ;; Author is nil on the sitemap page, so don't include it.
+    ;; Author is sometimes nil (e.g., sitemap) so don't include it in that case.
     (let ((author (car (plist-get options :author))))
       (when author
 	(insert (format "<p class=\"author\">Author: %s</p>" author))))
@@ -69,44 +67,48 @@
 	(let ((org-inhibit-startup t))
 	  (setq sitemap-buffer (or visiting (find-file sitemap-fn))))
       (erase-buffer)
-      (message "sitemap-fn: %s" sitemap-fn)
       (insert "#+TITLE: " (plist-get project-plist :sitemap-title) "\n\n")
       (while (setq file (pop files))
 	(let ((fn (file-name-nondirectory file)))
-	  (message "file: %s" file)
 	  (unless (equal (file-truename sitemap-fn) (file-truename file))
 	    (let ((title (org-publish-format-file-entry "%t" file project-plist))
 		  (date (org-publish-format-file-entry "%d" file project-plist))
 		  (preview (asd/blog/get-preview file)))
-	      (insert "* [[file:" fn "][" title "]]")
-	      (newline)
+	      (insert "* [[file:" fn "][" title "]] \n")
 	      (insert preview "\n")
-	      (insert "Posted: " date "\n\n")))))
+	      (insert "Posted: " date ".\n\n")))))
       (save-buffer))
     (or visiting (kill-buffer sitemap-buffer))))
 
+;;; This is currently needed. Org ignores project settings. Options
+;;; does fuck-all (besides setting the path...)
+(setq org-html-mathjax-options '((path "/res/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML")
+				 (scale "100") (align "left") (indent "2em") (mathml nil))
+      org-html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>")
+
 (setq org-publish-project-alist
       `(("blog"
-	 :components ("blog-posts" "blog-image" "blog-video" "static-pages"))
+	 :components ("blog-posts" "blog-image" "blog-video" "blog-static"))
 	("blog-posts" ;; posts
-	 :base-directory ,(asd/blog/base-dir "posts");; "~/Documents/blog/posts/"
-	 :publishing-directory ,(asd/blog/pub-dir "posts");; "~/Documents/blog/www/posts"
+	 :base-directory ,(asd/blog/base-dir "posts")
+	 :publishing-directory ,(asd/blog/pub-dir "posts")
 	 :base-extension "org"
 	 :recursive t
 	 :htmlized-source t
 
-	 ;; withs
 	 :with-author t
 	 :with-date t
 	 :with-toc nil
 	 :with-creator nil
 
-	 ;; HTML
 	 :html-doctype "html5"
 	 :html-html5-fancy t
 	 :html-postamble asd/blog/postamble
 	 :html-preamble asd/blog/preamble
 	 :html-head "<link rel=\"stylesheet\" href=\"/res/style.css\" type=\"text/css\"/>"
+
+	 ;; :html-mathjax-options ,asd/blog/mathjax-options
+	 ;; :html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>"
 
 	 :headline-levels 4
 	 :todo-keywords nil
@@ -122,7 +124,7 @@
 
 	 :publishing-function org-html-publish-to-html)
 
-	("static-pages"
+	("blog-static" ;; contact, links, and so on
 	 :base-directory ,(asd/blog/base-dir)
 	 :publishing-directory ,(asd/blog/pub-dir)
 	 :base-extension "org"
@@ -159,12 +161,6 @@
 	 :publishing-function org-publish-attachment
 	 :recursive t)
 	 ))
-
-(add-to-list 'org-structure-template-alist
-	     '("b"
-	       "#+TITLE: ?
-#+AUTHOR: Anders Dalskov
-#+BEGIN_PREVIEW\n\n#+END_PREVIEW\n"))
 
 (provide 'asd-blog)
 ;;; asd-blog.el ends here
