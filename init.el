@@ -290,6 +290,7 @@ _q_:quit
   :bind (:map python-mode-map
 	      ("C-c b t" . hs-toggle-hiding))
   :init
+  (setq python-indent-offset 4)
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook #'eldoc-mode)
   (add-hook 'python-mode-hook #'yas-minor-mode)
