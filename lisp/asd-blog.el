@@ -28,21 +28,35 @@
 (defsubst asd/blog/pub-dir (&rest subdirs)
   (apply #'asd/blog/base-dir `("www" ,@subdirs)))
 
+(defun asd/blog/time-from-file-name (file &optional fmt-string)
+  (let ((file (file-name-nondirectory file))
+	(fmt-string (or fmt-string "%d-%m-%Y")))
+    (if (string-match "[0-9].*\\.org$" file)
+	(format-time-string
+	 fmt-string
+	 (string-to-number
+	  (file-name-sans-extension (match-string 0 file))))
+      ;; Dummy value for when time is missing from file-name.
+      (format-time-string fmt-string 0))))
+
 (defun asd/blog/postamble (options)
   (with-temp-buffer
     (insert "<hr>")
     ;; Author is sometimes nil (e.g., sitemap) so don't include it in that case.
-    (let ((author (car (plist-get options :author))))
+    (let ((author (car (plist-get options :author)))
+	  (pub-time (asd/blog/time-from-file-name (plist-get options :input-file))))
       (when author
-	(insert (format "<p class=\"author\">Author: %s</p>" author))))
-    (insert (format-time-string "<p class=\"date\">Last modified: %Y-%m-%d %a %H:%M</p>"))
-    (buffer-string)))
+	(insert (format "<p class=\"author\">Author: %s</p>" author)))
+      (insert (format-time-string "<p class=\"date\">Last modified: %Y-%m-%d %a %H:%M</p>"))
+      (insert (format "<p class=\"date\">Published: %s</p>" pub-time))
+      (message "asd %s" (plist-get options :input-file))
+      (buffer-string))))
 
 (defun asd/blog/preamble (options)
   (with-temp-buffer
     (insert "<ul>")
     (dolist (it asd/blog/navbar-items)
-      (insert (format "<li><a href=\"%s\">%s</a></li>" (car it) (cdr it))))
+      (insert (format "<li class=\"nav-item\"><a href=\"%s\">%s</a></li>" (car it) (cdr it))))
     (insert "</ul><hr>")
     (buffer-string)))
 
@@ -72,16 +86,20 @@
 	(let ((fn (file-name-nondirectory file)))
 	  (unless (equal (file-truename sitemap-fn) (file-truename file))
 	    (let ((title (org-publish-format-file-entry "%t" file project-plist))
-		  (date (org-publish-format-file-entry "%d" file project-plist))
+		  ;; (date (org-publish-format-file-entry "%d" file project-plist))
+		  (pub-date (asd/blog/time-from-file-name file))
 		  (preview (asd/blog/get-preview file)))
 	      (insert "* [[file:" fn "][" title "]] \n")
 	      (insert preview "\n")
-	      (insert "Posted: " date ".\n\n")))))
+	      ;; (insert "Posted: " date ".\n\n")
+	      (insert "Posted: " pub-date ".\n\n")
+	      (unless (null files)
+		(insert "----------\n"))))))
       (save-buffer))
     (or visiting (kill-buffer sitemap-buffer))))
 
 ;;; This is currently needed. Org ignores project settings. Options
-;;; does fuck-all (besides setting the path...)
+;;; seem to do fuck-all (besides setting the path...)
 (setq org-html-mathjax-options '((path "/res/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML")
 				 (scale "100") (align "left") (indent "2em") (mathml nil))
       org-html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>")
@@ -118,7 +136,7 @@
 	 :auto-sitemap t
 	 :sitemap-filename "blog.org"
 	 :sitemap-title "Latests posts"
-	 :sitemap-date-format "%Y-%m-%d"
+	 :sitemap-date-format "%d-%m-%Y"
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-function asd/blog/sitemap
 
