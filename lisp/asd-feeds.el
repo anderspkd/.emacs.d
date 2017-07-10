@@ -10,6 +10,7 @@
 ;;; Code:
 
 (require 'feeds)
+(require 'cl)
 
 (defvar asd/feeds/youtube-fmt "https://www.youtube.com/feeds/videos.xml?user=%s")
 (defvar asd/feeds/reddit-fmt "https://www.reddit.com/r/%s/.rss")
