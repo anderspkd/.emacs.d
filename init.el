@@ -270,16 +270,58 @@ _q_:quit
   :ensure t
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
-	 ("x" . open-in-mpv))
+	 ("x" . open-in-mpv)
+	 ("f" . favorite-entry)
+	 ("F" . display-favorites))
   :init
   (setq elfeed-curl-program-name "curl"
-	elfeed-use-curl t)
+	elfeed-use-curl t
+	elfeed-search-title-max-width 100)
   (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
+
+  ;; Helper function for `display-favorites' -- Works like `concat',
+  ;; except it puts `sep' (if supplied) between each element. E.g.,
+  ;;  (concat-ext " -> " "a" "b" "c") => "a -> b -> c".
+  (defun concat-ext (sep &rest seq)
+    (if (not sep)
+	(apply #'concat seq)
+      (let ((r "") s)
+	(while (setq s (pop seq))
+	  (setq r (concat r s (unless (null seq) sep))))
+	r)))
+
+  ;; Open an entry in mpv. Useful for youtube entries.
   (defun open-in-mpv ()
     (interactive)
     (let ((entry (elfeed-search-selected :single)))
       (elfeed-search-untag-all 'unread) ;; mark as read
       (asd/send-to-mpv (elfeed-entry-link entry))))
+
+  ;; Favorite an entry (by giving it a `faved' tag). If already
+  ;; favored, remove `faved' tag.
+  (defun favorite-entry ()
+    (interactive)
+    (let ((entry (elfeed-search-selected :single))
+	  (fav-tag 'faved))
+      (if (member fav-tag (elfeed-entry-tags entry))
+	  (elfeed-untag-1 entry fav-tag)
+	(elfeed-tag-1 entry fav-tag))
+      (elfeed-search-update-entry entry)))
+
+  ;; Display all entries with the `faved' tag. I.e., display favorited
+  ;; entries.
+  (defun display-favorites ()
+    (interactive)
+    (let ((search-filter (split-string elfeed-search-filter)))
+      (if (member "+faved" search-filter)
+	  (setq elfeed-search-filter
+		(apply #'concat-ext
+		       `(" " .,(remove-if #'(lambda (x) (string= x "+faved"))
+					  search-filter))))
+	(setq elfeed-search-filter
+	      (apply #'concat-ext `(" " ,@search-filter "+faved"))))
+      (elfeed-search-update--force)))
+
   :config
   (require 'asd-feeds)
   (load-rss-feeds))
