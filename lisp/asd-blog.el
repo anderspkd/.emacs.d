@@ -20,6 +20,15 @@
     ("/contact.html" . "contact")
     ("/links.html" . "links")))
 
+;; Stop `org-publish' from polluting recentf-list
+(advice-add
+ #'org-publish
+ :around
+ #'(lambda (f &rest args)
+     (recentf-mode -1)
+     (apply f args)
+     (recentf-mode 1)))
+
 (defsubst asd/blog/base-dir (&rest subdirs)
   (let ((d "~/Documents/blog/"))
     (dolist (sd subdirs d)
@@ -30,7 +39,7 @@
 
 (defun asd/blog/time-from-file-name (file &optional fmt-string)
   (let ((file (file-name-nondirectory file))
-	(fmt-string (or fmt-string "%d-%m-%Y")))
+	(fmt-string (or fmt-string "%F")))
     (if (string-match "[0-9].*\\.org$" file)
 	(format-time-string
 	 fmt-string
@@ -39,17 +48,28 @@
       ;; Dummy value for when time is missing from file-name.
       (format-time-string fmt-string 0))))
 
+;;; FIXME: Very non-portable.
+(defsubst asd/blog/post-p (file)
+  (multiple-value-bind (dir file-name)
+      (let ((file-list (split-string file "/")))
+	(values (nth (- (length file-list) 2) file-list)
+		(file-name-base (nth (1- (length file-list)) file-list))))
+    (and (string= dir "posts")
+	 (not (string= file-name "blog")))))
+
 (defun asd/blog/postamble (options)
   (with-temp-buffer
     (insert "<hr>")
     ;; Author is sometimes nil (e.g., sitemap) so don't include it in that case.
-    (let ((author (car (plist-get options :author)))
-	  (pub-time (asd/blog/time-from-file-name (plist-get options :input-file))))
+    (let* ((file (plist-get options :input-file))
+	   (author (car (plist-get options :author)))
+	   (pub-time (when (asd/blog/post-p file) (asd/blog/time-from-file-name file))))
       (when author
 	(insert (format "<p class=\"author\">Author: %s</p>" author)))
+      ;; (message "asd %s %s %s" file navbar-item-p)
       (insert (format-time-string "<p class=\"date\">Last modified: %Y-%m-%d %a %H:%M</p>"))
-      (insert (format "<p class=\"date\">Published: %s</p>" pub-time))
-      (message "asd %s" (plist-get options :input-file))
+      (when pub-time
+	(insert (format "<p class=\"date\">Published: %s</p>" pub-time)))
       (buffer-string))))
 
 (defun asd/blog/preamble (options)

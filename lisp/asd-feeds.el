@@ -60,16 +60,6 @@
 	(setq new (concat new nl nl))))
     new))
 
-;; (defun asd/feeds/fill-string2 (content html-p)
-;;   (let (new)
-;;     (with-temp-buffer
-;;       (insert content)
-;;       (let ((s (or (beginning-of-buffer) (point)))
-;; 	    (e (or (end-of-buffer) (point))))
-;; 	(fill-region s e)
-;; 	(setq new (buffer-string))))
-;;     new))
-
 (defun asd/feeds/fill-entry (entry)
   (when (intersection asd/feeds/fill-tags (elfeed-entry-tags entry))
     (let* ((original (elfeed-deref (elfeed-entry-content entry)))
