@@ -92,11 +92,6 @@
 (when (eq window-system 'x)
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
 
-  ;; Needed to ensure proper display of e.g., Japense text in
-  ;; elfeed-show.
-  (set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono")
-  (set-face-attribute 'message-header-subject nil :family "DejaVu Sans Mono")
-
   (use-package leuven-theme
     :ensure t
     :init (setq leuven-scale-outline-headlines nil))
@@ -330,6 +325,11 @@ _q_:quit
       (elfeed-search-update--force)))
 
   :config
+  ;; Needed to ensure proper display of e.g., Japense text in
+  ;; elfeed-show.
+  (set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono")
+  (set-face-attribute 'message-header-subject nil :family "DejaVu Sans Mono")
+
   (require 'asd-feeds)
   (load-rss-feeds))
 
