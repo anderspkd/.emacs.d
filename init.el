@@ -354,6 +354,8 @@ _q_:quit
       (when file
 	(asd/send-to-mpv file))))
   :config
+  (require 'dired-x)
+  (dired-omit-mode 1)
   (setq dired-auto-revert-buffer t
 	;; `-v` and `-group-directories-first` are GNU ls specific afaik
 	dired-listing-switches "-alhFv --group-directories-first"))
