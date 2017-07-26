@@ -57,6 +57,7 @@
 
 ;; `y` or `n` instead of `yes` or `no`
 (fset 'yes-or-no-p 'y-or-n-p)
+(setq confirm-kill-emacs 'y-or-n-p)
 
 ;; Place backups somewhere else than everywhere
 (setq backup-by-copying t
