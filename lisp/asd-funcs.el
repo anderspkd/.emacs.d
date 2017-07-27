@@ -90,6 +90,34 @@ rectangle."
 			    (insert string)))
 			start end)))
 
+;;; Useful helper functions for various things
+
+(defun concat-ext (sep &rest seq)
+  "Concatenates strings SEQ with an optionally seperator SEP
+between each (internal) element. For example:
+
+(concat-ext \" -> \" \"a\" \"b\" \"c\") => \"a -> b -> c\"
+
+Behaves identically to `concat' if SEP is nil.
+"
+  (if sep
+      (let ((r "") s)
+	(while (setq s (pop seq))
+	  (setq r (concat r s (unless (null seq) sep))))
+	r)
+    (apply #'concat seq)))
+
+;; terrible
+(defsubst remove-string-from-list (str l)
+  "Identical to
+
+(remove-if #'(lambda (x) (string= x str)) l)
+"
+  (let (r)
+    (reverse
+(dolist (e l r)
+  (unless (string= e str) (push e r))))))
+
 
 (provide 'asd-funcs)
 ;;; asd-funcs.el ends here

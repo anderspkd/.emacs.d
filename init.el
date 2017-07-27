@@ -273,35 +273,52 @@ _q_:quit
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
 	 ("x" . open-in-mpv)
-	 ("f" . favorite-entry)
-	 ("F" . display-favorites))
+	 ("S" . elfeed-toggle-tag)
+	 ("f" . elfeed-mark-entry-favority)
+	 ("F" . elfeed-show-favorites))
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t
 	elfeed-search-title-max-width 100)
   (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
 
-  ;; Helper function for `display-favorites' -- Works like `concat',
-  ;; except it puts `sep' (if supplied) between each element. E.g.,
-  ;;  (concat-ext " -> " "a" "b" "c") => "a -> b -> c".
-  (defun concat-ext (sep &rest seq)
-    (if (not sep)
-	(apply #'concat seq)
-      (let ((r "") s)
-	(while (setq s (pop seq))
-	  (setq r (concat r s (unless (null seq) sep))))
-	r)))
+  (defun elfeed-toggle-tag (tag &optional exclude-p)
+    "Toggle a tag in either an exclusive or inclusive way. Calling
 
-  ;; Open an entry in mpv. Useful for youtube entries.
+(elfeed-toggle-tag \"sometag\"), or
+S sometag RET
+
+will add \"+sometag\" if it does not exist in the search
+filter. Otherwise it will remove it. With a prefix, \"-sometag\"
+is used instead.
+"
+    (interactive
+     (if current-prefix-arg
+	 (list (read-string "toggle tag (exclude): ") t)
+       (list (read-string "toggle tag (include) "))))
+    (let* ((filter-list (split-string elfeed-search-filter))
+	   (tag-i (concat (if exclude-p "+" "-") tag))
+
+	   ;; If we are to add "+sometag", then we must remove
+	   ;; "-sometag" first, if present.
+	   (filter-list (remove-string-from-list tag-i filter-list))
+	   (tag (concat (if exclude-p "-" "+") tag)))
+      (if (member tag filter-list)
+      	  ;; if the tag is present, remove it
+      	  (setq elfeed-search-filter (apply #'concat-ext `(" " ,@(remove-string-from-list tag filter-list))))
+      	;; if the tag is not present, add it
+      	(setq elfeed-search-filter (apply #'concat-ext `(" " ,@filter-list ,tag))))
+      (elfeed-search-update--force)))
+
   (defun open-in-mpv ()
+"Open selected entry in mpv."
     (interactive)
     (let ((entry (elfeed-search-selected :single)))
       (elfeed-search-untag-all 'unread) ;; mark as read
       (asd/send-to-mpv (elfeed-entry-link entry))))
 
-  ;; Favorite an entry (by giving it a `faved' tag). If already
-  ;; favored, remove `faved' tag.
-  (defun favorite-entry ()
+  (defun elfeed-mark-entry-favority ()
+"Add the 'faved tag to an entry."
     (interactive)
     (let ((entry (elfeed-search-selected :single))
 	  (fav-tag 'faved))
@@ -310,19 +327,10 @@ _q_:quit
 	(elfeed-tag-1 entry fav-tag))
       (elfeed-search-update-entry entry)))
 
-  ;; Display all entries with the `faved' tag. I.e., display favorited
-  ;; entries.
-  (defun display-favorites ()
+  (defun elfeed-show-favorites ()
+"Show all entries with the 'faved tag"
     (interactive)
-    (let ((search-filter (split-string elfeed-search-filter)))
-      (if (member "+faved" search-filter)
-	  (setq elfeed-search-filter
-		(apply #'concat-ext
-		       `(" " .,(remove-if #'(lambda (x) (string= x "+faved"))
-					  search-filter))))
-	(setq elfeed-search-filter
-	      (apply #'concat-ext `(" " ,@search-filter "+faved"))))
-      (elfeed-search-update--force)))
+    (elfeed-toggle-tag "faved"))
 
   :config
   ;; Needed to ensure proper display of e.g., Japense text in

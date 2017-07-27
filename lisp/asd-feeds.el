@@ -15,6 +15,8 @@
 (defvar asd/feeds/youtube-fmt "https://www.youtube.com/feeds/videos.xml?%s")
 (defvar asd/feeds/reddit-fmt "https://www.reddit.com/r/%s/.rss")
 
+(defvar asd/feeds/tags nil)
+
 ;;; Fonts n faces
 
 ;; A bit wonky. Works, but doesn't really add the face def to elfeed-search-face-alist?
@@ -74,6 +76,10 @@
 
 (defun asd/feeds/expand-feed (feed)
   (cl-destructuring-bind (link . tags) feed
+    ;; add tags to a list containing all tags
+    (dolist (tag tags)
+      (unless (member tag asd/feeds/tags)
+	(push tag asd/feeds/tags)))
     (cond ((member 'youtube tags)
 	   (cons (format asd/feeds/youtube-fmt link) tags))
 	  ((member 'reddit tags)
