@@ -72,6 +72,51 @@
 
 (add-hook 'elfeed-new-entry-hook #'asd/feeds/fill-entry)
 
+;;; More functionality
+
+(defun elfeed-mark-entry-favorite ()
+  "Add the 'faved tag to an entry."
+  (interactive)
+  (let ((entry (elfeed-search-selected :single))
+	(fav-tag 'faved))
+    (if (member fav-tag (elfeed-entry-tags entry))
+	(elfeed-untag-1 entry fav-tag)
+      (elfeed-tag-1 entry fav-tag))
+    (elfeed-search-update-entry entry)))
+
+(defun elfeed-show-favorites ()
+  "Show all entries with the 'faved tag"
+  (interactive)
+  (elfeed-toggle-tag "faved"))
+
+(defun elfeed-toggle-tag (tag &optional exclude-p)
+  "Toggle a tag in either an exclusive or inclusive way. Calling
+
+(elfeed-toggle-tag \"sometag\"), or
+S sometag RET
+
+will add \"+sometag\" if it does not exist in the search
+filter. Otherwise it will remove it. With a prefix, \"-sometag\"
+is used instead.
+"
+  (interactive
+   (if current-prefix-arg
+       (list (completing-read "toggle tag (exclude): " asd/feeds/tags) t)
+     (list (completing-read "toggle tag (include) " asd/feeds/tags))))
+  (let* ((filter-list (split-string elfeed-search-filter))
+	 (tag-i (concat (if exclude-p "+" "-") tag))
+
+	 ;; If we are to add "+sometag", then we must remove
+	 ;; "-sometag" first, if present.
+	 (filter-list (remove-string-from-list tag-i filter-list))
+	 (tag (concat (if exclude-p "-" "+") tag)))
+    (if (member tag filter-list)
+	;; if the tag is present, remove it
+	(setq elfeed-search-filter (apply #'concat-ext `(" " ,@(remove-string-from-list tag filter-list))))
+      ;; if the tag is not present, add it
+      (setq elfeed-search-filter (apply #'concat-ext `(" " ,@filter-list ,tag))))
+    (elfeed-search-update--force)))
+
 ;;; Setup feeds
 
 (defun asd/feeds/expand-feed (feed)

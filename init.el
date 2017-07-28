@@ -272,65 +272,19 @@ _q_:quit
   :ensure t
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
-	 ("x" . open-in-mpv)
-	 ("S" . elfeed-toggle-tag)
-	 ("f" . elfeed-mark-entry-favority)
-	 ("F" . elfeed-show-favorites))
+	 ("x" . open-in-mpv))
   :init
   (setq elfeed-curl-program-name "curl"
 	elfeed-use-curl t
 	elfeed-search-title-max-width 100)
   (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
 
-  (defun elfeed-toggle-tag (tag &optional exclude-p)
-    "Toggle a tag in either an exclusive or inclusive way. Calling
-
-(elfeed-toggle-tag \"sometag\"), or
-S sometag RET
-
-will add \"+sometag\" if it does not exist in the search
-filter. Otherwise it will remove it. With a prefix, \"-sometag\"
-is used instead.
-"
-    (interactive
-     (if current-prefix-arg
-	 (list (read-string "toggle tag (exclude): ") t)
-       (list (read-string "toggle tag (include) "))))
-    (let* ((filter-list (split-string elfeed-search-filter))
-	   (tag-i (concat (if exclude-p "+" "-") tag))
-
-	   ;; If we are to add "+sometag", then we must remove
-	   ;; "-sometag" first, if present.
-	   (filter-list (remove-string-from-list tag-i filter-list))
-	   (tag (concat (if exclude-p "-" "+") tag)))
-      (if (member tag filter-list)
-      	  ;; if the tag is present, remove it
-      	  (setq elfeed-search-filter (apply #'concat-ext `(" " ,@(remove-string-from-list tag filter-list))))
-      	;; if the tag is not present, add it
-      	(setq elfeed-search-filter (apply #'concat-ext `(" " ,@filter-list ,tag))))
-      (elfeed-search-update--force)))
-
   (defun open-in-mpv ()
-"Open selected entry in mpv."
+    "Open selected entry in mpv."
     (interactive)
     (let ((entry (elfeed-search-selected :single)))
       (elfeed-search-untag-all 'unread) ;; mark as read
       (asd/send-to-mpv (elfeed-entry-link entry))))
-
-  (defun elfeed-mark-entry-favority ()
-"Add the 'faved tag to an entry."
-    (interactive)
-    (let ((entry (elfeed-search-selected :single))
-	  (fav-tag 'faved))
-      (if (member fav-tag (elfeed-entry-tags entry))
-	  (elfeed-untag-1 entry fav-tag)
-	(elfeed-tag-1 entry fav-tag))
-      (elfeed-search-update-entry entry)))
-
-  (defun elfeed-show-favorites ()
-"Show all entries with the 'faved tag"
-    (interactive)
-    (elfeed-toggle-tag "faved"))
 
   :config
   ;; Needed to ensure proper display of e.g., Japense text in
@@ -339,7 +293,11 @@ is used instead.
   (set-face-attribute 'message-header-subject nil :family "DejaVu Sans Mono")
 
   (require 'asd-feeds)
-  (load-rss-feeds))
+  (load-rss-feeds)
+
+  (bind-key "f" 'elfeed-mark-entry-favorite elfeed-search-mode-map)
+  (bind-key "F" 'elfeed-show-favorites elfeed-search-mode-map)
+  (bind-key "S" 'elfeed-toggle-tag elfeed-search-mode-map))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
