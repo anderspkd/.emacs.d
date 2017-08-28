@@ -39,7 +39,7 @@
 	  (scale (or scale 0.6)))
       (create-image image-loc image-typ nil
 		    :max-height (truncate (* scale (frame-pixel-height)))
-		    ;; :max-width (truncate (* scale (frame-pixel-width))) ;no need to constrain on width, i think.
+		    :max-width (truncate (* scale (frame-pixel-width))) ;no need to constrain on width, i think.
 		    ))))
 
 (defun mm/goto-file-from-line (&optional file)
