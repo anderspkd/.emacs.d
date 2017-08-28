@@ -1,4 +1,4 @@
-;;; asd-notify.el --- Notifications via. dbus
+;;; dbus-notify.el --- Notifications via. dbus
 ;;
 ;; Author: Anders Dalskov
 ;; Copyright: (C) 2017, Anders Dalskov, all rights reserved.
