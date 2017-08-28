@@ -358,14 +358,23 @@ _q_:quit
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
 	 ("C-c l" . org-store-link)
+	 ("C-c w" . org-add-timeslot)
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
   (add-hook 'org-mode-hook #'asd/remove-ws-hook)
+  (defun org-add-timeslot ()
+    (interactive)
+    (let ((ts-string
+	   (with-temp-buffer
+	     (org-time-stamp 0) ;; TODO pass prefix args along?
+	     (buffer-string))))
+      (org-set-property "WHEN" ts-string)))
   :config
   ;; (unless org-agenda-files
-  (setq org-agenda-files '("~/Documents/org/agenda.org"))
+  ;; (setq org-agenda-files '("~/Documents/org/agenda.org"))
+  (setq org-agenda-files (directory-files "~/Documents/org/agendafiles" t "\\.org$"))
   (setq org-log-reschedule t
 	org-log-done t
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
