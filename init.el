@@ -11,6 +11,7 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setq package-enable-at-startup nil)
 (package-initialize)
 
 ;; I use this twice, so that justifies abstraction :^)
@@ -89,12 +90,14 @@
   (recentf-mode t))
 
 ;; Settings that are relevant when running in X
-(when (eq window-system 'x)
+(defun enable-look-and-feel ()
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
 
   (use-package leuven-theme
     :ensure t
-    :init (setq leuven-scale-outline-headlines nil))
+    :init
+    (setq leuven-scale-outline-headlines nil))
+
   (use-package smart-mode-line
     :ensure t
     :init
@@ -107,6 +110,7 @@
   		       ("^~/.emacs.d" ":EMACS:")
   		       ("^~/Documents/" ":DOC:")
   		       ("^~/Documents/org/" ":ORG:")
+  		       ("^~/Documents/org/agendafiles/" ":AGENDA:")
   		       ("^~/Documents/uni/" ":UNI:")))
       (add-to-list 'sml/replacer-regexp-list pattern)))
   (use-package marisa-mode
@@ -117,6 +121,14 @@
 		     (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
 		       (nth (random (length files)) files))))
     (mm/init)))
+
+(when (eq window-system 'x)
+  (if (daemonp)
+      (add-hook 'after-init-hook
+		(lambda (frame)
+		  (select-frame frame)
+		  (enable-look-and-feel)))
+    (enable-look-and-feel)))
 
 ;;; Settings for keybindings and whatnot
 
@@ -189,6 +201,15 @@ _q_:quit
   "Auto delete trailing whitespace before saving in some modes."
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
 
+;; (use-package emms
+;;   :ensure t
+;;   :config
+;;   ;; load emms packages
+;;   (require 'emms-player-simple)
+;;   (require 'emms-source-file)
+;;   (require 'emms-source-playlist)
+;;   (require 'emms-player-mpd))
+
 (use-package nlinum
   :defer t
   :ensure t)
@@ -200,18 +221,23 @@ _q_:quit
   (add-hook 'pdf-view-mode-hook 'auto-revert-mode)
   :config
   (pdf-tools-install)
-  (bind-key "C-f" (lambda (n) (interactive "p")
-		    (image-forward-hscroll (if (= n 1) 5 n)))
-	    pdf-view-mode-map)
-  (bind-key "C-b" (lambda (n) (interactive "p")
-		    (image-backward-hscroll (if (= n 1) 5 n)))
-	    pdf-view-mode-map)
-  (bind-key "C-n" (lambda (n) (interactive "p")
-		    (pdf-view-next-line-or-next-page (if (= n 1) 5 n)))
-	    pdf-view-mode-map)
-  (bind-key "C-p" (lambda (n) (interactive "p")
-		    (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))
-	    pdf-view-mode-map))
+  (setq pdf-annot-activate-created-annotations t)
+
+  ;; more pleasent bindings.
+  (let ((fwd (lambda (n) (interactive "p") (image-forward-hscroll (if (= n 1) 5 n))))
+	(bkw (lambda (n) (interactive "p") (image-backward-hscroll (if (= n 1) 5 n))))
+	(down (lambda (n) (interactive "p") (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
+	(up (lambda (n) (interactive "p") (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
+    (bind-key "C-f" fwd pdf-view-mode-map)
+    (bind-key "C-b" bkw pdf-view-mode-map)
+    (bind-key "C-n" down pdf-view-mode-map)
+    (bind-key "C-p" up pdf-view-mode-map)
+
+    (bind-key "<right>" fwd pdf-view-mode-map)
+    (bind-key "<left>" bkw pdf-view-mode-map)
+    (bind-key "<down>" down pdf-view-mode-map)
+    (bind-key "<up>" up pdf-view-mode-map)))
+
 
 (use-package yasnippet
   :ensure t
@@ -251,6 +277,12 @@ _q_:quit
   (setq-default TeX-master nil)
   (setq reftex-plug-into-AUCTeX t)
   (setq reftex-ref-style-default-list '("Default" "Hyperref")))
+
+(use-package slime
+  :init
+  (setq inferior-lisp-program "/usr/bin/sbcl")
+  :config
+  (slime-setup '(slime-repl)))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
@@ -310,7 +342,17 @@ _q_:quit
   (add-hook 'python-mode-hook #'eldoc-mode)
   (add-hook 'python-mode-hook #'yas-minor-mode)
   (add-hook 'python-mode-hook #'asd/remove-ws-hook) ; maybe someway to turn this on/off
-  (add-hook 'python-mode-hook #'nlinum-mode))
+  (add-hook 'python-mode-hook #'nlinum-mode)
+
+  :config
+  (defhydra hydra-python-indent (:hint nil)
+    "
+(_f_) more, (_b_) less
+"
+    ("f" python-indent-shift-right)
+    ("b" python-indent-shift-left)
+    ("q" nil))
+  (bind-key "C-c s" 'hydra-python-indent/body))
 
 (use-package dired
   :defer t
@@ -330,7 +372,7 @@ _q_:quit
   (dired-omit-mode 1)
   (setq dired-auto-revert-buffer t
 	;; `-v` and `-group-directories-first` are GNU ls specific afaik
-	dired-listing-switches "-alhFv --group-directories-first"))
+	dired-listing-switches "-AlhFv --group-directories-first"))
 
 (use-package emacs-lisp-mode
   :mode "\\.el\\'"
@@ -353,6 +395,13 @@ _q_:quit
   :config
   (add-hook 'web-mode-hook 'auto-revert-mode))
 
+(setq easycrypt-prog-name (expand-file-name "~/.opam/easycrypt/bin/easycrypt"))
+
+;; Easycrypt
+(defun load-proof-general ()
+  (interactive)
+  (load-file (expand-file-name "~/.opam/easycrypt/share/proofgeneral/generic/proof-site.el")))
+
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
@@ -374,12 +423,16 @@ _q_:quit
   :config
   ;; (unless org-agenda-files
   ;; (setq org-agenda-files '("~/Documents/org/agenda.org"))
-  (setq org-agenda-files (directory-files "~/Documents/org/agendafiles" t "\\.org$"))
+  (setq org-agenda-files (directory-files "~/Documents/org/agendafiles/" t "^[^.#].+\\.org\\'" t))
+  (setq org-agenda-custom-commands
+	'(("c" "Simple Agenda view"
+	   ((agenda "")
+	    (alltodo "")))))
   (setq org-log-reschedule t
 	org-log-done t
 	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
 			    (sequence "|" "WAITING(w)" "|")
-			    (sequence "|" "CANCELED(c)"))
+			    (sequence "|" "CANCELED(c@)"))
 	org-todo-keyword-faces '(("WAITING" . "blue")
 				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
 

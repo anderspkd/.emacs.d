@@ -13,6 +13,7 @@
 (require 'htmlize)
 (require 'ox-publish)
 (require 'ox-html)
+(require 'url-util)
 
 (defvar asd/blog/navbar-items
   '(("/" . "about")
@@ -199,6 +200,36 @@
 	 :publishing-function org-publish-attachment
 	 :recursive t)
 	 ))
+
+;;; Here's some helper functions and whatnot
+
+(defun asd/blog/new-filename (from-string)
+  (when (< 25 (length from-string))
+    (setq from-string (substring from-string 0 25)))
+  (let ((timestamp (format-time-string "%s"))
+	(url-safe-str (url-encode-url from-string)))
+    (concat url-safe-str "_" timestamp ".org")))
+
+(defun asd/new-blog-post (&optional title author)
+  (interactive
+   (let ((title (read-string "Title: " nil nil "Untitled"))
+	 (author (read-string "Author: " "Anders Dalskov")))
+     (list title author)))
+  (let* ((title (or title "Untitled"))
+	 (filename (asd/blog/base-dir "posts/" (asd/blog/new-filename title))))
+    (let ((buf (find-file-noselect filename)))
+      (when buf
+	(with-current-buffer buf
+	  (insert
+	   (format "#+TITLE: %s
+#+AUTHOR: %s
+#+BEGIN_PREVIEW
+
+#+END_PREVIEW"
+		   title author))
+	  (forward-line -1))
+	(switch-to-buffer buf)))))
+
 
 (provide 'asd-blog)
 ;;; asd-blog.el ends here
