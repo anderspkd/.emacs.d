@@ -93,34 +93,59 @@
 (defun enable-look-and-feel ()
   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
 
-  (use-package leuven-theme
-    :ensure t
-    :init
-    (setq leuven-scale-outline-headlines nil))
+  (require 'leuven-theme)
+  (setq leuven-scale-outline-headlines nil)
+  (load-theme 'leuven t)
 
-  (use-package smart-mode-line
-    :ensure t
-    :init
-    (setq sml/no-confirm-load-theme t
-  	  sml/theme 'dark)
-    :config
-    (sml/setup)
-    (dolist (pattern '(("^~/Code/" ":CODE:")
+  (require 'smart-mode-line)
+  (setq sml/no-confirm-load-theme t
+	sml/theme 'dark)
+  (sml/setup)
+  (dolist (pattern '(("^~/Code/" ":CODE:")
   		       ("^~/.config/" ":CONF:")
   		       ("^~/.emacs.d" ":EMACS:")
   		       ("^~/Documents/" ":DOC:")
   		       ("^~/Documents/org/" ":ORG:")
   		       ("^~/Documents/org/agendafiles/" ":AGENDA:")
   		       ("^~/Documents/uni/" ":UNI:")))
-      (add-to-list 'sml/replacer-regexp-list pattern)))
-  (use-package marisa-mode
-    :demand t
-    :config
-    ;; pick a random image from the specified folder
-    (setq mm/image (lambda ()
-		     (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
-		       (nth (random (length files)) files))))
-    (mm/init)))
+    (add-to-list 'sml/replacer-regexp-list pattern))
+
+  (require 'marisa-mode)
+  (setq mm/image (lambda ()
+		   (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
+		     (nth (random (length files)) files))))
+
+  (mm/init)
+
+  ;; (use-package leuven-theme
+  ;;   :ensure t
+  ;;   :init
+  ;;   (setq leuven-scale-outline-headlines nil))
+
+  ;; (use-package smart-mode-line
+  ;;   :ensure t
+  ;;   :init
+  ;;   (setq sml/no-confirm-load-theme t
+  ;; 	  sml/theme 'dark)
+  ;;   :config
+  ;;   (sml/setup)
+  ;;   (dolist (pattern '(("^~/Code/" ":CODE:")
+  ;; 		       ("^~/.config/" ":CONF:")
+  ;; 		       ("^~/.emacs.d" ":EMACS:")
+  ;; 		       ("^~/Documents/" ":DOC:")
+  ;; 		       ("^~/Documents/org/" ":ORG:")
+  ;; 		       ("^~/Documents/org/agendafiles/" ":AGENDA:")
+  ;; 		       ("^~/Documents/uni/" ":UNI:")))
+  ;;     (add-to-list 'sml/replacer-regexp-list pattern)))
+  ;; (use-package marisa-mode
+  ;;   :demand t
+  ;;   :config
+  ;;   ;; pick a random image from the specified folder
+  ;;   (setq mm/image (lambda ()
+  ;; 		     (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
+  ;; 		       (nth (random (length files)) files))))
+  ;;   (mm/init))
+  )
 
 (when (eq window-system 'x)
   (if (daemonp)
@@ -200,15 +225,6 @@ _q_:quit
 (defsubst asd/remove-ws-hook ()
   "Auto delete trailing whitespace before saving in some modes."
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
-
-;; (use-package emms
-;;   :ensure t
-;;   :config
-;;   ;; load emms packages
-;;   (require 'emms-player-simple)
-;;   (require 'emms-source-file)
-;;   (require 'emms-source-playlist)
-;;   (require 'emms-player-mpd))
 
 (use-package nlinum
   :defer t
@@ -407,12 +423,12 @@ _q_:quit
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
 	 ("C-c l" . org-store-link)
-	 ("C-c w" . org-add-timeslot)
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
   (add-hook 'org-mode-hook #'asd/remove-ws-hook)
+  :config
   (defun org-add-timeslot ()
     (interactive)
     (let ((ts-string
@@ -420,7 +436,7 @@ _q_:quit
 	     (org-time-stamp 0) ;; TODO pass prefix args along?
 	     (buffer-string))))
       (org-set-property "WHEN" ts-string)))
-  :config
+  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
   ;; (unless org-agenda-files
   ;; (setq org-agenda-files '("~/Documents/org/agenda.org"))
   (setq org-agenda-files (directory-files "~/Documents/org/agendafiles/" t "^[^.#].+\\.org\\'" t))
