@@ -14,12 +14,16 @@
 (require 'ox-publish)
 (require 'ox-html)
 (require 'url-util)
+(require 'cl-lib) ;; for cl-intersect
 
 (defvar asd/blog/navbar-items
-  '(("/" . "about")
+  '(("/" . "front")
     ("/posts/blog.html" . "blog")
     ("/contact.html" . "contact")
     ("/links.html" . "links")))
+
+(defvar asd/blog/base-directory "~/Documents/blog/"
+  "Base directory where the blog resides.")
 
 ;; Stop `org-publish' from polluting recentf-list
 (advice-add
@@ -30,49 +34,53 @@
      (apply f args)
      (recentf-mode 1)))
 
+;; Return a directory relative to `asd/blog/base-directory'
 (defsubst asd/blog/base-dir (&rest subdirs)
-  (let ((d "~/Documents/blog/"))
+  (let ((d asd/blog/base-directory))
     (dolist (sd subdirs d)
       (setq d (concat (file-name-as-directory d) sd)))))
 
+;; Return a directory relative to the publication dir. The publication
+;; dir is `asd/blog/base-directory'/www
 (defsubst asd/blog/pub-dir (&rest subdirs)
   (apply #'asd/blog/base-dir `("www" ,@subdirs)))
 
-(defun asd/blog/time-from-file-name (file &optional fmt-string)
-  (let ((file (file-name-nondirectory file))
+;; Retrieve post creation time from the filename. Filenames (of posts)
+;; are of the form `unix_timestamp'.org
+(defun asd/blog/time-from-filename (filename &optional fmt-string)
+  (let ((file (file-name-nondirectory filename))
 	(fmt-string (or fmt-string "%F")))
-    (if (string-match "[0-9].*\\.org$" file)
+    (let ((b (string-match "^[0-9].*\.org$" filename)))
+      (when b
 	(format-time-string
 	 fmt-string
-	 (string-to-number
-	  (file-name-sans-extension (match-string 0 file))))
-      ;; Dummy value for when time is missing from file-name.
-      (format-time-string fmt-string 0))))
+	 (string-to-number (file-name-sans-extension filename)))))))
 
-;;; FIXME: Very non-portable.
+;; Determine whether `file' is a proper posts, or the sitemap file.
 (defsubst asd/blog/post-p (file)
-  (multiple-value-bind (dir file-name)
+  (multiple-value-bind (dir filename)
       (let ((file-list (split-string file "/")))
 	(values (nth (- (length file-list) 2) file-list)
 		(file-name-base (nth (1- (length file-list)) file-list))))
     (and (string= dir "posts")
-	 (not (string= file-name "blog")))))
+	 (not (string= filename "blog")))))
 
+;; Construct the postable (the thing at the bottom).
 (defun asd/blog/postamble (options)
   (with-temp-buffer
     (insert "<hr>")
     ;; Author is sometimes nil (e.g., sitemap) so don't include it in that case.
     (let* ((file (plist-get options :input-file))
 	   (author (car (plist-get options :author)))
-	   (pub-time (when (asd/blog/post-p file) (asd/blog/time-from-file-name file))))
+	   (pub-time (when (asd/blog/post-p file) (asd/blog/time-from-filename file))))
       (when author
 	(insert (format "<p class=\"author\">Author: %s</p>" author)))
-      ;; (message "asd %s %s %s" file navbar-item-p)
       (insert (format-time-string "<p class=\"date\">Last modified: %Y-%m-%d %a %H:%M</p>"))
       (when pub-time
 	(insert (format "<p class=\"date\">Published: %s</p>" pub-time)))
       (buffer-string))))
 
+;; Construct the preable (the thing at the top).
 (defun asd/blog/preamble (options)
   (with-temp-buffer
     (insert "<ul>")
@@ -81,6 +89,7 @@
     (insert "</ul><hr>")
     (buffer-string)))
 
+;; Retrieve the post preview.
 (defun asd/blog/get-preview (file)
   (with-temp-buffer
     (insert-file-contents file)
@@ -90,6 +99,7 @@
 		    (match-beginning 0))))
       (buffer-substring b e))))
 
+;; Construct sitemap file.
 (defun asd/blog/sitemap (project &optional sitemap-fn)
   (let* ((project-plist (cdr project))
 	 (dir (file-name-as-directory (plist-get project-plist :base-directory)))
@@ -107,12 +117,11 @@
 	(let ((fn (file-name-nondirectory file)))
 	  (unless (equal (file-truename sitemap-fn) (file-truename file))
 	    (let ((title (org-publish-format-file-entry "%t" file project-plist))
-		  ;; (date (org-publish-format-file-entry "%d" file project-plist))
-		  (pub-date (asd/blog/time-from-file-name file))
+		  (pub-date (asd/blog/time-from-filename file))
 		  (preview (asd/blog/get-preview file)))
+	      (message "filename from sitemap: %s (%s)" fn title)
 	      (insert "* [[file:" fn "][" title "]] \n")
 	      (insert preview "\n")
-	      ;; (insert "Posted: " date ".\n\n")
 	      (insert "Posted: " pub-date ".\n\n")
 	      (unless (null files)
 		(insert "----------\n"))))))
@@ -203,20 +212,27 @@
 
 ;;; Here's some helper functions and whatnot
 
-(defun asd/blog/new-filename (from-string)
-  (when (< 25 (length from-string))
-    (setq from-string (substring from-string 0 25)))
-  (let ((timestamp (format-time-string "%s"))
-	(url-safe-str (url-encode-url from-string)))
-    (concat url-safe-str "_" timestamp ".org")))
+;; Characters that does not screw with org-mode
+(defvar asd/blog/valid-title-chars-re "[a-zA-Z0-9 /\.()\+?!{}\-,=\"']")
 
-(defun asd/new-blog-post (&optional title author)
+;; Determine whether or not `title' is valid. It is, if it only
+;; contains characters from `asd/blog/valid-title-chars-re'.
+(defsubst asd/blog/valid-titlep (title)
+  (zerop (length (replace-regexp-in-string asd/blog/valid-title-chars-re "" title))))
+
+;; Function that creates a new blog post.
+(defun asd/new-blog-post (title author)
   (interactive
    (let ((title (read-string "Title: " nil nil "Untitled"))
-	 (author (read-string "Author: " "Anders Dalskov")))
+	 (author (read-string "Author:" "Anders Dalskov")))
      (list title author)))
-  (let* ((title (or title "Untitled"))
-	 (filename (asd/blog/base-dir "posts/" (asd/blog/new-filename title))))
+
+  ;; Validate title
+  (unless (asd/blog/valid-titlep title)
+    (error "`%s' is not a valid title" title))
+
+  ;; filenames are just a timestamp + .org
+  (let ((filename (asd/blog/base-dir "posts/" (format-time-string "%s.org"))))
     (let ((buf (find-file-noselect filename)))
       (when buf
 	(with-current-buffer buf
@@ -229,7 +245,6 @@
 		   title author))
 	  (forward-line -1))
 	(switch-to-buffer buf)))))
-
 
 (provide 'asd-blog)
 ;;; asd-blog.el ends here
