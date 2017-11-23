@@ -375,6 +375,7 @@ _q_:quit
   :bind (:map dired-mode-map
 	      ([backspace] . dired-up-directory)
 	      ("b" . browse-url-of-dired-file)
+	      ("\"" . do-shell-and-copy-to-kill-ring)
 	      ("W" . play-in-mpv))
   :init
   (add-hook 'dired-mode-hook (lambda () (toggle-truncate-lines)))
@@ -383,9 +384,21 @@ _q_:quit
     (let ((file (dired-get-filename)))
       (when file
 	(asd/send-to-mpv file))))
+  ;; from https://stackoverflow.com/a/29816147
+  (defun do-shell-and-copy-to-kill-ring (command &optional arg file-list)
+    (interactive
+     (let ((files (dired-get-marked-files t current-prefix-arg)))
+       (list
+	(dired-read-shell-command "! on %s: " current-prefix-arg files)
+	current-prefix-arg
+	files)))
+    (dired-do-shell-command command arg file-list)
+    (with-current-buffer "*Shell Command Output*"
+      (copy-region-as-kill (point-min) (point-max))))
+  (add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
+  (add-hook 'dired-mode-hook (lambda () (dired-hide-details-mode)))
   :config
   (require 'dired-x)
-  (dired-omit-mode 1)
   (setq dired-auto-revert-buffer t
 	;; `-v` and `-group-directories-first` are GNU ls specific afaik
 	dired-listing-switches "-AlhFv --group-directories-first"))
