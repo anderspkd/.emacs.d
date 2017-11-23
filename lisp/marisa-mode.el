@@ -25,6 +25,10 @@
   case it should return a path to an image)")
 (defvar mm/buffer-name " mm")
 
+(defvar mm/current-image nil
+  "Holds the data of the current image. Lets us redraw the screen
+  without having to re-creating an image (which is expensive)")
+
 ;; Ensure recentf-list is populated
 (unless recentf-list
   (recentf-load-list))
@@ -62,15 +66,17 @@
 ;; binding the above function to return.
 (define-derived-mode marisa-mode special-mode " HELLO")
 
-(defun mm/make-buffer ()
+(defun mm/make-buffer (&optional image)
   (let ((buffer (get-buffer-create mm/buffer-name))
-	(image (mm/make-image nil 0.5))
-	(header-str "[R] RSS, [T] TODOs, [A] Agenda\nRecent Files")
+	(image (or image (mm/make-image nil 0.5)))
+	(header-str "[R] RSS, [T] TODOs, [A] Agenda [B] Bookmarks\nRecent Files")
 	additional-keys)
     (set-buffer buffer)
 
     ;; show image
     (when image
+      (unless mm/current-image
+	(setq mm/current-image image))
       (put-image image 0)
       (newline))
 
@@ -97,18 +103,29 @@
     (local-set-key "R" #'elfeed)
     (local-set-key "T" #'org-todo-list)
     (local-set-key "A" #'org-agenda-list)
+    (local-set-key "B" #'bookmark-bmenu-list)
     (dolist (kc additional-keys)
       (when kc
 	(cl-destructuring-bind (key . cmd) kc
 	  (local-set-key key cmd))))
     buffer))
 
+(defvar mm/old-buffer nil "Holds the first buffer created")
+
 ;; TODO: should not run when init.el is reloaded from within an emacs
-;; session
+;; session.
+;; Should be more "intelligent".
 (defun mm/init ()
-  (when (and (= (length command-line-args) 1)
-	     (string= (car command-line-args) "emacs")) ; can != even happen here?
-    (switch-to-buffer (mm/make-buffer))))
+  (if mm/old-buffer
+      (switch-to-buffer mm/old-buffer)
+    (when (and (= (length command-line-args) 1)
+	       (string= (car command-line-args) "emacs")) ; can != even happen here?
+      (let ((buf (mm/make-buffer mm/current-image)))
+	(switch-to-buffer (setq mm/old-buffer buf))))))
+
+(defun mm/goto ()
+  (interactive)
+  (mm/init))
 
 (provide 'marisa-mode)
 
