@@ -285,6 +285,8 @@ _q_:quit
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   :config
+  (setq fill-column 90)
+  (setq TeX-electric-sub-and-superscript t)
   (setq TeX-auto-save t
 	TeX-parse-self t
 	TeX-source-correlate-method-active 'synctex
