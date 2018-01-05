@@ -208,17 +208,8 @@ _q_:quit
 (defhydra hydra-zoom (global-map "<f2>")
   "zoom"
   ("+" text-scale-increase "in")
-  ("-" text-scale-decrease "out"))
-
-(defhydra hydra-jump-around (:hint nil)
-  "
-jump to either `.,!' in text (C-u for reverse direction)
-_q_:quit
-"
-  ("." (lambda (b) (interactive "P") (if b (search-backward ".") (search-forward "."))))
-  ("," (lambda (b) (interactive "P") (if b (search-backward ",") (search-forward ","))))
-  ("!" (lambda (b) (interactive "P") (if b (search-backward "!") (search-forward "!"))))
-  ("q" nil))
+  ("-" text-scale-decrease "out")
+  ("0" (lambda () (interactive) (text-scale-adjust 0))))
 
 ;;; More settings
 
@@ -273,9 +264,22 @@ _q_:quit
   (global-flycheck-mode)
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
+(defhydra hydra-outline (:hint nil)
+  "
+Various shortcuts for outline mode
+_q_:quit
+"
+  ("F" outline-forward-same-level)
+  ("B" outline-backward-same-level)
+  ("f" outline-next-heading)
+  ("b" outline-previous-heading)
+  ("h" outline-hide-entry)
+  ("s" outline-show-entry)
+  ("q" nil))
+
 (use-package tex
   :mode ("\\.tex\\'" . tex-mode)
-  :bind ("C-c j" . hydra-jump-around/body)
+  :bind ("C-c o" . hydra-outline/body)
   :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
