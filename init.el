@@ -1,11 +1,27 @@
 ;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
-;;
+
 ;; Author: Anders Dalskov
 ;; Copyright: (C) 2017, Anders Dalskov, all rights reserved
+
+;; This file is not part of GNU Emacs.
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 ;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ;;; Commentary:
 ;;
-;; Emacs configuration file.
+;; Emacs configuration file. Contains mostly everything I need for
+;; using emacs. Extra code is located in ~/.emacs.d/lisp/.
 ;;
 ;;; Code:
 
@@ -14,13 +30,11 @@
 (setq package-enable-at-startup nil)
 (package-initialize)
 
-;; I use this twice, so that justifies abstraction :^)
 (defsubst emacsdir (f)
   (expand-file-name (concat user-emacs-directory f)))
 
 (add-to-list 'load-path (emacsdir "lisp"))
 
-;; Ensure `use-packge` is installed
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -29,21 +43,14 @@
   (require 'use-package))
 (require 'bind-key)
 
-;;; Some general settings related to visuals
-
 (tool-bar-mode -1)     ; no toolbar,
 (menu-bar-mode -1)     ; no menu bar,
 (scroll-bar-mode -1)   ; no scroll bar,
 (blink-cursor-mode -1) ; no cursor blinking, (fox only, final destination)
-
-;; Enable line and column numbers in the modeline
 (line-number-mode t)
 (column-number-mode t)
-
-;; Auto parenthesis stuff
 (electric-pair-mode t)
 
-;; No *scratch* comment
 (setq initial-scratch-message nil)
 
 (setq ring-bell-function 'ignore ; no bell
@@ -60,7 +67,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq confirm-kill-emacs 'y-or-n-p)
 
-;; Place backups somewhere else than everywhere
+;; All backups (.# files) go into a specific directory.
 (setq backup-by-copying t
       backup-directory-alist '(("." . "~/.emacs_backups"))
       delete-old-versions t
@@ -68,15 +75,14 @@
       kept-old-versions 2
       version-control t)
 
-(use-package iso-transl) ; fixes dead keys e.g., tilde
+(use-package iso-transl) ; fixes dead keys (~ etc.)
 
-;; Some settings to ensure stuff is opened in the right browser
+;; Set browser
 (setq browse-url-chromium-arguments '("-incognito")
       browse-url-generic-program "chromium"
       browse-url-browser-function 'browse-url-chromium)
 
-;; For the sake of excluding certain files from recentf.
-;; Bugs when `:ensure t` is present
+;; Recentf. exclude some known auto generated files.
 (use-package recentf
   :bind ("C-x C-r" . recentf-open-files)
   :config
@@ -115,47 +121,10 @@
 		   (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
 		     (nth (random (length files)) files))))
 
-  (mm/init)
-
-  ;; (use-package leuven-theme
-  ;;   :ensure t
-  ;;   :init
-  ;;   (setq leuven-scale-outline-headlines nil))
-
-  ;; (use-package smart-mode-line
-  ;;   :ensure t
-  ;;   :init
-  ;;   (setq sml/no-confirm-load-theme t
-  ;; 	  sml/theme 'dark)
-  ;;   :config
-  ;;   (sml/setup)
-  ;;   (dolist (pattern '(("^~/Code/" ":CODE:")
-  ;; 		       ("^~/.config/" ":CONF:")
-  ;; 		       ("^~/.emacs.d" ":EMACS:")
-  ;; 		       ("^~/Documents/" ":DOC:")
-  ;; 		       ("^~/Documents/org/" ":ORG:")
-  ;; 		       ("^~/Documents/org/agendafiles/" ":AGENDA:")
-  ;; 		       ("^~/Documents/uni/" ":UNI:")))
-  ;;     (add-to-list 'sml/replacer-regexp-list pattern)))
-  ;; (use-package marisa-mode
-  ;;   :demand t
-  ;;   :config
-  ;;   ;; pick a random image from the specified folder
-  ;;   (setq mm/image (lambda ()
-  ;; 		     (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
-  ;; 		       (nth (random (length files)) files))))
-  ;;   (mm/init))
-  )
+  (mm/init))
 
 (when (eq window-system 'x)
-  (if (daemonp)
-      (add-hook 'after-init-hook
-		(lambda (frame)
-		  (select-frame frame)
-		  (enable-look-and-feel)))
-    (enable-look-and-feel)))
-
-;;; Settings for keybindings and whatnot
+  (enable-look-and-feel))
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -164,8 +133,8 @@
   :ensure t)
 
 (use-package asd-funcs
-  ;; `demand t` is neccessary here since some of the functions it
-  ;; provides are used elsewhere (e.g., elfeed and dired).
+  ;; `demand t` is neccessary here since some of the functions this
+  ;; package provides are used elsewhere (e.g., elfeed and dired).
   :demand t
   :bind (("C-x K" . asd/kill-all-buffers)
 	 ("C-a" . asd/back-to-indent-or-beg)
@@ -211,8 +180,6 @@ _q_:quit
   ("-" text-scale-decrease "out")
   ("0" (lambda () (interactive) (text-scale-adjust 0))))
 
-;;; More settings
-
 (defsubst asd/remove-ws-hook ()
   "Auto delete trailing whitespace before saving in some modes."
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
@@ -230,7 +197,7 @@ _q_:quit
   (pdf-tools-install)
   (setq pdf-annot-activate-created-annotations t)
 
-  ;; more pleasent bindings.
+  ;; Default movement is painfully slow.
   (let ((fwd (lambda (n) (interactive "p") (image-forward-hscroll (if (= n 1) 5 n))))
 	(bkw (lambda (n) (interactive "p") (image-backward-hscroll (if (= n 1) 5 n))))
 	(down (lambda (n) (interactive "p") (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
@@ -244,7 +211,6 @@ _q_:quit
     (bind-key "<left>" bkw pdf-view-mode-map)
     (bind-key "<down>" down pdf-view-mode-map)
     (bind-key "<up>" up pdf-view-mode-map)))
-
 
 (use-package yasnippet
   :ensure t
@@ -264,7 +230,11 @@ _q_:quit
   (global-flycheck-mode)
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
-(defhydra hydra-outline (:hint nil)
+(use-package tex
+  :mode ("\\.tex\\'" . tex-mode)
+  :bind ("C-c o" . hydra-outline/body)
+  :init
+  (defhydra hydra-outline (:hint nil)
   "
 Various shortcuts for outline mode
 _q_:quit
@@ -276,11 +246,6 @@ _q_:quit
   ("h" outline-hide-entry)
   ("s" outline-show-entry)
   ("q" nil))
-
-(use-package tex
-  :mode ("\\.tex\\'" . tex-mode)
-  :bind ("C-c o" . hydra-outline/body)
-  :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
@@ -326,14 +291,9 @@ _q_:quit
   :ensure t
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
-	 ("x" . open-in-mpv))
+	 ("x" . elfeed-search-open-in-mpv))
   :init
-  (setq elfeed-curl-program-name "curl"
-	elfeed-use-curl t
-	elfeed-search-title-max-width 100)
-  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
-
-  (defun open-in-mpv ()
+  (defun elfeed-search-open-in-mpv ()
     "Open selected entry in mpv."
     (interactive)
     (let ((entry (elfeed-search-selected :single)))
@@ -341,6 +301,10 @@ _q_:quit
       (asd/send-to-mpv (elfeed-entry-link entry))))
 
   :config
+  (setq elfeed-curl-program-name "curl"
+	elfeed-use-curl t
+	elfeed-search-title-max-width 100)
+  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
   ;; Needed to ensure proper display of e.g., Japense text in
   ;; elfeed-show.
   (set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono")
@@ -363,7 +327,7 @@ _q_:quit
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook #'eldoc-mode)
   (add-hook 'python-mode-hook #'yas-minor-mode)
-  (add-hook 'python-mode-hook #'asd/remove-ws-hook) ; maybe someway to turn this on/off
+  (add-hook 'python-mode-hook #'asd/remove-ws-hook) ; maybe someway to turn this on/off?
   (add-hook 'python-mode-hook #'nlinum-mode)
 
   :config
@@ -382,10 +346,10 @@ _q_:quit
 	      ([backspace] . dired-up-directory)
 	      ("b" . browse-url-of-dired-file)
 	      ("\"" . do-shell-and-copy-to-kill-ring)
-	      ("W" . play-in-mpv))
+	      ("W" . dired-play-in-mpv))
   :init
   (add-hook 'dired-mode-hook (lambda () (toggle-truncate-lines)))
-  (defun play-in-mpv ()
+  (defun dired-play-in-mpv ()
     (interactive)
     (let ((file (dired-get-filename)))
       (when file
@@ -430,11 +394,10 @@ _q_:quit
   :config
   (add-hook 'web-mode-hook 'auto-revert-mode))
 
-(setq easycrypt-prog-name (expand-file-name "~/.opam/easycrypt/bin/easycrypt"))
-
 ;; Easycrypt
 (defun load-proof-general ()
   (interactive)
+  (setq easycrypt-prog-name (expand-file-name "~/.opam/easycrypt/bin/easycrypt"))
   (load-file (expand-file-name "~/.opam/easycrypt/share/proofgeneral/generic/proof-site.el")))
 
 (use-package org
@@ -445,7 +408,7 @@ _q_:quit
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
-  (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
+  ;; (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
   (add-hook 'org-mode-hook #'asd/remove-ws-hook)
   :config
   (defun org-add-timeslot ()
@@ -471,8 +434,9 @@ _q_:quit
 	org-todo-keyword-faces '(("WAITING" . "blue")
 				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
 
+;; TODO mail
+
 ;; put that junk somewhere out of the way.
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
-
 ;;; init.el ends here
