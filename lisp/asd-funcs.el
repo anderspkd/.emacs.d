@@ -20,7 +20,7 @@
   (lisp-interaction-mode))
 
 (defun asd/kill-all-buffers ()
-  "Kill everything and open *scratch*. I.e., reset the session."
+  "Kill everything and open *scratch*."
   (interactive)
   (when (y-or-n-p "Kill all buffers? ")
     (mapc 'kill-buffer (buffer-list))
@@ -38,7 +38,7 @@
   (byte-recompile-directory "~/.emacs.d/" 0 t))
 
 (defun asd/base64-string-length (beg end)
-  "Decode region between BEG and END as base64 and output the
+  "Decode region between `BEG' and `END' as base64 and output the
 length of the segment in the minibuffer."
   (interactive "r")
   (when (and beg end)
@@ -47,7 +47,7 @@ length of the segment in the minibuffer."
       (message "length=%d" (length b64-decd)))))
 
 (defun asd/unixtime->ts (beg end)
-  "Convert the unix timestamp between BEG and END to something
+  "Convert the unix timestamp between `BEG' and `END' to something
 readable."
   (interactive "r")
   (when (and beg end)
@@ -62,7 +62,7 @@ of line."
     (beginning-of-line)))
 
 (defun asd/file-size-human-readable (beg end)
-  "Super thin wrapper around `file-size-human-readable. Converts
+  "Super thin wrapper around `file-size-human-readable'. Converts
 selection into something readable and messages it."
   (interactive "r")
   (let ((thing (buffer-substring-no-properties beg end)))
@@ -70,12 +70,12 @@ selection into something readable and messages it."
 	(message "%s" (file-size-human-readable (string-to-number thing) 'iec)))))
 
 (defsubst asd/send-to-mpv (url)
-  "Open URL in mpv."
+  "Open `URL' in mpv."
   (when (stringp url)
     (start-process "mpv-emacs" nil "mpv" url)))
 
 (defun asd/insert-around-rectangle (start end string)
-  "Insert STRING before and after each line in a selected
+  "Insert `STRING' before and after each line in a selected
 rectangle."
   (interactive
    (let ((string (read-string (format "String-padding (default %s): "
@@ -93,12 +93,12 @@ rectangle."
 ;;; Useful helper functions for various things
 
 (defun concat-ext (sep &rest seq)
-  "Concatenates strings SEQ with an optionally seperator SEP
+  "Concatenates strings `SEQ' with an optionally seperator `SEP'
 between each (internal) element. For example:
 
 (concat-ext \" -> \" \"a\" \"b\" \"c\") => \"a -> b -> c\"
 
-Behaves identically to `concat' if SEP is nil.
+Behaves identically to `concat' if `SEP' is nil.
 "
   (if sep
       (let ((r "") s)
@@ -108,15 +108,15 @@ Behaves identically to `concat' if SEP is nil.
     (apply #'concat seq)))
 
 ;; terrible
-(defsubst remove-string-from-list (str l)
+(defsubst remove-string-from-list (str lst)
   "Identical to
 
-(remove-if #'(lambda (x) (string= x str)) l)
+(remove-if #'(lambda (x) (string= x str)) lst)
 "
-  (let (r)
+  (let (res)
     (reverse
-(dolist (e l r)
-  (unless (string= e str) (push e r))))))
+(dolist (elt lst res)
+  (unless (string= elt str) (push elt res))))))
 
 
 (provide 'asd-funcs)
