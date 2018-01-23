@@ -62,8 +62,6 @@
       (setq entry (concat "... " entry)))
     (cons entry key-cmd)))
 
-;; Do this in order to not screw with other modes' keymaps when
-;; binding the above function to return.
 (define-derived-mode marisa-mode special-mode " HELLO")
 
 (defun mm/make-buffer (&optional image)
