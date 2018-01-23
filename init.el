@@ -223,12 +223,12 @@ _q_:quit
   :bind ("C-x g" . magit-status)
   :ensure t)
 
-(use-package flycheck
-  :ensure t
-  :diminish flycheck-mode
-  :config
-  (global-flycheck-mode)
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+;; (use-package flycheck
+;;   :ensure t
+;;   :diminish flycheck-mode
+;;   :config
+;;   (global-flycheck-mode)
+;;   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 (use-package tex
   :mode ("\\.tex\\'" . tex-mode)
@@ -282,9 +282,9 @@ _q_:quit
   :ensure t
   :mode (("\\.rs\\'" . rust-mode))
   :init
-  (use-package flycheck-rust
-    :ensure t)
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  ;; (use-package flycheck-rust
+  ;;   :ensure t)
+  ;; (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   (add-hook 'rust-mode-hook #'asd/remove-ws-hook))
 
 (use-package elfeed
