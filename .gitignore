@@ -13,5 +13,7 @@ url/
 /image-dired/*
 /.python-environments/*
 /custom.el
-/profile-dotemacs.el
 /lisp/feeds.el
+/bookmarks
+emms/
+flycheck_init.el
