@@ -1,242 +1,139 @@
-;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
+(defvar old-file-name-handler-alist file-name-handler-alist)
 
-;; Author: Anders Dalskov
-;; Copyright: (C) 2017, Anders Dalskov, all rights reserved
+(setq gc-cons-threshold 64000000
+      auto-save-list-file-prefix nil
+      package-enable-at-startup nil
+      package--init-file-ensured t
+      file-name-handler-alist nil
+      package-user-dir "~/.emacs.d/elpa/"
+      package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("gnu" . "https://elpa.gnu.org/packages/")))
 
-;; This file is not part of GNU Emacs.
+(add-hook 'after-init-hook
+	  #'(lambda ()
+	      (setq gc-cons-threshold 800000
+		    file-name-handler-alist old-file-name-handler-alist)))
 
-;; This program is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+(mapc #'(lambda (add) (add-to-list 'load-path add))
+      (eval-when-compile
+        (package-initialize)
+        (unless (package-installed-p 'use-package)
+          (package-refresh-contents)
+          (package-install 'use-package))
+        (setq use-package-always-ensure t)
+        (let ((package-user-dir-real (file-truename package-user-dir)))
+          ;; The reverse is necessary, because outside we mapc
+          ;; add-to-list element-by-element, which reverses.
+          (nreverse (apply #'nconc
+                           ;; Only keep package.el provided loadpaths.
+                           (mapcar #'(lambda (path)
+                                       (if (string-prefix-p package-user-dir-real path)
+                                           (list path)
+                                         nil))
+                                   load-path))))))
 
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+(use-package bind-key)
+(use-package diminish)
+;; wack!
+(use-package use-package :commands use-package-autoload-keymap)
 
-;;; Commentary:
-;;
-;; Emacs configuration file. Contains mostly everything I need for
-;; using emacs. Extra code is located in ~/.emacs.d/lisp/.
-;;
-;;; Code:
+(setf (symbol-function 'x-focus-frame) #'ignore)
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setq package-enable-at-startup nil)
-(package-initialize)
+(eval-and-compile
+  (defsubst emacs-dir (&optional file-name)
+    (expand-file-name (concat user-emacs-directory file-name)))
 
-(defsubst emacsdir (f)
-  (expand-file-name (concat user-emacs-directory f)))
+  (setq custom-file (emacs-dir "custom.el"))
+  (load custom-file))
 
-(add-to-list 'load-path (emacsdir "lisp"))
+(eval-and-compile
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  ;; Remove toolbar, menu etc...
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (blink-cursor-mode -1)
+  (line-number-mode t)
+  (column-number-mode t)
+  (electric-pair-mode t)
 
-(eval-when-compile
-  (require 'use-package))
-(require 'bind-key)
+  (setq initial-scratch-message nil
+	ring-bell-function 'ignore
+	inhibit-startup-screen t
+	scroll-step 1)
 
-(tool-bar-mode -1)     ; no toolbar,
-(menu-bar-mode -1)     ; no menu bar,
-(scroll-bar-mode -1)   ; no scroll bar,
-(blink-cursor-mode -1) ; no cursor blinking, (fox only, final destination)
-(line-number-mode t)
-(column-number-mode t)
-(electric-pair-mode t)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (setq confirm-kill-emacs 'y-or-n-p)
 
-(setq initial-scratch-message nil)
+  (setq backup-by-copying t
+	backup-directory-alist '(("." . "~/.emacs_backups"))
+	delete-old-versions t
+	kept-new-versions 6
+	kept-old-versions 2
+	version-control t)
 
-(setq ring-bell-function 'ignore ; no bell
-      inhibit-startup-screen t
-      scroll-step 1)             ; make scrolling sane
+  (setq browse-url-chromium-arguments '("-incognito")
+	browse-url-generic-program "chromium"
+	browse-url-browser-function 'browse-url-chromium))
 
-;; Display time as `weekday month day hour:minutes` in the modeline
-(setq display-time-24hr-format t
-      display-time-day-and-date t
-      display-time-default-load-average nil)
-(display-time)
+;;; Functions
 
-;; `y` or `n` instead of `yes` or `no`
-(fset 'yes-or-no-p 'y-or-n-p)
-(setq confirm-kill-emacs 'y-or-n-p)
+(eval-and-compile
 
-;; All backups (.# files) go into a specific directory.
-(setq backup-by-copying t
-      backup-directory-alist '(("." . "~/.emacs_backups"))
-      delete-old-versions t
-      kept-new-versions 6
-      kept-old-versions 2
-      version-control t)
+  (defsubst remove-ws-hook ()
+    (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) t))
 
-(use-package iso-transl) ; fixes dead keys (~ etc.)
+  (defsubst byte-recompile-dotemacs-dir ()
+    (interactive)
+    (byte-recompile-directory (emacs-dir) 0 t))
 
-;; Set browser
-(setq browse-url-chromium-arguments '("-incognito")
-      browse-url-generic-program "chromium"
-      browse-url-browser-function 'browse-url-chromium)
+  (defsubst open-file-or-thing-in-mpv (file-or-thing)
+    (when (stringp file-or-thing)
+      (start-process "mpv-emacs" nil "mpv" file-or-thing))))
 
-;; Recentf. exclude some known auto generated files.
-(use-package recentf
-  :bind ("C-x C-r" . recentf-open-files)
-  :config
-  (dolist (p (list ".*\\.synctex\\.gz\\'"
-		   ".*\\.aux\\'"
-		   (expand-file-name "~/.elfeed/index")
-		   (emacsdir "custom.el")
-		   (emacsdir "elpa/.*")
-		   (emacsdir "recentf")))
-    (add-to-list 'recentf-exclude p))
-  (recentf-mode t))
-
-;; Settings that are relevant when running in X
-(defun enable-look-and-feel ()
-  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
-
-  (require 'leuven-theme)
-  (setq leuven-scale-outline-headlines nil)
-  (load-theme 'leuven t)
-
-  (require 'smart-mode-line)
-  (setq sml/no-confirm-load-theme t
-	sml/theme 'dark)
-  (sml/setup)
-  (dolist (pattern '(("^~/Code/" ":CODE:")
-  		       ("^~/.config/" ":CONF:")
-  		       ("^~/.emacs.d" ":EMACS:")
-  		       ("^~/Documents/" ":DOC:")
-  		       ("^~/Documents/org/" ":ORG:")
-  		       ("^~/Documents/org/agendafiles/" ":AGENDA:")
-  		       ("^~/Documents/uni/" ":UNI:")))
-    (add-to-list 'sml/replacer-regexp-list pattern))
-
-  (require 'marisa-mode)
-  (setq mm/image (lambda ()
-		   (let ((files (directory-files "~/Pictures/marisas/scaled" t ".*\\.png\\'\\|.*\\.jpe?g\\'\\|.*\\.gif\\'")))
-		     (nth (random (length files)) files))))
-
-  (mm/init))
-
-(when (eq window-system 'x)
-  (enable-look-and-feel))
+;;; Keys and movement
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-(use-package hydra
-  :ensure t)
-
-(use-package asd-funcs
-  ;; `demand t` is neccessary here since some of the functions this
-  ;; package provides are used elsewhere (e.g., elfeed and dired).
-  :demand t
-  :bind (("C-x K" . asd/kill-all-buffers)
-	 ("C-a" . asd/back-to-indent-or-beg)
-	 ("C-x r a" . asd/insert-around-rectangle)))
+(use-package hydra)
 
 (use-package transpose-frame
-  :ensure t
+  :bind ("C-c f" . hydra-flop-frame/body)
   :config
   (defhydra hydra-flop-frame (:hint nil)
     "
 Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
-(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit.
-"
+(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit."
     ("s" transpose-frame)
     ("f" flip-frame)
     ("F" flop-frame)
     ("r" rotate-frame-clockwise)
     ("R" rotate-frame-anticlockwise)
-    ("q" nil))
-(bind-key "C-c f" 'hydra-flop-frame/body))
+    ("q" nil)))
 
 (use-package ace-window
-  :ensure t
   :bind ("C-x o" . ace-window))
 
-;; use `hjkl' to shrink/expand current window in a variety of ways.
-(defhydra hydra-resize-windows (:hint nil)
-  "
-Shrink/expand window -- use `hjkl'.
-_q_:quit
-"
+(defhydra hydra-resize-windows (global-map "C-c r")
+  "Resize buffer"
   ("h" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3 t))))
   ("l" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3 t))))
   ("j" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3))))
   ("k" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3))))
   ("q" nil))
-(bind-key "C-c r" 'hydra-resize-windows/body)
 
-;; Zoom functionality, from the github page of Hydra.
 (defhydra hydra-zoom (global-map "<f2>")
   "zoom"
   ("+" text-scale-increase "in")
   ("-" text-scale-decrease "out")
   ("0" (lambda () (interactive) (text-scale-adjust 0))))
 
-(defsubst asd/remove-ws-hook ()
-  "Auto delete trailing whitespace before saving in some modes."
-  (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) nil t))
-
-(use-package nlinum
-  :defer t
-  :ensure t)
-
-(use-package pdf-tools
-  :demand t
-  :ensure t
-  :init
-  (add-hook 'pdf-view-mode-hook 'auto-revert-mode)
-  :config
-  (pdf-tools-install)
-  (setq pdf-annot-activate-created-annotations t)
-
-  ;; Default movement is painfully slow.
-  (let ((fwd (lambda (n) (interactive "p") (image-forward-hscroll (if (= n 1) 5 n))))
-	(bkw (lambda (n) (interactive "p") (image-backward-hscroll (if (= n 1) 5 n))))
-	(down (lambda (n) (interactive "p") (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
-	(up (lambda (n) (interactive "p") (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
-    (bind-key "C-f" fwd pdf-view-mode-map)
-    (bind-key "C-b" bkw pdf-view-mode-map)
-    (bind-key "C-n" down pdf-view-mode-map)
-    (bind-key "C-p" up pdf-view-mode-map)
-
-    (bind-key "<right>" fwd pdf-view-mode-map)
-    (bind-key "<left>" bkw pdf-view-mode-map)
-    (bind-key "<down>" down pdf-view-mode-map)
-    (bind-key "<up>" up pdf-view-mode-map)))
-
-(use-package yasnippet
-  :ensure t
-  :diminish yas-minor-mode
-  :defer t
-  :config
-  (yas-reload-all))
-
-(use-package magit
-  :bind ("C-x g" . magit-status)
-  :ensure t)
-
-;; (use-package flycheck
-;;   :ensure t
-;;   :diminish flycheck-mode
-;;   :config
-;;   (global-flycheck-mode)
-;;   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-
-(use-package tex
-  :mode ("\\.tex\\'" . tex-mode)
-  :bind ("C-c o" . hydra-outline/body)
-  :init
   (defhydra hydra-outline (:hint nil)
   "
-Various shortcuts for outline mode
+Outline mode shortcuts:
+_F_/_B_ (_f_/_b_): Forward/backward same level (heading)
+_h_/_s_: hide/show entry
 _q_:quit
 "
   ("F" outline-forward-same-level)
@@ -246,30 +143,80 @@ _q_:quit
   ("h" outline-hide-entry)
   ("s" outline-show-entry)
   ("q" nil))
+
+;;; Other packages
+
+(use-package recentf
+  :defer 5
+  :bind ("C-x C-r" . recentf-open-files)
+  :config
+  (mapc #'(lambda (path) (add-to-list 'recentf-exclude path))
+	(list ".*\\.synctex\\.gz\\'"
+	      ".*\\.aux\\'"
+	      (expand-file-name "~/.elfeed/index")
+	      custom-file
+	      (emacs-dir "elpa/.*")
+	      (emacs-dir "recentf")))
+  (recentf-mode t))
+
+(use-package magit
+  :defer t
+  :bind ("C-x g" . magit-status))
+
+(use-package nlinum
+  :defer t)
+
+(use-package pdf-tools
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-tools-install)
+  (setq pdf-annot-activate-created-annotations t)
+
+  ;; default movements are painfully slow
+  (let ((fwd (lambda (n) (interactive "p") (image-forward-hscroll (if (= n 1) 5 n))))
+	(bkw (lambda (n) (interactive "p") (image-backward-hscroll (if (= n 1) 5 n))))
+	(dwn (lambda (n) (interactive "p") (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
+	(up  (lambda (n) (interactive "p") (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
+    (bind-key "C-f"     fwd pdf-view-mode-map)
+    (bind-key "<right>" fwd pdf-view-mode-map)
+
+    (bind-key "C-b"     bkw pdf-view-mode-map)
+    (bind-key "<left>"  bkw pdf-view-mode-map)
+
+    (bind-key "C-n"     dwn pdf-view-mode-map)
+    (bind-key "<down>"  dwn pdf-view-mode-map)
+
+    (bind-key "C-p"     up  pdf-view-mode-map)
+    (bind-key "<up>"    up  pdf-view-mode-map)))
+
+(use-package yasnippet
+  :defer t
+  :diminish yas-minor-mode
+  :config
+  (yas-reload-all))
+
+(use-package tex
+  :mode ("\\.tex\\'" . tex-mode)
+  :ensure auctex
+  :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-  (add-hook 'LaTeX-mode-hook 'tex-source-correlate-mode)
-  (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
   :config
+  (setq TeX-source-correlate-method-active 'synctex)
   (setq fill-column 90)
   (setq TeX-electric-sub-and-superscript t)
   (setq TeX-auto-save t
 	TeX-parse-self t
-	TeX-source-correlate-method-active 'synctex
 	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
   (setq-default TeX-master nil)
   (setq reftex-plug-into-AUCTeX t)
   (setq reftex-ref-style-default-list '("Default" "Hyperref")))
-
-(use-package slime
-  :init
-  (setq inferior-lisp-program "/usr/bin/sbcl")
-  :config
-  (slime-setup '(slime-repl)))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
@@ -278,69 +225,64 @@ _q_:quit
   :init
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
 
-(use-package rust-mode
-  :ensure t
-  :mode (("\\.rs\\'" . rust-mode))
-  :init
-  ;; (use-package flycheck-rust
-  ;;   :ensure t)
-  ;; (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-  (add-hook 'rust-mode-hook #'asd/remove-ws-hook))
-
-(use-package elfeed
-  :ensure t
-  :bind (("C-x w" . elfeed)
-	 :map elfeed-search-mode-map
-	 ("x" . elfeed-search-open-in-mpv))
-  :init
-  (defun elfeed-search-open-in-mpv ()
-    "Open selected entry in mpv."
-    (interactive)
-    (let ((entry (elfeed-search-selected :single)))
-      (elfeed-search-untag-all 'unread) ;; mark as read
-      (asd/send-to-mpv (elfeed-entry-link entry))))
-
-  :config
-  (setq elfeed-curl-program-name "curl"
-	elfeed-use-curl t
-	elfeed-search-title-max-width 100)
-  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
-  ;; Needed to ensure proper display of e.g., Japense text in
-  ;; elfeed-show.
-  (set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono")
-  (set-face-attribute 'message-header-subject nil :family "DejaVu Sans Mono")
-
-  (require 'asd-feeds)
-  (load-rss-feeds)
-
-  (bind-key "f" 'elfeed-mark-entry-favorite elfeed-search-mode-map)
-  (bind-key "F" 'elfeed-show-favorites elfeed-search-mode-map)
-  (bind-key "S" 'elfeed-toggle-tag elfeed-search-mode-map))
-
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
-  :bind (:map python-mode-map
-	      ("C-c b t" . hs-toggle-hiding))
+  :bind (:map python-mode-map ("C-c b t" . hs-toggle-hiding))
   :init
-  (setq python-indent-offset 4)
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
-  (add-hook 'python-mode-hook #'eldoc-mode)
-  (add-hook 'python-mode-hook #'yas-minor-mode)
-  (add-hook 'python-mode-hook #'asd/remove-ws-hook) ; maybe someway to turn this on/off?
-  (add-hook 'python-mode-hook #'nlinum-mode)
-
+  (add-hook 'python-mode-hook 'yas-minor-mode)
+  (add-hook 'python-mode-hook 'nlinum-mode)
+  (add-hook 'python-mode-hook 'remove-ws-hook)
   :config
-  (defhydra hydra-python-indent (:hint nil)
-    "
-(_f_) more, (_b_) less
-"
-    ("f" python-indent-shift-right)
-    ("b" python-indent-shift-left)
-    ("q" nil))
-  (bind-key "C-c s" 'hydra-python-indent/body))
+  (setq python-indent-offset 4))
+
+(use-package emacs-lisp-mode
+  :ensure nil  ; already present
+  :mode "\\.el\\'"
+  :init
+  (add-hook 'emacs-lisp-mode-hook 'remove-ws-hook))
+
+(use-package tramp
+  :defer t
+  :config
+  (setq tramp-default-method "ssh"))
+
+(use-package web-mode
+  :mode (("\\.html\\'" . web-mode)
+	 ("\\.js\\'" . web-mode)
+	 ("\\.php\\'" . web-mode)
+	 ("\\.css\\'" . web-mode))
+  :init
+  (add-hook 'web-mode-hook 'auto-revert-mode))
+
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c a" . org-agenda)
+	 ("C-c l" . org-store-link)
+	 ("C-c C-l" . org-insert-link))
+  :init
+  (add-hook 'org-mode-hook 'yas-minor-mode)
+  :config
+  (defun org-add-timeslot ()
+    (interactive)
+    (let ((ts-string (with-temp-buffer (org-time-stamp 0) (buffer-string))))
+      (org-set-property "WHEN" ts-string)))
+  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
+  (setq org-agenda-files (directory-files "~/Documents/org/agendafiles" t "^[^.#].+\\.org\\'" t)
+	org-agenda-custom-commands '(("c" "Simple Agenda view"
+				      ((agenda "")
+				       (alltodo ""))))
+	org-log-reschedule t
+	org-log-done t
+	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
+			    (sequence "|" "WAITING(w)" "|")
+			    (sequence "|" "CANCELED(c@)"))
+	org-todo-keyword-faces '(("WAITING" . "blue")
+				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
 
 (use-package dired
+  :ensure nil  ; dired is already installed by default
   :defer t
   :bind (:map dired-mode-map
 	      ([backspace] . dired-up-directory)
@@ -348,13 +290,22 @@ _q_:quit
 	      ("\"" . do-shell-and-copy-to-kill-ring)
 	      ("W" . dired-play-in-mpv))
   :init
-  (add-hook 'dired-mode-hook (lambda () (toggle-truncate-lines)))
+  (add-hook 'dired-mode-hook 'toggle-truncate-lines)
+  (add-hook 'dired-mode-hook 'dired-omit-mode)
+  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+  :config
+  (use-package dired-x :ensure nil)  ; so is dired-x
+  (setq dired-auto-revert-buffer t
+	;; no "." and "..", long-list, human readable, classify, dirs first
+	dired-listing-switches "-AlhF --group-directories-first")
+
   (defun dired-play-in-mpv ()
     (interactive)
     (let ((file (dired-get-filename)))
       (when file
-	(asd/send-to-mpv file))))
-  ;; from https://stackoverflow.com/a/29816147
+	(open-file-or-thing-in-mpv file))))
+
+  ;; https://stackoverflow.com/a/29816147
   (defun do-shell-and-copy-to-kill-ring (command &optional arg file-list)
     (interactive
      (let ((files (dired-get-marked-files t current-prefix-arg)))
@@ -364,79 +315,32 @@ _q_:quit
 	files)))
     (dired-do-shell-command command arg file-list)
     (with-current-buffer "*Shell Command Output*"
-      (copy-region-as-kill (point-min) (point-max))))
-  (add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
-  (add-hook 'dired-mode-hook (lambda () (dired-hide-details-mode)))
-  :config
-  (require 'dired-x)
-  (setq dired-auto-revert-buffer t
-	;; `-v` and `-group-directories-first` are GNU ls specific afaik
-	dired-listing-switches "-AlhFv --group-directories-first"))
+      (copy-region-as-kill (point-min) (point-max)))))
 
-(use-package emacs-lisp-mode
-  :mode "\\.el\\'"
-  :init
-  (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
-  (add-hook 'emacs-lisp-mode-hook #'asd/remove-ws-hook))
+;;; Theme settings
 
-(use-package tramp
-  :ensure t
-  :defer t
-  :init
-  (setq tramp-default-method "ssh"))
+(eval-and-compile
+  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
 
-(use-package web-mode
-  :ensure t
-  :mode (("\\.html\\'" . web-mode)
-	 ("\\.js\\'" . web-mode)
-	 ("\\.php\\'" . web-mode)
-	 ("\\.css\\'" . web-mode))
-  :config
-  (add-hook 'web-mode-hook 'auto-revert-mode))
+  (add-hook 'prog-mode-hook
+	    (lambda ()
+	      (hl-line-mode)
+	      (set-face-attribute hl-line-face nil :underline nil)
+	      (set-face-background 'hl-line "#ddffff")))
 
-;; Easycrypt
-(defun load-proof-general ()
-  (interactive)
-  (setq easycrypt-prog-name (expand-file-name "~/.opam/easycrypt/bin/easycrypt"))
-  (load-file (expand-file-name "~/.opam/easycrypt/share/proofgeneral/generic/proof-site.el")))
+  (use-package leuven-theme
+    :init (setq leuven-scale-outline-headlines nil)
+    :config (load-theme 'leuven t))
 
-(use-package org
-  :ensure t
-  :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-	 ("C-c l" . org-store-link)
-	 ("C-c C-l" . org-insert-link))
-  :init
-  (add-hook 'org-mode-hook 'yas-minor-mode)
-  ;; (add-hook 'org-mode-hook (lambda () (flycheck-mode -1)))
-  (add-hook 'org-mode-hook #'asd/remove-ws-hook)
-  :config
-  (defun org-add-timeslot ()
-    (interactive)
-    (let ((ts-string
-	   (with-temp-buffer
-	     (org-time-stamp 0) ;; TODO pass prefix args along?
-	     (buffer-string))))
-      (org-set-property "WHEN" ts-string)))
-  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
-  ;; (unless org-agenda-files
-  ;; (setq org-agenda-files '("~/Documents/org/agenda.org"))
-  (setq org-agenda-files (directory-files "~/Documents/org/agendafiles/" t "^[^.#].+\\.org\\'" t))
-  (setq org-agenda-custom-commands
-	'(("c" "Simple Agenda view"
-	   ((agenda "")
-	    (alltodo "")))))
-  (setq org-log-reschedule t
-	org-log-done t
-	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
-			    (sequence "|" "WAITING(w)" "|")
-			    (sequence "|" "CANCELED(c@)"))
-	org-todo-keyword-faces '(("WAITING" . "blue")
-				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
-
-;; TODO mail
-
-;; put that junk somewhere out of the way.
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-;;; init.el ends here
+  (use-package smart-mode-line
+    :config
+    (setq sml/theme 'dark)
+    (sml/setup)
+    (mapc #'(lambda (pattern) (add-to-list 'sml/replacer-regexp-list pattern))
+	  '(("^~/Code/" ":CODE:")
+	    ("^~/.config/" ":CONF:")
+	    ("^~/.emacs.d" ":EMACS:")
+	    ("^~/Documents/" ":DOC:")
+	    ("^~/Documents/org/" ":ORG:")
+	    ("^~/Documents/org/agendafiles/" ":AGENDA:")
+	    ("^~/Documents/uni/" ":UNI:")))))
