@@ -266,9 +266,11 @@ _q_:quit
   :config
   (defun org-add-timeslot ()
     (interactive)
-    (let ((ts-string (with-temp-buffer (org-time-stamp 0) (buffer-string))))
+    (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
       (org-set-property "WHEN" ts-string)))
+
   (bind-key "C-c w" #'org-add-timeslot org-mode-map)
+
   (setq org-agenda-files (directory-files "~/Documents/org/agendafiles" t "^[^.#].+\\.org\\'" t)
 	org-agenda-custom-commands '(("c" "Simple Agenda view"
 				      ((agenda "")
