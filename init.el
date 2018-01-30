@@ -1,4 +1,5 @@
 (defvar old-file-name-handler-alist file-name-handler-alist)
+(defvar preferred-font "DejaVu Sans Mono")
 
 (setq gc-cons-threshold 64000000
       auto-save-list-file-prefix nil
@@ -322,7 +323,7 @@ _q_:quit
 ;;; Theme settings
 
 (eval-and-compile
-  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90)
+  (set-face-attribute 'default nil :family preferred-font :height 90)
 
   (add-hook 'prog-mode-hook
 	    (lambda ()
