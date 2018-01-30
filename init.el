@@ -211,10 +211,10 @@ _q_:quit
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
   :config
-  (setq TeX-source-correlate-method-active 'synctex)
-  (setq fill-column 90)
-  (setq TeX-electric-sub-and-superscript t)
-  (setq TeX-auto-save t
+  (setq TeX-source-correlate-method-active 'synctex
+	fill-column 90
+	TeX-electric-sub-and-superscript t
+	TeX-auto-save t
 	TeX-parse-self t
 	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
