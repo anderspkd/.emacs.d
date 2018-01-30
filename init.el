@@ -45,7 +45,10 @@
     (expand-file-name (concat user-emacs-directory file-name)))
 
   (setq custom-file (emacs-dir "custom.el"))
-  (load custom-file))
+  (load custom-file)
+
+  (add-to-list 'load-path (emacs-dir "lisp")))
+
 
 (eval-and-compile
 
@@ -319,6 +322,34 @@ _q_:quit
     (dired-do-shell-command command arg file-list)
     (with-current-buffer "*Shell Command Output*"
       (copy-region-as-kill (point-min) (point-max)))))
+
+(use-package elfeed
+  :bind (("C-x w" . elfeed)
+	 :map elfeed-search-mode-map
+	 ("x" . elfeed-play-in-mpv))
+  :config
+  (set-face-attribute 'variable-pitch nil :family preferred-font)
+  (set-face-attribute 'message-header-subject nil :family preferred-font)
+
+  (defun elfeed-play-in-mpv ()
+    (interactive)
+    (let ((entry (elfeed-search-selected :single)))
+      (elfeed-search-untag-all 'unread)
+      (open-file-or-thing-in-mpv (elfeed-entry-link entry))))
+
+  (setq elfeed-curl-program-name "curl"
+	elfeed-use-curl t
+	elfeed-search-title-max-width 100)
+  (setq-default elfeed-search-filter "@1-week-ago +unread -advisory ")
+
+  ;; load settings
+  (use-package elfeed-settings :ensure nil)
+
+  (bind-key "S" 'asd-feeds-toggle-tag elfeed-search-mode-map)
+  (bind-key "f" 'asd-feeds-mark-favorite elfeed-search-mode-map)
+  (bind-key "F" 'asd-feeds-show-favorites elfeed-search-mode-map)
+
+  (reload-feeds (emacs-dir "data/feeds.el")))
 
 ;;; Theme settings
 
