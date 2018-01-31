@@ -84,22 +84,24 @@ added in front of `tag'). Default is nil"
 
 ;; https://github.com/skeeto/.emacs.d/blob/master/etc/feed-setup.el#L146
 (defun asd-feeds-expand-feed (feed)
-  (cl-destructuring-bind (link . tags) feed
-    (dolist (tag tags)
-      (unless (member tag asd-feeds-tags)
-	(push tag asd-feeds-tags)))
-    (cond ((member 'youtube tags)
-	   (cons (format asd-feeds-youtube-fmt link) tags))
-	  ((member 'reddit tags)
-	   (cons (format asd-feeds-reddit-fmt link) tags))
-	  (t feed))))
+  (if (not (listp feed))
+      feed
+    (cl-destructuring-bind (link . tags) feed
+      (dolist (tag tags)
+	(unless (member tag asd-feeds-tags)
+	  (push tag asd-feeds-tags)))
+      (cond ((member 'youtube tags)
+	     (cons (format asd-feeds-youtube-fmt link) tags))
+	    ((member 'reddit tags)
+	     (cons (format asd-feeds-reddit-fmt link) tags))
+	    (t feed)))))
 
 ;;;###autoload
 (defun reload-feeds (file-name)
   "reloads RSS feeds"
   (interactive "fFile: ")
   (load file-name)
-  (setq elfeed-feeds feeds)
+  (setq elfeed-feeds (mapcar #'asd-feeds-expand-feed feeds))
   (elfeed-search-update--force))
 
 (provide 'elfeed-settings)
