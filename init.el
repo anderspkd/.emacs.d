@@ -49,7 +49,6 @@
 
   (add-to-list 'load-path (emacs-dir "lisp")))
 
-
 (eval-and-compile
 
   ;; Remove toolbar, menu etc...
@@ -209,18 +208,20 @@ _q_:quit
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+  (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
+  (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 90)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
   :config
   (setq TeX-source-correlate-method-active 'synctex
-	fill-column 90
 	TeX-electric-sub-and-superscript t
 	TeX-auto-save t
 	TeX-parse-self t
 	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
   (setq-default TeX-master nil)
-  (setq reftex-plug-into-AUCTeX t)
-  (setq reftex-ref-style-default-list '("Default" "Hyperref")))
+  (setq reftex-plug-into-AUCTeX t
+	reftex-ref-style-default-list '("Default" "Hyperref")))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
