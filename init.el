@@ -190,7 +190,10 @@ _q_:quit
     (bind-key "<down>"  dwn pdf-view-mode-map)
 
     (bind-key "C-p"     up  pdf-view-mode-map)
-    (bind-key "<up>"    up  pdf-view-mode-map)))
+    (bind-key "<up>"    up  pdf-view-mode-map)
+
+    ;; set some nice default colors for annotations
+    (setq pdf-annot-color-history '("yellow2" "deep sky blue" "pale green" "aquamarine3"))))
 
 (use-package yasnippet
   :defer t
