@@ -47,7 +47,7 @@
   (setq custom-file (emacs-dir "custom.el"))
   (load custom-file)
 
-  (add-to-list 'load-path (emacs-dir "lisp")))
+  (add-to-list 'load-path (emacs-dir "etc")))
 
 (eval-and-compile
 
