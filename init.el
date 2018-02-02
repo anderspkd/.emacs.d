@@ -353,7 +353,7 @@ _q_:quit
   (bind-key "f" 'asd-feeds-mark-favorite elfeed-search-mode-map)
   (bind-key "F" 'asd-feeds-show-favorites elfeed-search-mode-map)
 
-  (reload-feeds (emacs-dir "data/feeds.el")))
+  (reload-feeds (emacs-dir "personal/feeds.el")))
 
 ;;; Theme settings
 
@@ -381,4 +381,10 @@ _q_:quit
 	    ("^~/Documents/" ":DOC:")
 	    ("^~/Documents/org/" ":ORG:")
 	    ("^~/Documents/org/agendafiles/" ":AGENDA:")
-	    ("^~/Documents/uni/" ":UNI:")))))
+	    ("^~/Documents/uni/" ":UNI:"))))
+
+  ;; (use-package greeting-buffer
+  ;;   :ensure nil
+  ;;   :config
+  ;;   (gb-init))
+  )
