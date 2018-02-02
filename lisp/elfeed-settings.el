@@ -1,7 +1,8 @@
 (eval-when-compile
   (require 'cl))
 
-(defvar asd-feeds-tags '(youtube reddit))
+(defvar asd-feeds nil)
+(defvar asd-feeds-tags '(youtube reddit))  ; these tags will exist for sure
 (defvar asd-feeds-youtube-fmt "https://www.youtube.com/feeds/videos.xml?%s")
 (defvar asd-feeds-reddit-fmt "https://www.reddit.com/r/%s/.rss")
 
@@ -19,18 +20,18 @@
 (defface-helper youtube '((t :foreground "#e74c3c")))
 (defface-helper news '((t :foreground "#996633")))
 
-(defun asd-feeds-fill-string (content)
-  (with-temp-buffer
-    (insert content)
-    (fill-region (point-min) (point-max))
-    (buffer-string)))
+;; (defun asd-feeds-fill-string (content)
+;;   (with-temp-buffer
+;;     (insert content)
+;;     (fill-region (point-min) (point-max))
+;;     (buffer-string)))
 
-(defun asd-feeds-fill-entry (entry)
-  (when (intersection asd-feeds-tags (elfeed-entry-tags entry))
-    (let* ((old (elfeed-deref (elfeed-entry-content entry)))
-	   (new (asd-feeds-fill-string old))
-	   (new-ref (elfeed-ref new)))
-      (setf (elfeed-entry-content entry) new-ref))))
+;; (defun asd-feeds-fill-entry (entry)
+;;   (when (intersection asd-feeds-tags (elfeed-entry-tags entry))
+;;     (let* ((old (elfeed-deref (elfeed-entry-content entry)))
+;; 	   (new (asd-feeds-fill-string old))
+;; 	   (new-ref (elfeed-ref new)))
+;;       (setf (elfeed-entry-content entry) new-ref))))
 
 (defvar asd-feeds-favorite-tag 'favorite)
 
@@ -68,7 +69,7 @@ added in front of `tag'). Default is nil"
   (interactive
    (if current-prefix-arg
        (list (completing-read "toggle tag (exclude): " asd-feeds-tags) t)
-     (list (completing-read "toggle tag (exclude): " asd-feeds-tags))))
+     (list (completing-read "toggle tag (include): " asd-feeds-tags))))
   (let* ((filter-list (split-string elfeed-search-filter))
 	 (tag-i (concat (if exclude-p "+" "-") tag))
 
@@ -76,10 +77,9 @@ added in front of `tag'). Default is nil"
 	 ;; is present
 	 (filter-list (remove-if #'(lambda (x) (string= x tag-i)) filter-list))
 	 (tag (concat (if exclude-p "-" "+") tag)))
-    (when (member tag filter-list)
-	;; `tag' is present, so we remove it (un-toggle)
-	(setq filter-list (remove-if #'(lambda (x) (string= x tag)) filter-list)))
-    (setq elfeed-search-filter (apply #'concat-ext ,filter-list))
+    (if (member tag filter-list)
+	(setq elfeed-search-filter (apply #'concat-ext `(" " ,@(remove-if #'(lambda (x) (string= x tag)) filter-list))))
+      (setq elfeed-search-filter (apply #'concat-ext `(" " ,@filter-list ,tag))))
     (elfeed-search-update--force)))
 
 ;; https://github.com/skeeto/.emacs.d/blob/master/etc/feed-setup.el#L146
@@ -101,7 +101,7 @@ added in front of `tag'). Default is nil"
   "reloads RSS feeds"
   (interactive "fFile: ")
   (load file-name)
-  (setq elfeed-feeds (mapcar #'asd-feeds-expand-feed feeds))
+  (setq elfeed-feeds (mapcar #'asd-feeds-expand-feed asd-feeds))
   (elfeed-search-update--force))
 
 (provide 'elfeed-settings)
