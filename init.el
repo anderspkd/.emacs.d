@@ -356,7 +356,7 @@ _q_:quit
   (bind-key "f" 'asd-feeds-mark-favorite elfeed-search-mode-map)
   (bind-key "F" 'asd-feeds-show-favorites elfeed-search-mode-map)
 
-  (reload-feeds (personal-file "feeds.el")))
+  (reload-feeds (personal-file "feeds")))
 
 (use-package mu4e
   :ensure nil  ; installed with system package manager
@@ -365,7 +365,7 @@ _q_:quit
   (use-package smtpmail :ensure nil)
 
   ;; defines `user-full-name' and `private-mail-*' variables used below.
-  (load (personal-file "email.el"))
+  (load (personal-file "email"))
 
   (setq mu4e-maildir "~/Mail")
   (setq mu4e-contexts
