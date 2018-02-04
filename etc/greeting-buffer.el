@@ -3,7 +3,7 @@
 (defvar gb-buffer-name " gb")
 (defvar gb-recent-files-keys "1 2 3 4 5 6 7 8 9 0")
 
-(define-derived-mode greetings-mode special-mode " HELLO")
+(define-derived-mode greeting-mode special-mode " HELLO")
 
 (defun gb-make-entry (file-name &optional key)
   (let ((entry file-name)
@@ -40,7 +40,7 @@
 	    (newline)
 	    (push (cdr e) additional-keys)))))
 
-    (greetings-mode)
+    (greeting-mode)
     (local-set-key [return] #'gb-goto-file-on-line)
     (local-set-key "n" #'next-line)
     (local-set-key "p" #'previous-line)
