@@ -44,6 +44,9 @@
   (defsubst emacs-dir (&optional file-name)
     (expand-file-name (concat user-emacs-directory file-name)))
 
+  (defsubst personal-file (file-name)
+    (emacs-dir (concat "personal/" file-name)))
+
   (setq custom-file (emacs-dir "custom.el"))
   (load custom-file)
 
@@ -353,7 +356,40 @@ _q_:quit
   (bind-key "f" 'asd-feeds-mark-favorite elfeed-search-mode-map)
   (bind-key "F" 'asd-feeds-show-favorites elfeed-search-mode-map)
 
-  (reload-feeds (emacs-dir "personal/feeds.el")))
+  (reload-feeds (personal-file "feeds.el")))
+
+(use-package mu4e
+  :ensure nil  ; installed with system package manager
+  :config
+
+  (use-package smtpmail :ensure nil)
+
+  ;; defines `user-full-name' and `private-mail-*' variables used below.
+  (load (personal-file "email.el"))
+
+  (setq mu4e-maildir "~/Mail")
+  (setq mu4e-contexts
+	`(,(make-mu4e-context
+	    :name "Private"
+	    :enter-func (lambda () (mu4e-message "Entering private context"))
+	    :leave-func (lambda () (mu4e-message "Leaving private context"))
+	    :match-func (lambda (msg)
+			  (when msg
+			    (string-match private-mail-ctx-rx
+					  (mu4e-message-field msg :maildir))))
+	    :vars `((user-full-name         . ,user-full-name)
+		    (user-mail-address      . ,private-mail-address)
+		    (mu4e-drafts-folder     . ,private-mail-drafts-folder)
+		    (mu4e-sent-folder       . ,private-mail-sent-folder)
+		    (mu4e-trash-folder      . ,private-mail-trash-folder)
+		    (mu4e-compose-signature . ,private-mail-sig)
+
+		    ;; SMTP settings
+		    (message-send-mail-function   . smtpmail-send-it)
+		    (smtpmail-stream-type         . ssl)
+		    (smtpmail-default-smtp-server . ,private-mail-smtp-server)
+		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
+		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
 
 ;;; Theme settings
 
@@ -372,6 +408,7 @@ _q_:quit
 
   (use-package smart-mode-line
     :config
+    (use-package smtpmail :ensure nil)
     (setq sml/theme 'dark)
     (sml/setup)
     (mapc #'(lambda (pattern) (add-to-list 'sml/replacer-regexp-list pattern))
