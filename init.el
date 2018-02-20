@@ -358,6 +358,11 @@ _q_:quit
 
   (reload-feeds (personal-file "feeds")))
 
+(use-package epa-file
+  :ensure nil
+  :config
+  (epa-file-enable))
+
 (use-package mu4e
   :ensure nil  ; installed with system package manager
   :config
@@ -367,6 +372,7 @@ _q_:quit
   ;; defines `user-full-name' and `private-mail-*' variables used below.
   (load (personal-file "email"))
 
+  (setq mail-user-agent 'mu4e-user-agent)
   (setq mu4e-maildir "~/Mail")
   (setq mu4e-contexts
 	`(,(make-mu4e-context
