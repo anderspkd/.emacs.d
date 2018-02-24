@@ -274,6 +274,7 @@ _q_:quit
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
+  (add-hook 'org-mode-hook 'turn-on-flyspell)
   (add-hook 'org-mode-hook (lambda () (setq fill-column 90)))
   :config
   (defun org-add-timeslot ()
