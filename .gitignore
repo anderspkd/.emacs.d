@@ -5,3 +5,4 @@ personal
 /bookmarks
 elpa
 .python-environments
+eshell/*
