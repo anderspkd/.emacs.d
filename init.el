@@ -310,6 +310,8 @@ _q_:quit
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
   :config
   (use-package dired-x :ensure nil)  ; so is dired-x
+  (setq-default dired-omit-files-p)
+  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
   (setq dired-auto-revert-buffer t
 	;; no "." and "..", long-list, human readable, classify, dirs first
 	dired-listing-switches "-AlhF --group-directories-first")
