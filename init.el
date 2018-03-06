@@ -93,6 +93,24 @@
     (interactive)
     (byte-recompile-directory (emacs-dir) 0 t))
 
+  (defsubst recreate-scratch ()
+    (interactive)
+    (switch-to-buffer (get-buffer-create "*scratch*"))
+    (lisp-interaction-mode))
+
+  (defun kill-all-buffers-and-reopen-scratch ()
+    (interactive)
+    (when (y-or-n-p "Kill all buffers? ")
+      (mapc 'kill-buffer (buffer-list))
+      (delete-other-windows)
+      (recreate-scratch)))
+
+  (defun back-to-indentation-or-beginning ()
+    (interactive)
+    (when (= (point)
+	     (progn (back-to-indentation) (point)))
+      (beginning-of-line)))
+
   (defsubst open-file-or-thing-in-mpv (file-or-thing)
     (when (stringp file-or-thing)
       (start-process "mpv-emacs" nil "mpv" file-or-thing))))
@@ -101,6 +119,9 @@
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+(bind-key "C-x K" 'kill-all-buffers-and-reopen-scratch)
+(bind-key "C-a" 'back-to-indentation-or-beginning)
 
 (use-package hydra)
 
