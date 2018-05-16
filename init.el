@@ -251,15 +251,11 @@ _q_:quit
   (setq reftex-plug-into-AUCTeX t
 	reftex-ref-style-default-list '("Default" "Hyperref")))
 
-;; (defun asd-insert-?-header-guard ()
-;;   ())
-
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
   :bind ([ret] . newline-and-indent)
   :init
-  (add-hook 'c-mode-hook (lambda () (setq fill-column 80)))
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
 
 (use-package c++-mode
@@ -268,8 +264,6 @@ _q_:quit
   :bind (([ret] . newline-and-indent)
 	 ("C-c h" . insert-c++-header-guard))
   :init
-  (add-hook 'c++-mode-hook (lambda () (setq fill-column 80)))
-
   (defun insert-c++-header-guard ()
     (interactive)
     (unless (string= (file-name-extension (buffer-file-name)) "hpp")
@@ -456,6 +450,7 @@ _q_:quit
 	      (hl-line-mode)
 	      (set-face-attribute hl-line-face nil :underline nil)
 	      (set-face-background 'hl-line "#ddffff")))
+  (add-hook 'prog-mode-hook (lambda () (setq fill-column 80)))
 
   (use-package leuven-theme
     :init (setq leuven-scale-outline-headlines nil)
