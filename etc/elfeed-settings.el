@@ -20,19 +20,6 @@
 (defface-helper youtube '((t :foreground "#e74c3c")))
 (defface-helper news '((t :foreground "#996633")))
 
-;; (defun asd-feeds-fill-string (content)
-;;   (with-temp-buffer
-;;     (insert content)
-;;     (fill-region (point-min) (point-max))
-;;     (buffer-string)))
-
-;; (defun asd-feeds-fill-entry (entry)
-;;   (when (intersection asd-feeds-tags (elfeed-entry-tags entry))
-;;     (let* ((old (elfeed-deref (elfeed-entry-content entry)))
-;; 	   (new (asd-feeds-fill-string old))
-;; 	   (new-ref (elfeed-ref new)))
-;;       (setf (elfeed-entry-content entry) new-ref))))
-
 (defvar asd-feeds-favorite-tag 'favorite)
 
 (defun asd-feeds-mark-favorite ()

@@ -76,11 +76,7 @@
 	delete-old-versions t
 	kept-new-versions 6
 	kept-old-versions 2
-	version-control t)
-
-  (setq browse-url-chromium-arguments '("-incognito")
-	browse-url-generic-program "chromium"
-	browse-url-browser-function 'browse-url-chromium))
+	version-control t))
 
 ;;; Functions
 
@@ -123,7 +119,9 @@
 (bind-key "C-x K" 'kill-all-buffers-and-reopen-scratch)
 (bind-key "C-a" 'back-to-indentation-or-beginning)
 
-(use-package hydra)
+(bind-key "C-c i" 'imenu-list)
+
+(use-package hydra :ensure t)
 
 (use-package transpose-frame
   :bind ("C-c f" . hydra-flop-frame/body)
@@ -230,14 +228,17 @@ _q_:quit
   :ensure auctex
   :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-  (add-hook 'LaTeX-mode-hook (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
+  (add-hook 'LaTeX-mode-hook
+	    (lambda ()
+	      (add-to-list 'TeX-view-program-list '("mupdf" "mupdf %o"))
+	      (add-to-list 'TeX-view-program-selection '(output-pdf "mupdf"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-  (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 90)))
+  (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 80)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
   :config
   (setq TeX-source-correlate-method-active 'synctex
@@ -250,12 +251,40 @@ _q_:quit
   (setq reftex-plug-into-AUCTeX t
 	reftex-ref-style-default-list '("Default" "Hyperref")))
 
+;; (defun asd-insert-?-header-guard ()
+;;   ())
+
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
   :bind ([ret] . newline-and-indent)
   :init
+  (add-hook 'c-mode-hook (lambda () (setq fill-column 80)))
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
+
+(use-package c++-mode
+  :ensure nil
+  :mode "\\.cpp\\'"
+  :bind (([ret] . newline-and-indent)
+	 ("C-c h" . insert-c++-header-guard))
+  :init
+  (add-hook 'c++-mode-hook (lambda () (setq fill-column 80)))
+
+  (defun insert-c++-header-guard ()
+    (interactive)
+    (unless (string= (file-name-extension (buffer-file-name)) "hpp")
+      (error "Not in .hpp file ..."))
+    (let* ((filename (file-name-base (buffer-file-name)))
+	   (hdr-guard (when filename (format "__%s_HPP__" (upcase filename)))))
+      (when hdr-guard
+	(insert (format "#ifndef %s\n" hdr-guard))
+	(insert (format "#define %s\n\n" hdr-guard))
+	(forward-line)
+	(save-excursion
+	  (goto-char (point-max))
+	  (insert "\n\n#endif")))))
+
+  (add-hook 'c++-mode-hook (lambda () (c-set-style "java"))))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
@@ -288,35 +317,6 @@ _q_:quit
   :init
   (add-hook 'web-mode-hook 'auto-revert-mode))
 
-(use-package org
-  :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-	 ("C-c l" . org-store-link)
-	 ("C-c C-l" . org-insert-link))
-  :init
-  (add-hook 'org-mode-hook 'yas-minor-mode)
-  (add-hook 'org-mode-hook 'turn-on-flyspell)
-  (add-hook 'org-mode-hook (lambda () (setq fill-column 90)))
-  :config
-  (defun org-add-timeslot ()
-    (interactive)
-    (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
-      (org-set-property "WHEN" ts-string)))
-
-  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
-
-  (setq org-agenda-files (directory-files "~/Documents/org/agendafiles" t "^[^.#].+\\.org\\'" t)
-	org-agenda-custom-commands '(("c" "Simple Agenda view"
-				      ((agenda "")
-				       (alltodo ""))))
-	org-log-reschedule t
-	org-log-done t
-	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
-			    (sequence "|" "WAITING(w)" "|")
-			    (sequence "|" "CANCELED(c@)"))
-	org-todo-keyword-faces '(("WAITING" . "blue")
-				 ("CANCELED" . (:foreground "grey" :weight "bold")))))
-
 (use-package dired
   :ensure nil  ; dired is already installed by default
   :defer t
@@ -331,7 +331,7 @@ _q_:quit
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
   :config
   (use-package dired-x :ensure nil)  ; so is dired-x
-  (setq-default dired-omit-files-p)
+  (setq-default dired-omit-files-p t)
   (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
   (setq dired-auto-revert-buffer t
 	;; no "." and "..", long-list, human readable, classify, dirs first
@@ -354,6 +354,32 @@ _q_:quit
     (dired-do-shell-command command arg file-list)
     (with-current-buffer "*Shell Command Output*"
       (copy-region-as-kill (point-min) (point-max)))))
+
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c a" . org-agenda)
+	 ("C-c l" . org-store-link)
+	 ("C-c C-l" . org-insert-link))
+  :init
+  (add-hook 'org-mode-hook 'yas-minor-mode)
+  (add-hook 'org-mode-hook (lambda () (setq fill-column 80)))
+  :config
+  (defun org-add-timeslot ()
+    (interactive)
+    (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
+      (org-set-property "WHEN" ts-string)))
+
+  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
+
+  (setq org-agenda-files (directory-files "~/org" t "^[^.#].+\\.org\\'" t)
+	org-agenda-custom-commands '(("c" "Simple Agenda view"
+				      ((agenda "")
+				       (alltodo ""))))
+	org-log-reschedule t
+	org-log-done t
+	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
+			    (sequence "|" "CANCELED(c@)"))
+	org-todo-keyword-faces '(("CANCELED" . (:foreground "grey" :weight "bold")))))
 
 (use-package elfeed
   :bind (("C-x w" . elfeed)
@@ -398,7 +424,7 @@ _q_:quit
   (load (personal-file "email"))
 
   (setq mail-user-agent 'mu4e-user-agent)
-  (setq mu4e-maildir "~/Mail")
+  (setq mu4e-maildir "~/mail")
   (setq mu4e-contexts
 	`(,(make-mu4e-context
 	    :name "Private"
@@ -422,8 +448,6 @@ _q_:quit
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
 		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
 
-;;; Theme settings
-
 (eval-and-compile
   (set-face-attribute 'default nil :family preferred-font :height 90)
 
@@ -443,16 +467,7 @@ _q_:quit
     (setq sml/theme 'dark)
     (sml/setup)
     (mapc #'(lambda (pattern) (add-to-list 'sml/replacer-regexp-list pattern))
-	  '(("^~/Code/" ":CODE:")
+	  '(("^~/code/" ":CODE:")
 	    ("^~/.config/" ":CONF:")
 	    ("^~/.emacs.d" ":EMACS:")
-	    ("^~/Documents/" ":DOC:")
-	    ("^~/Documents/org/" ":ORG:")
-	    ("^~/Documents/org/agendafiles/" ":AGENDA:")
-	    ("^~/Documents/uni/" ":UNI:"))))
-
-  ;; (use-package greeting-buffer
-  ;;   :ensure nil
-  ;;   :config
-  ;;   (gb-init))
-  )
+	    ("^~/docs/" ":DOC:")))))
