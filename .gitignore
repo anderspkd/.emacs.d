@@ -6,3 +6,5 @@ personal
 elpa
 .python-environments
 eshell/*
+/ido.last
+emms

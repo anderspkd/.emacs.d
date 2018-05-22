@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: tex-denote
+# key: tex-denote
+# --
+\newcommand\\$1{\ensuremath{$0}}
