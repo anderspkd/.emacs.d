@@ -318,6 +318,7 @@ _q_:quit
 	      ([backspace] . dired-up-directory)
 	      ("b" . browse-url-of-dired-file)
 	      ("\"" . do-shell-and-copy-to-kill-ring)
+	      ("P" . emms-play-dired)
 	      ("W" . dired-play-in-mpv))
   :init
   (add-hook 'dired-mode-hook 'toggle-truncate-lines)
@@ -442,14 +443,39 @@ _q_:quit
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
 		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
 
-;; (defhydra hydra-emms-quick-keys (:color amaranth :hint nil)
-;;   "
-;; currently playing: %
-;; "
-
 (use-package emms
   :ensure nil
+  :bind ("C-c m" . 'hydra-emms-media-keys/body)
   :config
+  (defsubst emms-player-mpv--mute-unmute ()
+    (interactive)
+    (call-process-shell-command (emms-player-mpv--format-command "mute")))
+
+  (defhydra hydra-emms-media-keys (:color amaranth :hint nil)
+    "
+currently playing: %s(emms-track-description (emms-playlist-current-selected-track))
+
+^playback control^  ^^^volume control^^^  ^other^
+-----------------------------------------------------
+_n_: next           _k_, _+_: louder      _e_: emms list
+_p_: previous       _j_, _-_: silenter    _q_: quit
+_r_: random         _m_: mute
+_s_: stop
+_SPC_: %s(if emms-player-paused-p \"unpause\" \"pause  \")
+"
+    ("n" emms-next)
+    ("p" emms-previous)
+    ("r" emms-random)
+    ("s" emms-stop)
+    ("SPC" emms-pause)
+    ("j" emms-volume-lower)
+    ("-" emms-volume-lower)
+    ("k" emms-volume-raise)
+    ("+" emms-volume-raise)
+    ("m" emms-player-mpv--mute-unmute)
+    ("q" nil :color blue)
+    ("e" emms :color blue))
+
   (emms-all)
   (emms-history-load)
   (setq emms-player-list '(emms-player-mpv)
