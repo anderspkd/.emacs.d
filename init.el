@@ -269,7 +269,7 @@ _q_:quit
     (unless (string= (file-name-extension (buffer-file-name)) "hpp")
       (error "Not in .hpp file ..."))
     (let* ((filename (file-name-base (buffer-file-name)))
-	   (hdr-guard (when filename (format "__%s_HPP__" (upcase filename)))))
+	   (hdr-guard (when (stringp filename) (format "__%s_HPP__" (upcase filename)))))
       (when hdr-guard
 	(insert (format "#ifndef %s\n" hdr-guard))
 	(insert (format "#define %s\n\n" hdr-guard))
@@ -441,6 +441,21 @@ _q_:quit
 		    (smtpmail-default-smtp-server . ,private-mail-smtp-server)
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
 		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
+
+;; (defhydra hydra-emms-quick-keys (:color amaranth :hint nil)
+;;   "
+;; currently playing: %
+;; "
+
+(use-package emms
+  :ensure nil
+  :config
+  (emms-all)
+  (emms-history-load)
+  (setq emms-player-list '(emms-player-mpv)
+	emms-source-file-default-directory (expand-file-name "~/music"))
+  (add-to-list 'emms-player-mpv-parameters "--no-audio-display")
+  (add-to-list 'emms-info-functions 'emms-info-cueinfo))
 
 (eval-and-compile
   (set-face-attribute 'default nil :family preferred-font :height 90)
