@@ -445,7 +445,8 @@ _q_:quit
 
 (use-package emms
   :ensure nil
-  :bind ("C-c m" . 'hydra-emms-media-keys/body)
+  :bind (("C-c e m" . 'hydra-emms-media-keys/body)
+	 ("C-c e u" . emms-play-url))
   :config
   (defsubst emms-player-mpv--mute-unmute ()
     (interactive)
@@ -480,7 +481,7 @@ _SPC_: %s(if emms-player-paused-p \"unpause\" \"pause  \")
   (emms-history-load)
   (setq emms-player-list '(emms-player-mpv)
 	emms-source-file-default-directory (expand-file-name "~/music"))
-  (add-to-list 'emms-player-mpv-parameters "--no-audio-display")
+  (add-to-list 'emms-player-mpv-parameters "--no-video")
   (add-to-list 'emms-info-functions 'emms-info-cueinfo))
 
 (eval-and-compile
