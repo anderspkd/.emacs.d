@@ -445,24 +445,29 @@ _q_:quit
 
 (use-package emms
   :ensure nil
-  :bind (("C-c e m" . 'hydra-emms-media-keys/body)
+  :bind (("C-c e m" . hydra-emms-media-keys/body)
 	 ("C-c e u" . emms-play-url))
   :config
   (defsubst emms-player-mpv--mute-unmute ()
     (interactive)
     (call-process-shell-command (emms-player-mpv--format-command "mute")))
 
+  (defsubst emms-goto-music-directory ()
+    (interactive)
+    (when emms-source-file-default-directory
+      (find-file emms-source-file-default-directory)))
+
   (defhydra hydra-emms-media-keys (:color amaranth :hint nil)
     "
 currently playing: %s(emms-track-description (emms-playlist-current-selected-track))
 
-^playback control^  ^^^volume control^^^  ^other^
+^playback control^  ^^^volume control^^^    ^other^
 -----------------------------------------------------
 _n_: next           _k_, _+_: louder      _e_: emms list
 _p_: previous       _j_, _-_: silenter    _q_: quit
-_r_: random         _m_: mute
+_r_: random         _m_: mute ^^          _d_: music dir
 _s_: stop
-_SPC_: %s(if emms-player-paused-p \"unpause\" \"pause  \")
+_SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
 "
     ("n" emms-next)
     ("p" emms-previous)
@@ -474,6 +479,7 @@ _SPC_: %s(if emms-player-paused-p \"unpause\" \"pause  \")
     ("k" emms-volume-raise)
     ("+" emms-volume-raise)
     ("m" emms-player-mpv--mute-unmute)
+    ("d" emms-goto-music-directory :color blue)
     ("q" nil :color blue)
     ("e" emms :color blue))
 
