@@ -418,6 +418,9 @@ _q_:quit
   ;; defines `user-full-name' and `private-mail-*' variables used below.
   (load (personal-file "email"))
 
+  (add-to-list 'mu4e-view-actions
+	       '("ViewInBrowser" . mu4e-action-view-in-browser))
+
   (setq mail-user-agent 'mu4e-user-agent)
   (setq mu4e-maildir "~/mail")
   (setq mu4e-contexts
