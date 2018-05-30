@@ -276,7 +276,7 @@ _q_:quit
 	(forward-line)
 	(save-excursion
 	  (goto-char (point-max))
-	  (insert "\n\n#endif")))))
+	  (insert (format "\n\n#endif /* %s */" hdr-guard))))))
 
   (add-hook 'c++-mode-hook (lambda () (c-set-style "java"))))
 
