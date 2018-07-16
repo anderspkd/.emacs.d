@@ -83,7 +83,7 @@
 (eval-and-compile
 
   (defsubst remove-ws-hook ()
-    (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)) t))
+    (add-hook 'before-save-hook 'delete-trailing-whitespace t t))
 
   (defsubst byte-recompile-dotemacs-dir ()
     (interactive)
