@@ -229,16 +229,19 @@ _q_:quit
   :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook
-	    (lambda ()
-	      (add-to-list 'TeX-view-program-list '("mupdf" "mupdf %o"))
-	      (add-to-list 'TeX-view-program-selection '(output-pdf "mupdf"))))
+	    (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
+  ;; (add-hook 'LaTeX-mode-hook
+  ;; 	    (lambda ()
+  ;; 	      (add-to-list 'TeX-view-program-list '("mupdf" "mupdf %o"))
+  ;; 	      (add-to-list 'TeX-view-program-selection '(output-pdf "mupdf"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  ;; (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-  (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 80)))
+  ;; (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 80)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
   :config
   (setq TeX-source-correlate-method-active 'synctex
@@ -251,33 +254,42 @@ _q_:quit
   (setq reftex-plug-into-AUCTeX t
 	reftex-ref-style-default-list '("Default" "Hyperref")))
 
+(defun insert-header-guard (&optional prefix)
+  (interactive
+   (list (when current-prefix-arg (read-string "prefix: "))))
+  (let ((ext (file-name-extension (buffer-file-name))))
+    (unless (or (string= ext "hpp")
+		(string= ext "h"))
+      (error "Not in a c or c++ header file ... "))
+    (let* ((filename (file-name-base (buffer-file-name)))
+	   guard)
+      (when (stringp filename)
+	(if prefix
+	    (setq guard (format "_%s_%s_%s" (upcase prefix) (upcase filename) (upcase ext)))
+	  (setq guard (format "_%s_%s" (upcase filename) (upcase ext))))
+	(insert (format "#ifndef %s\n" guard))
+	(insert (format "#define %s\n\n" guard))
+	(forward-line)
+	(save-excursion
+	  (goto-char (point-max))
+	  (insert (format "\n\n#endif /* %s */" guard)))))))
+
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
-  :bind ([ret] . newline-and-indent)
+  :bind (([ret] . newline-and-indent)
+	 ("C-c h" . insert-header-guard)
+	 ("C-c c" . compile))
   :init
+  (add-hook 'c-mode-hook 'remove-ws-hook)
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
 
 (use-package c++-mode
   :ensure nil
   :mode "\\.cpp\\'"
   :bind (([ret] . newline-and-indent)
-	 ("C-c h" . insert-c++-header-guard))
+	 ("C-c h" . insert-header-guard))
   :init
-  (defun insert-c++-header-guard ()
-    (interactive)
-    (unless (string= (file-name-extension (buffer-file-name)) "hpp")
-      (error "Not in .hpp file ..."))
-    (let* ((filename (file-name-base (buffer-file-name)))
-	   (hdr-guard (when (stringp filename) (format "__%s_HPP__" (upcase filename)))))
-      (when hdr-guard
-	(insert (format "#ifndef %s\n" hdr-guard))
-	(insert (format "#define %s\n\n" hdr-guard))
-	(forward-line)
-	(save-excursion
-	  (goto-char (point-max))
-	  (insert (format "\n\n#endif /* %s */" hdr-guard))))))
-
   (add-hook 'c++-mode-hook (lambda () (c-set-style "java"))))
 
 (use-package python
@@ -288,7 +300,7 @@ _q_:quit
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'nlinum-mode)
-  (add-hook 'python-mode-hook 'remove-ws-hook)
+  ;; (add-hook 'python-mode-hook 'remove-ws-hook)
   :config
   (setq python-indent-offset 4))
 
@@ -296,7 +308,8 @@ _q_:quit
   :ensure nil  ; already present
   :mode "\\.el\\'"
   :init
-  (add-hook 'emacs-lisp-mode-hook 'remove-ws-hook))
+  ;; (add-hook 'emacs-lisp-mode-hook 'remove-ws-hook)
+  )
 
 (use-package tramp
   :defer t
@@ -379,7 +392,9 @@ _q_:quit
 (use-package elfeed
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
-	 ("x" . elfeed-play-in-mpv))
+	 ("x" . elfeed-play-in-mpv)
+	 :map elfeed-show-mode-map
+	 ("w" . visual-line-mode))
   :config
   (set-face-attribute 'variable-pitch nil :family preferred-font)
   (set-face-attribute 'message-header-subject nil :family preferred-font)
@@ -411,6 +426,11 @@ _q_:quit
 
 (use-package mu4e
   :ensure nil  ; installed with system package manager
+  :init
+  (add-hook 'message-send-hook
+	    (lambda ()
+	      (unless (yes-or-no-p "Send message?")
+		(signal 'quit nil))))
   :config
 
   (use-package smtpmail :ensure nil)
