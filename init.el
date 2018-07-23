@@ -107,6 +107,26 @@
 	     (progn (back-to-indentation) (point)))
       (beginning-of-line)))
 
+  (defun create-note (name full-name existing-p)
+    (interactive
+     (let* ((files (directory-files "~/notes" t "^[^.#].+\\.org\\'" t))
+	    (existing-notes (mapcar
+			     (lambda (f)
+			       (file-name-nondirectory (file-name-sans-extension f)))
+			     files))
+	    (note-name (completing-read "Note name: " existing-notes)))
+       (list note-name
+	     (concat "~/notes/" note-name ".org")
+	     (member note-name existing-notes))))
+    (if existing-p
+	(find-file full-name)
+      (with-current-buffer (find-file full-name)
+	(insert "#+TITLE: " name "\n")
+	(insert "#+PROPERTIES: Created ")
+	(org-time-stamp '(16) t)
+	(newline)
+	(newline))))
+
   (defsubst open-file-or-thing-in-mpv (file-or-thing)
     (when (stringp file-or-thing)
       (start-process "mpv-emacs" nil "mpv" file-or-thing))))
