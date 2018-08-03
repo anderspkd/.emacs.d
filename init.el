@@ -261,7 +261,7 @@ _q_:quit
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   ;; (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-  ;; (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 80)))
+  (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 80)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
   :config
   (setq TeX-source-correlate-method-active 'synctex
