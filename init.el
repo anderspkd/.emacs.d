@@ -194,6 +194,8 @@ _q_:quit
 (use-package recentf
   :defer 5
   :bind ("C-x C-r" . recentf-open-files)
+  :init
+  (setq recentf-auto-cleanup 'never)
   :config
   (mapc #'(lambda (path) (add-to-list 'recentf-exclude path))
 	(list ".*\\.synctex\\.gz\\'"
