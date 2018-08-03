@@ -8,3 +8,6 @@ elpa
 eshell/*
 /ido.last
 emms
+games/
+tramp
+url/
