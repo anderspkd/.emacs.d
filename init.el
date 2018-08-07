@@ -387,13 +387,15 @@ _q_:quit
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
+  :bind (("C-c a a" . org-agenda)
+	 ("C-c a c" . cfw:open-org-calendar)
 	 ("C-c l" . org-store-link)
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (setq fill-column 80)))
   :config
+  (require 'calfw-org)
   (defun org-add-timeslot ()
     (interactive)
     (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
