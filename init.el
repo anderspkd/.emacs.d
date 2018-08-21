@@ -490,6 +490,14 @@ _q_:quit
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
 		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
 
+(use-package papr
+  :ensure nil
+  :bind (("C-c p l" . papr::goto-papr-file)
+	 ("C-c p a" . papr::get-paper-create))
+  :init
+  (setq papr-file (expand-file-name "~/docs/papr/papr.org")
+	papr-directory (expand-file-name "~/docs/papr")))
+
 (use-package emms
   :ensure nil
   :bind (("C-c e m" . hydra-emms-media-keys/body)
