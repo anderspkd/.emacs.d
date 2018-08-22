@@ -67,8 +67,8 @@ Note that HASH-LEN is the hex length (twice the output size in bytes).")
 	 (year (read-string "year: "))
 	 (copy-file-p (yes-or-no-p (format "copy file? [new location: %s]" papr-file)))
 	 ;; get these two from pdf-info or from the user.
-	 (title (or (plist-get info :title) (read-string "title: ")))
-	 (author (or (plist-get info :author) (read-string "authors: "))))
+	 (title (read-string "title: " (plist-get info :title)))
+	 (author (read-string "authors: " (plist-get info :author))))
     (papr::debug "info=%s, year=%s, copy-file-p=%s, title=%s, author=%s"
 		 info year copy-file-p title author)
 
