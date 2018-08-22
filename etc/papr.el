@@ -65,10 +65,10 @@ Note that HASH-LEN is the hex length (twice the output size in bytes).")
 (defun papr::new-paper-entry (hash filename)
   (let* ((info (and papr::has-pdfinfo (papr::get-pdfinfo-info filename)))
 	 (year (read-string "year: "))
-	 (copy-file-p (yes-or-no-p (format "copy file? [new location: %s]" papr-file)))
 	 ;; get these two from pdf-info or from the user.
 	 (title (read-string "title: " (plist-get info :title)))
-	 (author (read-string "authors: " (plist-get info :author))))
+	 (author (read-string "authors: " (plist-get info :author)))
+	 (copy-file-p (yes-or-no-p (format "copy file? [new location: %s]" papr-file))))
     (papr::debug "info=%s, year=%s, copy-file-p=%s, title=%s, author=%s"
 		 info year copy-file-p title author)
 
@@ -81,7 +81,7 @@ Note that HASH-LEN is the hex length (twice the output size in bytes).")
   :hash:       %s
   :authors:    %s
   :year:       %s
-  :END:"
+  :END:\n"
 	    title hash author year))))
 
 ;;;###autoload
