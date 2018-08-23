@@ -490,13 +490,13 @@ _q_:quit
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
 		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
 
-(use-package papr
+(use-package rmse
   :ensure nil
-  :bind (("C-c p l" . papr::goto-papr-file)
-	 ("C-c p a" . papr::get-paper-create))
+  :bind (("C-c p l" . rmse::goto-rmse-file)
+	 ("C-c p a" . rmse::get-paper-create))
   :init
-  (setq papr-file (expand-file-name "~/docs/papr/papr.org")
-	papr-directory (expand-file-name "~/docs/papr")))
+  (setq rmse-file (expand-file-name "~/docs/rmse/rmse.org")
+	rmse-directory (expand-file-name "~/docs/rmse")))
 
 (use-package emms
   :ensure nil
