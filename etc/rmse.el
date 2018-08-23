@@ -65,7 +65,7 @@
     ;; construct and return author list
     (while (setq author (pop authors))
       (setq author-string (concat author-string author (unless (null authors) " and "))))
-    r))
+    author-string))
 
 (defvar rmse::authors nil)
 
