@@ -57,8 +57,7 @@
     ;; read author input from user until they input nothing
     (while (progn
 	     (setq author (completing-read "Author: " rmse::authors))
-	     (if (string= author "")
-		 nil
+	     (unless (string= author "")
 	       (unless (member author rmse::authors)
 		 (push author rmse::authors))
 	       (push author authors))))
