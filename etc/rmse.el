@@ -52,7 +52,7 @@
     (format "[%s]_%s.pdf" year fn-title)))
 
 (defun rmse::read-authors-from-minibuffer ()
-  (let (author authors (r "") a)
+  (let (author authors (author-string ""))
 
     ;; read author input from user until they input nothing
     (while (progn
@@ -63,8 +63,8 @@
 	       (push author authors))))
 
     ;; construct and return author list
-    (while (setq a (pop authors))
-      (setq r (concat r a (unless (null authors) " and "))))
+    (while (setq author (pop authors))
+      (setq author-string (concat author-string author (unless (null authors) " and "))))
     r))
 
 (defvar rmse::authors nil)
