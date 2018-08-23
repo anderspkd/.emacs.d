@@ -107,25 +107,25 @@
 	     (progn (back-to-indentation) (point)))
       (beginning-of-line)))
 
-  (defun create-note (name full-name existing-p)
-    (interactive
-     (let* ((files (directory-files "~/notes" t "^[^.#].+\\.org\\'" t))
-	    (existing-notes (mapcar
-			     (lambda (f)
-			       (file-name-nondirectory (file-name-sans-extension f)))
-			     files))
-	    (note-name (completing-read "Note name: " existing-notes)))
-       (list note-name
-	     (concat "~/notes/" note-name ".org")
-	     (member note-name existing-notes))))
-    (if existing-p
-	(find-file full-name)
-      (with-current-buffer (find-file full-name)
-	(insert "#+TITLE: " name "\n")
-	(insert "#+PROPERTIES: Created ")
-	(org-time-stamp '(16) t)
-	(newline)
-	(newline))))
+  ;; (defun create-note (name full-name existing-p)
+  ;;   (interactive
+  ;;    (let* ((files (directory-files "~/notes" t "^[^.#].+\\.org\\'" t))
+  ;; 	    (existing-notes (mapcar
+  ;; 			     (lambda (f)
+  ;; 			       (file-name-nondirectory (file-name-sans-extension f)))
+  ;; 			     files))
+  ;; 	    (note-name (completing-read "Note name: " existing-notes)))
+  ;;      (list note-name
+  ;; 	     (concat "~/notes/" note-name ".org")
+  ;; 	     (member note-name existing-notes))))
+  ;;   (if existing-p
+  ;; 	(find-file full-name)
+  ;;     (with-current-buffer (find-file full-name)
+  ;; 	(insert "#+TITLE: " name "\n")
+  ;; 	(insert "#+PROPERTIES: Created ")
+  ;; 	(org-time-stamp '(16) t)
+  ;; 	(newline)
+  ;; 	(newline))))
 
   (defsubst open-file-or-thing-in-mpv (file-or-thing)
     (when (stringp file-or-thing)
@@ -387,15 +387,15 @@ _q_:quit
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a a" . org-agenda)
-	 ("C-c a c" . cfw:open-org-calendar)
+  :bind (("C-c a" . org-agenda)
+	 ;; ("C-c a c" . cfw:open-org-calendar)
 	 ("C-c l" . org-store-link)
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (setq fill-column 80)))
   :config
-  (require 'calfw-org)
+  ;; (require 'calfw-org)
   (defun org-add-timeslot ()
     (interactive)
     (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
