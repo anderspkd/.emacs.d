@@ -403,7 +403,7 @@ _q_:quit
 
   (bind-key "C-c w" #'org-add-timeslot org-mode-map)
 
-  (setq org-agenda-files (directory-files "~/org" t "^[^.#].+\\.org\\'" t)
+  (setq org-agenda-files '("~/org/agenda.org");; (directory-files "~/org" t "^[^.#].+\\.org\\'" t)
 	org-agenda-custom-commands '(("c" "Simple Agenda view"
 				      ((agenda "")
 				       (alltodo ""))))
