@@ -1,7 +1,7 @@
 ;;; rmse.el --- Small reference management system for emacs
 ;;
 ;; Author: Anders Dalskov
-;; Copyright: (C) 2017, Anders Dalskov, all rights reserved.
+;; Copyright: (C) 2018, Anders Dalskov, all rights reserved.
 ;;
 ;;; Commentary:
 ;;
