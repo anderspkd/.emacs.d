@@ -107,26 +107,6 @@
 	     (progn (back-to-indentation) (point)))
       (beginning-of-line)))
 
-  ;; (defun create-note (name full-name existing-p)
-  ;;   (interactive
-  ;;    (let* ((files (directory-files "~/notes" t "^[^.#].+\\.org\\'" t))
-  ;; 	    (existing-notes (mapcar
-  ;; 			     (lambda (f)
-  ;; 			       (file-name-nondirectory (file-name-sans-extension f)))
-  ;; 			     files))
-  ;; 	    (note-name (completing-read "Note name: " existing-notes)))
-  ;;      (list note-name
-  ;; 	     (concat "~/notes/" note-name ".org")
-  ;; 	     (member note-name existing-notes))))
-  ;;   (if existing-p
-  ;; 	(find-file full-name)
-  ;;     (with-current-buffer (find-file full-name)
-  ;; 	(insert "#+TITLE: " name "\n")
-  ;; 	(insert "#+PROPERTIES: Created ")
-  ;; 	(org-time-stamp '(16) t)
-  ;; 	(newline)
-  ;; 	(newline))))
-
   (defsubst open-file-or-thing-in-mpv (file-or-thing)
     (when (stringp file-or-thing)
       (start-process "mpv-emacs" nil "mpv" file-or-thing))))
@@ -252,16 +232,11 @@ _q_:quit
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook
 	    (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
-  ;; (add-hook 'LaTeX-mode-hook
-  ;; 	    (lambda ()
-  ;; 	      (add-to-list 'TeX-view-program-list '("mupdf" "mupdf %o"))
-  ;; 	      (add-to-list 'TeX-view-program-selection '(output-pdf "mupdf"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-  ;; (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
   (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
   (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 80)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
@@ -322,7 +297,7 @@ _q_:quit
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'nlinum-mode)
-  ;; (add-hook 'python-mode-hook 'remove-ws-hook)
+  (add-hook 'python-mode-hook 'remove-ws-hook)
   :config
   (setq python-indent-offset 4))
 
@@ -330,8 +305,7 @@ _q_:quit
   :ensure nil  ; already present
   :mode "\\.el\\'"
   :init
-  ;; (add-hook 'emacs-lisp-mode-hook 'remove-ws-hook)
-  )
+  (add-hook 'emacs-lisp-mode-hook 'remove-ws-hook))
 
 (use-package tramp
   :defer t
@@ -403,7 +377,7 @@ _q_:quit
 
   (bind-key "C-c w" #'org-add-timeslot org-mode-map)
 
-  (setq org-agenda-files '("~/org/agenda.org");; (directory-files "~/org" t "^[^.#].+\\.org\\'" t)
+  (setq org-agenda-files '("~/org/agenda.org")
 	org-agenda-custom-commands '(("c" "Simple Agenda view"
 				      ((agenda "")
 				       (alltodo ""))))
@@ -568,4 +542,5 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
 	  '(("^~/code/" ":CODE:")
 	    ("^~/.config/" ":CONF:")
 	    ("^~/.emacs.d" ":EMACS:")
+	    ("^~/music/" ":MUSIC:")
 	    ("^~/docs/" ":DOC:")))))
