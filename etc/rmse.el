@@ -70,17 +70,16 @@
 (defvar rmse::authors nil)
 
 (defun rmse::find-all-authors ()
-  (let ((buf (find-file-noselect rmse-file)))
-    (with-current-buffer buf
-      (org-element-map (org-element-parse-buffer 'element) 'headline
-	(lambda (heading)
-	  (let* ((header (cadr heading))
-		 (authors (plist-get header :AUTHORS)))
-	    (when authors
-	      (dolist (author (split-string authors " and "))
-		(unless (member author rmse::authors)
-		  (push author rmse::authors))))))
-	nil t))))
+  (with-current-buffer (find-file-noselect rmse-file)
+    (org-element-map (org-element-parse-buffer 'element) 'headline
+      (lambda (heading)
+	(let* ((header (cadr heading))
+	       (authors (plist-get header :AUTHORS)))
+	  (when authors
+	    (dolist (author (split-string authors " and "))
+	      (unless (member author rmse::authors)
+		(push author rmse::authors))))))
+      nil t)))
 
 ;; if this is the first time this function is called, we scan the database
 ;; file and add any authors we find.
@@ -90,15 +89,14 @@
 (defvar rmse::conferences nil)
 
 (defun rmse::find-all-conferences ()
-  (let ((buf (find-file-noselect rmse-file)))
-    (with-current-buffer buf
-      (org-element-map (org-element-parse-buffer 'element) 'headline
-	(lambda (heading)
-	  (let* ((header (cadr heading))
-		 (conference (plist-get header :CONFERENCE)))
-	    (when (and conference (not (member conference rmse::conferences)))
-	      (push conference rmse::conferences))))
-	nil t))))
+  (with-current-buffer (find-file-noselect rmse-file)
+    (org-element-map (org-element-parse-buffer 'element) 'headline
+      (lambda (heading)
+	(let* ((header (cadr heading))
+	       (conference (plist-get header :CONFERENCE)))
+	  (when (and conference (not (member conference rmse::conferences)))
+	    (push conference rmse::conferences))))
+      nil t)))
 
 ;; Same deal as above
 (unless rmse::conferences
