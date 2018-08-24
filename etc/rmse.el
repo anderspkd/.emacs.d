@@ -49,6 +49,8 @@
 ;;; Creates a new filename of the form "[year] title.pdf"
 (defun rmse::make-new-filename (title year)
   (let ((fn-title (replace-regexp-in-string " \\\|\\\.\\\|,\\\|:" "_" title)))
+    (when (> (length fn-title) (- 249 (length year)))
+      (setq fn-title (substring fn-title 0 (- 249 (length year) 1))))
     (format "[%s]_%s.pdf" year fn-title)))
 
 (defun rmse::read-authors-from-minibuffer ()
