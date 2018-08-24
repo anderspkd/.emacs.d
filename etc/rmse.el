@@ -54,19 +54,30 @@
     (format "[%s]_%s.pdf" year fn-title)))
 
 (defun rmse::read-authors-from-minibuffer ()
-  (let (author authors (author-string ""))
+  (let (author (author-string "") (num 0))
 
     ;; read author input from user until they input nothing
     (while (progn
-	     (setq author (completing-read "Author: " rmse::authors))
+	     (setq author (completing-read
+			   (format "Author #%s (Return to exit): " (setq num (1+ num)))
+			   rmse::authors))
+
+	     ;; seperate current author and previous ones with an "and"
+	     (unless (or (string= author-string "") (string= author ""))
+	       (setq author-string (concat author-string " and " author)))
+
+	     (rmse::debug "author-string=%s" author-string)
+
 	     (unless (string= author "")
+
+	       ;; new author so add to suggestions
 	       (unless (member author rmse::authors)
 		 (push author rmse::authors))
-	       (push author authors))))
 
-    ;; construct and return author list
-    (while (setq author (pop authors))
-      (setq author-string (concat author-string author (unless (null authors) " and "))))
+	       (when (string= author-string "")
+		 (setq author-string (concat author-string author)))
+
+	       t)))
     author-string))
 
 (defvar rmse::authors nil)
@@ -172,7 +183,7 @@ Jumps to the (potentially new) entry in RMSE-FILE unless NO-SWITCH is non-nil."
 	(unless no-switch
 	  (switch-to-buffer buf)
 	  (goto-char pos)))
-      
+
       (save-buffer))))
 
 ;;;###autoload
