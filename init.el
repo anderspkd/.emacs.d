@@ -434,7 +434,7 @@ _q_:quit
   (use-package smtpmail :ensure nil)
 
   ;; defines `user-full-name' and `private-mail-*' variables used below.
-  (load (personal-file "email"))
+  (load (personal-file "email-private"))
 
   (add-to-list 'mu4e-view-actions
 	       '("ViewInBrowser" . mu4e-action-view-in-browser))
