@@ -387,6 +387,35 @@ _q_:quit
 			    (sequence "|" "CANCELED(c@)"))
 	org-todo-keyword-faces '(("CANCELED" . (:foreground "grey" :weight "bold")))))
 
+(defvar org-ref::notes-file "~/docs/lib/notes.org")
+(defvar org-ref::bib-file "~/docs/lib/refs.bib")
+
+(use-package org-ref
+  :defer 5
+  :bind (("C-c p n" . goto-org-ref-notes-file)
+	 ("C-c p b" . goto-org-ref-bib-file))
+  :init
+
+  (defun goto-org-ref-bib-file ()
+    (interactive)
+    (find-file org-ref::bib-file))
+
+  (defun goto-org-ref-notes-file ()
+    (interactive)
+    (if (string= (expand-file-name org-ref::bib-file)
+		 buffer-file-name)
+	(org-ref-open-bibtex-notes)
+      (find-file org-ref::notes-file)))
+
+  :config
+  (message "loaded org-ref")
+  (setq org-ref-bibliography-notes org-ref::notes-file
+	org-ref-default-bibliography `(,org-ref::bib-file)
+	org-ref-pdf-directory "~/docs/lib/files")
+  (setq bibtex-completion-bibliography org-ref::bib-file
+	bibtex-completion-library-path "~/docs/lib/files"
+	bibtex-completion-notes-path org-ref::notes-file))
+
 (use-package elfeed
   :bind (("C-x w" . elfeed)
 	 :map elfeed-search-mode-map
@@ -463,14 +492,6 @@ _q_:quit
 		    (smtpmail-default-smtp-server . ,private-mail-smtp-server)
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
 		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
-
-(use-package rmse
-  :ensure nil
-  :bind (("C-c p l" . rmse::goto-rmse-file)
-	 ("C-c p a" . rmse::get-paper-create))
-  :init
-  (setq rmse-file (expand-file-name "~/docs/rmse/rmse.org")
-	rmse-directory (expand-file-name "~/docs/rmse")))
 
 (use-package emms
   :ensure nil
