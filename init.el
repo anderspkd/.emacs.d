@@ -82,8 +82,30 @@
 
 (eval-and-compile
 
-  (defsubst remove-ws-hook ()
-    (add-hook 'before-save-hook 'delete-trailing-whitespace t t))
+  (defvar trim-ws-modes nil
+    "Modes in which whitespace should automatically be trimmed")
+
+  (defun trim-ws-in-mode (mode &optional no-trim)
+    "Automatically trim ws in MODE. if NO-TRIM is non-nil, then
+MODE disable ws trimming."
+    (let ((already-present (memq mode trim-ws-modes)))
+      (if no-trim
+	  (when already-present
+	    (let (temp)
+	      (dolist (m trim-ws-modes temp)
+		(unless (eq m mode)
+		  (push m temp)))
+	      (setq trim-ws-modes temp)))
+	(unless already-present
+	  (push mode trim-ws-modes)))))
+
+  (defun conditional-trim-ws ()
+    (message "%s" major-mode)
+    (when (memq major-mode trim-ws-modes)
+      (message "trimming ws")
+      (delete-trailing-whitespace)))
+
+  (add-hook 'before-save-hook 'conditional-trim-ws t)
 
   (defsubst byte-recompile-dotemacs-dir ()
     (interactive)
@@ -278,7 +300,7 @@ _q_:quit
 	 ("C-c h" . insert-header-guard)
 	 ("C-c c" . compile))
   :init
-  (add-hook 'c-mode-hook 'remove-ws-hook)
+  (trim-ws-in-mode 'c-mode)
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
 
 (use-package c++-mode
@@ -297,7 +319,7 @@ _q_:quit
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'nlinum-mode)
-  (add-hook 'python-mode-hook 'remove-ws-hook)
+  (trim-ws-in-mode 'python-mode)
   :config
   (setq python-indent-offset 4))
 
@@ -305,7 +327,7 @@ _q_:quit
   :ensure nil  ; already present
   :mode "\\.el\\'"
   :init
-  (add-hook 'emacs-lisp-mode-hook 'remove-ws-hook))
+  (trim-ws-in-mode 'emacs-lisp-mode))
 
 (use-package tramp
   :defer t
