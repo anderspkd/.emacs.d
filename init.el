@@ -415,7 +415,8 @@ _q_:quit
 (use-package org-ref
   :defer 5
   :bind (("C-c p n" . goto-org-ref-notes-file)
-	 ("C-c p b" . goto-org-ref-bib-file))
+	 ("C-c p b" . goto-org-ref-bib-file)
+	 ("C-c p r" . helm-bibtex))
   :init
 
   (defun goto-org-ref-bib-file ()
