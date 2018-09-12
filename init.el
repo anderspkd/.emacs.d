@@ -218,12 +218,21 @@ _q_:quit
   :config
   (pdf-tools-install)
   (setq pdf-annot-activate-created-annotations t)
+  (setq pdf-view-resize-factor 1.1)
+
+  ;; set some nice default colors for annotations
+  (setq pdf-annot-color-history '("yellow2" "deep sky blue" "pale green" "aquamarine1"))
 
   ;; default movements are painfully slow
-  (let ((fwd (lambda (n) (interactive "p") (image-forward-hscroll (if (= n 1) 5 n))))
-	(bkw (lambda (n) (interactive "p") (image-backward-hscroll (if (= n 1) 5 n))))
-	(dwn (lambda (n) (interactive "p") (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
-	(up  (lambda (n) (interactive "p") (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
+  (let ((fwd (lambda (n) (interactive "p")
+	       (image-forward-hscroll (if (= n 1) 5 n))))
+	(bkw (lambda (n) (interactive "p")
+	       (image-backward-hscroll (if (= n 1) 5 n))))
+	(dwn (lambda (n) (interactive "p")
+	       (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
+	(up  (lambda (n) (interactive "p")
+	       (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
+
     (bind-key "C-f"     fwd pdf-view-mode-map)
     (bind-key "<right>" fwd pdf-view-mode-map)
 
@@ -234,10 +243,7 @@ _q_:quit
     (bind-key "<down>"  dwn pdf-view-mode-map)
 
     (bind-key "C-p"     up  pdf-view-mode-map)
-    (bind-key "<up>"    up  pdf-view-mode-map)
-
-    ;; set some nice default colors for annotations
-    (setq pdf-annot-color-history '("yellow2" "deep sky blue" "pale green" "aquamarine1"))))
+    (bind-key "<up>"    up  pdf-view-mode-map)))
 
 (use-package yasnippet
   :defer t
