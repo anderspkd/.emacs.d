@@ -100,9 +100,7 @@ MODE disable ws trimming."
 	  (push mode trim-ws-modes)))))
 
   (defun conditional-trim-ws ()
-    (message "%s" major-mode)
     (when (memq major-mode trim-ws-modes)
-      (message "trimming ws")
       (delete-trailing-whitespace)))
 
   (add-hook 'before-save-hook 'conditional-trim-ws t)
@@ -309,6 +307,7 @@ _q_:quit
   :bind (([ret] . newline-and-indent)
 	 ("C-c h" . insert-header-guard))
   :init
+  (trim-ws-in-mode 'c++-mode)
   (add-hook 'c++-mode-hook (lambda () (c-set-style "java"))))
 
 (use-package python
