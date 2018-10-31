@@ -8,7 +8,8 @@
       file-name-handler-alist nil
       package-user-dir "~/.emacs.d/elpa/"
       package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("gnu" . "https://elpa.gnu.org/packages/")))
+			 ("gnu" . "https://elpa.gnu.org/packages/")
+			 ("org" . "https://orgmode.org/elpa/")))
 
 (add-hook 'after-init-hook
 	  #'(lambda ()
