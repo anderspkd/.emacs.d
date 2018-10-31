@@ -221,6 +221,8 @@ _q_:quit
   (setq pdf-annot-activate-created-annotations t)
   (setq pdf-view-resize-factor 1.1)
 
+  (bind-key "k" (lambda (interactive)) pdf-view-mode-map)
+
   ;; set some nice default colors for annotations
   (setq pdf-annot-color-history '("yellow2" "deep sky blue" "pale green" "aquamarine1"))
 
