@@ -108,10 +108,10 @@
 (setq org-publish-project-alist
       `(("blog"
 	 :components ("blog-posts" "blog-image" "blog-video" "blog-static"))
+
 	("blog-posts" ;; posts
 	 :base-directory ,(asd-blog:df "blog")
 	 :publishing-directory ,(asd-blog:pub-df "blog")
-	 :publishing-function org-html-publish-to-html
 	 :base-extension "org"
 	 :recursive t
 	 :htmlized-source t
@@ -122,7 +122,8 @@
 	 :with-creator nil
 
 	 :html-doctype "html5"
-	 :html-link-home "/"
+	 :html-link-home ""
+	 :html-link-up ""
 	 :html-html5-fancy t
 	 :html-postamble asd-blog:postamble
 	 :html-preamble asd-blog:preamble
@@ -130,6 +131,8 @@
 
 	 ;; :html-mathjax-options ,asd/blog/mathjax-options
 	 ;; :html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>"
+
+	 :publishing-function org-html-publish-to-html
 
 	 :headline-levels 4
 	 :todo-keywords nil
@@ -145,7 +148,7 @@
 
 	("blog-static" ;; contact, links, and so on
 	 :base-directory ,(asd-blog:df "pages")
-	 :publishing-directory ,(asd-blog:pub-df "pages")
+	 :publishing-directory ,(asd-blog:pub-df)
 	 :base-extension "org"
 	 :recursive t
 	 :htmlized-source t
@@ -160,7 +163,7 @@
 
 	 :html-doctype "html5"
 	 :html-html5-fancy t
-	 :html-postamble asd-blog:postamble
+	 :html-postamble nil
 	 :html-preamble asd-blog:preamble
 	 :html-head "<link rel=\"stylesheet\" href=\"/res/style.css\" type=\"text/css\"/>"
 
