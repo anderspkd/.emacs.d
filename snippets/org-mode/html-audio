@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: html-audio
+# key: <audio
+# --
+#+NAME: $1
+#+BEGIN_EXPORT html
+<figure id="$1">
+<audio controls>
+<source src="$2" type="${3:audio/ogg}">
+This browser does not support HTML5 audio.
+</audio>
+<figcaption>
+<span class="figure-caption">audio $4: </span>$5
+</figcaption>
+</figure>
+#+END_EXPORT
+$0

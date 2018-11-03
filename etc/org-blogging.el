@@ -18,7 +18,13 @@
 (setq org-html-viewport nil)
 
 (defvar asd-blog:base-dir (expand-file-name "~/docs/blog/"))
-(defvar asd-blog:default-sitemap-filename "sitemap.org")
+(defvar asd-blog:default-sitemap-filename "index.org")
+
+(defvar asd-blog:header-links
+  '(("/" . "Front")
+    ("/blog" . "Blog")
+    ("/contact.html" . "Contact")
+    ("/links.html" . "Links")))
 
 ;; small hack that stops `org-publish' from polluting `recentf-list'.
 (when (fboundp 'recentf-mode)
@@ -68,7 +74,8 @@
 (defun asd-blog:preamble (options)
   (with-temp-buffer
     (insert "<ul>")
-    (insert "hey!")
+    (dolist (e asd-blog:header-links)
+      (insert (format "<a href=\"%s\">%s</a>" (car e) (cdr e))))
     (insert "</ul><hr>")
     (buffer-string)))
 
@@ -100,14 +107,17 @@
 	       (preview (asd-blog:get-preview filename)))
 	  (insert "* " entry-title "\n")
 	  (insert preview " ")
-	  (insert "[[file:" (cadr s2) "][read more]]\n" )
+	  (insert "[[file:" (cadr s2) "][... read more]]\n" )
 	  (unless (null flist)
 	    (insert "---------------\n")))))
     (buffer-string)))
 
+(setq org-html-mathjax-options
+      '((path "/res/MathJax/MathJax.js?config=TeX-AMS_HTML")))
+
 (setq org-publish-project-alist
       `(("blog"
-	 :components ("blog-posts" "blog-image" "blog-video" "blog-static"))
+	 :components ("blog-posts" "blog-image" "blog-video" "blog-static" "blog-audio"))
 
 	("blog-posts" ;; posts
 	 :base-directory ,(asd-blog:df "blog")
@@ -129,8 +139,7 @@
 	 :html-preamble asd-blog:preamble
 	 :html-head "<link rel=\"stylesheet\" href=\"/res/style.css\" type=\"text/css\"/>"
 
-	 ;; :html-mathjax-options ,asd/blog/mathjax-options
-	 ;; :html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>"
+	 :html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>"
 
 	 :publishing-function org-html-publish-to-html
 
@@ -180,6 +189,13 @@
 	 :base-directory ,(asd-blog:df "res")
 	 :publishing-directory ,(asd-blog:pub-df "res")
 	 :base-extension "mp4\\|webm"
+	 :publishing-function org-publish-attachment
+	 :recursive t)
+
+	("blog-audio" ;; audio
+	 :base-directory ,(asd-blog:df "res")
+	 :publishing-directory ,(asd-blog:pub-df "res")
+	 :base-extension "ogg"
 	 :publishing-function org-publish-attachment
 	 :recursive t)
 	))
