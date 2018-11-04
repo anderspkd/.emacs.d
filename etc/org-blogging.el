@@ -117,9 +117,9 @@
 
 (setq org-publish-project-alist
       `(("blog"
-	 :components ("blog-posts" "blog-image" "blog-video" "blog-static" "blog-audio"))
+	 :components ("B-posts" "B-image" "B-video" "B-static" "B-audio" "B-drafts"))
 
-	("blog-posts" ;; posts
+	("B-posts" ;; posts
 	 :base-directory ,(asd-blog:df "blog")
 	 :publishing-directory ,(asd-blog:pub-df "blog")
 	 :base-extension "org"
@@ -155,7 +155,30 @@
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-function asd-blog:sitemap)
 
-	("blog-static" ;; contact, links, and so on
+	("B-drafts"
+	 :base-directory ,(asd-blog:df "drafts")
+	 :publishing-directory ,(asd-blog:pub-df "drafts")
+	 :base-extension "org"
+	 :recursive t
+	 :htmlized-source t
+	 :with-author t
+	 :with-date nil
+	 :with-toc nil
+	 :with-creator nil
+	 :html-doctype "html5"
+	 :html-link-home ""
+	 :html-link-up ""
+	 :html-postamble asd-blog:postamble
+	 :html-preamble asd-blog:preamble
+	 :html-head "<link rel=\"stylesheet\" href=\"/res/style.css\" type=\"text/css\"/>"
+	 :html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>"
+	 :publishing-function org-html-publish-to-html
+	 :headline-levels 4
+	 :todo-keywords nil
+	 :section-numbers nil
+	 )
+
+	("B-static" ;; contact, links, and so on
 	 :base-directory ,(asd-blog:df "pages")
 	 :publishing-directory ,(asd-blog:pub-df)
 	 :base-extension "org"
@@ -178,21 +201,21 @@
 
 	 :publishing-function org-html-publish-to-html)
 
-	("blog-image" ;; images
+	("B-image" ;; images
 	 :base-directory ,(asd-blog:df "res")
 	 :publishing-directory ,(asd-blog:pub-df "res")
 	 :base-extension "jpg\\|jpeg\\|png\\|gif"
 	 :publishing-function org-publish-attachment
 	 :recursive t)
 
-	("blog-video" ;; video
+	("B-video" ;; video
 	 :base-directory ,(asd-blog:df "res")
 	 :publishing-directory ,(asd-blog:pub-df "res")
 	 :base-extension "mp4\\|webm"
 	 :publishing-function org-publish-attachment
 	 :recursive t)
 
-	("blog-audio" ;; audio
+	("B-audio" ;; audio
 	 :base-directory ,(asd-blog:df "res")
 	 :publishing-directory ,(asd-blog:pub-df "res")
 	 :base-extension "ogg"
