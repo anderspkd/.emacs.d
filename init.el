@@ -342,6 +342,14 @@ _q_:quit
   :init
   (trim-ws-in-mode 'emacs-lisp-mode))
 
+(use-package slime
+  :init
+  (setq inferior-lisp-program "/usr/bin/sbcl")
+  (trim-ws-in-mode 'lisp-mode)
+  :config
+  (require 'slime-autoloads)
+  (add-to-list 'slime-contribs 'slime-fancy))
+
 (use-package tramp
   :defer t
   :config
