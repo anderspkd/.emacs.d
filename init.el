@@ -442,34 +442,29 @@ _q_:quit
 			    (sequence "|" "CANCELED(c@)"))
 	org-todo-keyword-faces '(("CANCELED" . (:foreground "grey" :weight "bold")))))
 
-(defvar org-ref::notes-file "~/docs/lib/notes.org")
-(defvar org-ref::bib-file "~/docs/lib/refs.bib")
-
 (use-package org-ref
-  :defer 5
-  :bind (("C-c p n" . goto-org-ref-notes-file)
+  :defer 1
+  :bind (("C-c p n" . org-ref-open-bibtex-notes)
 	 ("C-c p b" . goto-org-ref-bib-file)
 	 ("C-c p r" . helm-bibtex))
   :init
-
-  (defun goto-org-ref-bib-file ()
-    (interactive)
-    (find-file org-ref::bib-file))
-
-  (defun goto-org-ref-notes-file ()
-    (interactive)
-    (if (string= (expand-file-name org-ref::bib-file)
-		 buffer-file-name)
-	(org-ref-open-bibtex-notes)
-      (find-file org-ref::notes-file)))
-
+  (defvar org-ref::bib-files '(;; "~/docs/lib/crypto.bib" ;; this guy takes forever to load
+			       "~/docs/lib/bibs/refs.bib"))
+  (defvar org-ref::notes-file "~/docs/lib/notes.org")
+  (defvar org-ref::lib-path "~/docs/lib/pdfs")
+  (defun goto-org-ref-bib-file (path)
+    (interactive (list
+		  (if (< 1 (length org-ref::bib-files))
+		      (completing-read "bib file: " org-ref::bib-files)
+		    (car org-ref::bib-files))))
+    (find-file path))
   :config
   (message "loaded org-ref")
   (setq org-ref-bibliography-notes org-ref::notes-file
-	org-ref-default-bibliography `(,org-ref::bib-file)
-	org-ref-pdf-directory "~/docs/lib/files")
-  (setq bibtex-completion-bibliography org-ref::bib-file
-	bibtex-completion-library-path "~/docs/lib/files"
+	org-ref-default-bibliography org-ref::bib-files
+	org-ref-pdf-directory org-ref::lib-path)
+  (setq bibtex-completion-bibliography org-ref::bib-files
+	bibtex-completion-library-path org-ref::lib-path
 	bibtex-completion-notes-path org-ref::notes-file))
 
 (use-package elfeed
