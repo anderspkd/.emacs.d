@@ -592,7 +592,7 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
   (emms-all)
   (emms-history-load)
   (setq emms-player-list '(emms-player-mpv)
-	emms-source-file-default-directory (expand-file-name "~/music"))
+	emms-source-file-default-directory (expand-file-name "~/audio/music"))
   (add-to-list 'emms-player-mpv-parameters "--no-video")
   (add-to-list 'emms-info-functions 'emms-info-cueinfo))
 
