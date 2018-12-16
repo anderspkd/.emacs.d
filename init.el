@@ -308,9 +308,10 @@ _q_:quit
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
-  :bind (([ret] . newline-and-indent)
-	 ("C-c h" . insert-header-guard)
-	 ("C-c c" . compile))
+  :bind (:map c-mode-map
+	      ([ret] . newline-and-indent)
+	      ("C-c h" . insert-header-guard)
+	      ("C-c C-c" . compile))
   :init
   (trim-ws-in-mode 'c-mode)
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
@@ -318,8 +319,9 @@ _q_:quit
 (use-package c++-mode
   :ensure nil
   :mode "\\.cpp\\'"
-  :bind (([ret] . newline-and-indent)
-	 ("C-c h" . insert-header-guard))
+  :bind (:map c++-mode-map
+	      ([ret] . newline-and-indent)
+	      ("C-c h" . insert-header-guard))
   :init
   (trim-ws-in-mode 'c++-mode)
   (add-hook 'c++-mode-hook (lambda () (c-set-style "java"))))
