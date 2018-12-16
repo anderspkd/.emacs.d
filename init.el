@@ -421,27 +421,18 @@ _q_:quit
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
 	 ("C-c l" . org-store-link)
+	 ("C-c c" . org-capture)
 	 ("C-c C-l" . org-insert-link))
   :init
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (setq fill-column 80)))
   :config
-  (defun org-add-timeslot ()
-    (interactive)
-    (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
-      (org-set-property "WHEN" ts-string)))
-
-  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
-
-  (setq org-agenda-files (directory-files "~/org/agenda/" t "^[^.#].+2018.org\\'" t)
-	org-agenda-custom-commands '(("c" "Simple Agenda view"
-				      ((agenda "")
-				       (alltodo ""))))
+  (setq org-capture-templates
+	'(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
+	   "* %?\n %i\n %a\nAdded: %U")))
+  (setq org-agenda-files "~/org/tasks.org"
 	org-log-reschedule t
-	org-log-done t
-	org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
-			    (sequence "|" "CANCELED(c@)"))
-	org-todo-keyword-faces '(("CANCELED" . (:foreground "grey" :weight "bold")))))
+	org-log-done t))
 
 (use-package org-ref
   :defer 1
