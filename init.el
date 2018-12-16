@@ -418,7 +418,6 @@ _q_:quit
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
-	 ;; ("C-c a c" . cfw:open-org-calendar)
 	 ("C-c l" . org-store-link)
 	 ("C-c C-l" . org-insert-link))
   :init
