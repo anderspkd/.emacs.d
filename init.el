@@ -375,7 +375,7 @@ _q_:quit
   (bind-key "M-," 'pop-tag-mark go-mode-map)
   (bind-key "M-." 'godef-jump go-mode-map))
 
-
+;; C-x C-q is very handy, but I keep forgetting that it exists lol.
 (use-package dired
   :ensure nil  ; dired is already installed by default
   :defer t
