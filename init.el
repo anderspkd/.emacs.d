@@ -221,10 +221,15 @@ _q_:quit
   (setq pdf-annot-activate-created-annotations t)
   (setq pdf-view-resize-factor 1.1)
 
+  (defun pdf-annot-add-question-hl (list-of-edges &optional property-alist)
+    (interactive (list (pdf-view-active-region t)))
+    (pdf-annot-add-markup-annotation list-of-edges 'highlight "pale green" property-alist))
+
   (bind-key "k" (lambda (interactive)) pdf-view-mode-map)
+  (bind-key "C-c C-a q" 'pdf-annot-add-question-hl pdf-view-mode-map)
 
   ;; set some nice default colors for annotations
-  (setq pdf-annot-color-history '("yellow2" "deep sky blue" "pale green" "aquamarine1"))
+  (setq pdf-annot-color-history '("pale green" "yellow2" "deep sky blue" "aquamarine1"))
 
   ;; default movements are painfully slow
   (let ((fwd (lambda (n) (interactive "p")
