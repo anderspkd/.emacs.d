@@ -424,7 +424,6 @@ _q_:quit
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (setq fill-column 80)))
   :config
-  ;; (require 'calfw-org)
   (defun org-add-timeslot ()
     (interactive)
     (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
