@@ -429,8 +429,8 @@ _q_:quit
   :config
   (setq org-capture-templates
 	'(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
-	   "* %?\n %i\n %a\nAdded: %U")))
-  (setq org-agenda-files "~/org/tasks.org"
+	   "* %?\n :PROPERTIES:\n :ADDED: %U\n :ANNOTATION: %a\n :END:\n %i")))
+  (setq org-agenda-files '("~/org/tasks.org")
 	org-log-reschedule t
 	org-log-done t))
 
