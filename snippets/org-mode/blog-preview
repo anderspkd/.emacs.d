@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: blog-preview
+# key: <p
+# --
+#+BEGIN_PREVIEW
+$0
+#+END_PREVIEW
