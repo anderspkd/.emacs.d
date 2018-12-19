@@ -591,6 +591,27 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
 (eval-and-compile
   (set-face-attribute 'default nil :family preferred-font :height 90)
 
+  ;; fun with bitmaps :-)
+  (define-fringe-bitmap 'right-curly-arrow
+    [#b00000000
+     #b00000000
+     #b00000000
+     #b01111100
+     #b01111100
+     #b00001100
+     #b00001100
+     #b00000000])
+
+  (define-fringe-bitmap 'left-curly-arrow
+    [#b00000000
+     #b00110000
+     #b00110000
+     #b00111110
+     #b00111110
+     #b00000000
+     #b00000000
+     #b00000000])
+
   (add-hook 'prog-mode-hook
 	    (lambda ()
 	      (hl-line-mode)
