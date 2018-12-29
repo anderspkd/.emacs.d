@@ -221,20 +221,16 @@ _q_:quit
   (setq pdf-annot-activate-created-annotations t)
   (setq pdf-view-resize-factor 1.1)
 
-  (defun pdf-annot-add-question-hl (list-of-edges &optional property-alist)
-    (interactive (list (pdf-view-active-region t)))
-    (pdf-annot-add-markup-annotation list-of-edges 'highlight "pale green" property-alist))
-
   (bind-key "k" (lambda (interactive)) pdf-view-mode-map)
-  (bind-key "C-c C-a q" 'pdf-annot-add-question-hl pdf-view-mode-map)
 
   ;; ugly hack to change the default highlight color to LightCyan2 from yellow.
-  ;; (dolist (e pdf-annot-default-annotation-properties)
-  ;;   (when (eq (car e) 'highlight)
-  ;;     (setf (cdr e) '((color . "LightCyan2")))))
-
-  ;; set some nice default colors for annotations
-  (setq pdf-annot-color-history '("pale green" "yellow2" "deep sky blue" "aquamarine1"))
+  (setq pdf-annot-default-annotation-properties
+	`((t (label . ,user-full-name))
+	  (text (icon . "Comment") (color . "#ff0000"))
+	  (highlight (color . "LightCyan2"))
+	  (squiggly (color . "orange"))
+	  (strike-out (color . "red"))
+	  (underline (color . "blue"))))
 
   ;; default movements are painfully slow
   (let ((fwd (lambda (n) (interactive "p")
