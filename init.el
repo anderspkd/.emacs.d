@@ -615,18 +615,18 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
 	      (set-face-background 'hl-line "#ddffff")))
   (add-hook 'prog-mode-hook (lambda () (setq fill-column 80)))
 
-  (use-package leuven-theme
-    :init (setq leuven-scale-outline-headlines nil)
-    :config (load-theme 'leuven t))
+  ;; (use-package leuven-theme
+  ;;   :init (setq leuven-scale-outline-headlines nil)
+  ;;   :config (load-theme 'leuven t))
+  (load-theme 'mostlyblue)
 
   (use-package smart-mode-line
     :config
-    (use-package smtpmail :ensure nil)
     (setq sml/theme 'dark)
     (sml/setup)
     (mapc #'(lambda (pattern) (add-to-list 'sml/replacer-regexp-list pattern))
-	  '(("^~/code/" ":CODE:")
-	    ("^~/.config/" ":CONF:")
-	    ("^~/.emacs.d" ":EMACS:")
-	    ("^~/music/" ":MUSIC:")
-	    ("^~/docs/" ":DOC:")))))
+  	  '(("^~/code/" ":CODE:")
+  	    ("^~/.config/" ":CONF:")
+  	    ("^~/.emacs.d" ":EMACS:")
+  	    ("^~/music/" ":MUSIC:")
+  	    ("^~/docs/" ":DOC:")))))
