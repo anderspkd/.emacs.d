@@ -325,7 +325,12 @@ _q_:quit
 	      ("C-c h" . insert-header-guard))
   :init
   (trim-ws-in-mode 'c++-mode)
-  (add-hook 'c++-mode-hook (lambda () (c-set-style "java"))))
+  (defconst cpp-no-ns-indent
+    '("linux" (c-offsets-alist . ((innamespace . [0])))))
+  (c-add-style "cpp-no-ns-indent" cpp-no-ns-indent)
+  (add-hook 'c++-mode-hook (lambda ()
+			     (c-set-style "cpp-no-ns-indent")
+			     (setq c-basic-offset 4))))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
