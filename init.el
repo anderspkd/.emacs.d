@@ -218,10 +218,14 @@ _q_:quit
   :magic ("%PDF" . pdf-view-mode)
   :config
   (pdf-tools-install)
-  (setq pdf-annot-activate-created-annotations t)
+  (setq pdf-annot-activate-created-annotations nil)
   (setq pdf-view-resize-factor 1.1)
 
   (bind-key "k" (lambda (interactive)) pdf-view-mode-map)
+
+  (bind-key "h" 'pdf-annot-add-highlight-markup-annotation pdf-view-mode-map)
+  (bind-key "t" 'pdf-annot-add-text-annotation pdf-view-mode-map)
+  (bind-key "D" 'pdf-annot-delete pdf-view-mode-map)
 
   ;; ugly hack to change the default highlight color to LightCyan2 from yellow.
   (setq pdf-annot-default-annotation-properties
