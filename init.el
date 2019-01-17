@@ -291,6 +291,9 @@ _q_:quit
 	reftex-ref-style-default-list '("Default" "Hyperref")))
 
 (defun insert-header-guard (&optional prefix)
+  "Insert a C/C++ style header guard with a name derived from the
+filename. If `prefix' is supplied, prompt for a string which is
+prepended to the guard."
   (interactive
    (list (when current-prefix-arg (read-string "prefix: "))))
   (let ((ext (file-name-extension (buffer-file-name))))
@@ -325,8 +328,7 @@ _q_:quit
   :ensure nil
   :mode "\\.cpp\\'"
   :bind (:map c++-mode-map
-	      ([ret] . newline-and-indent)
-	      ("C-c h" . insert-header-guard))
+	      ([ret] . newline-and-indent))
   :init
   (trim-ws-in-mode 'c++-mode)
   (defconst cpp-no-ns-indent
@@ -334,7 +336,9 @@ _q_:quit
   (c-add-style "cpp-no-ns-indent" cpp-no-ns-indent)
   (add-hook 'c++-mode-hook (lambda ()
 			     (c-set-style "cpp-no-ns-indent")
-			     (setq c-basic-offset 4))))
+			     (setq c-basic-offset 4)))
+  :config
+  (bind-key "C-c h" 'insert-header-guard c-mode-map))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
@@ -476,6 +480,7 @@ _q_:quit
 	 :map elfeed-show-mode-map
 	 ("w" . visual-line-mode))
   :config
+  (setq shr-width 80)
   (set-face-attribute 'variable-pitch nil :family preferred-font)
   (set-face-attribute 'message-header-subject nil :family preferred-font)
 
@@ -617,25 +622,10 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
      #b00000000
      #b00000000])
 
-  (add-hook 'prog-mode-hook
-	    (lambda ()
-	      (hl-line-mode)
-	      (set-face-attribute hl-line-face nil :underline nil)
-	      (set-face-background 'hl-line "#ddffff")))
   (add-hook 'prog-mode-hook (lambda () (setq fill-column 80)))
 
+  (load-theme 'mostlyblue)
   ;; (use-package leuven-theme
   ;;   :init (setq leuven-scale-outline-headlines nil)
   ;;   :config (load-theme 'leuven t))
-  (load-theme 'mostlyblue)
-
-  (use-package smart-mode-line
-    :config
-    (setq sml/theme 'dark)
-    (sml/setup)
-    (mapc #'(lambda (pattern) (add-to-list 'sml/replacer-regexp-list pattern))
-  	  '(("^~/code/" ":CODE:")
-  	    ("^~/.config/" ":CONF:")
-  	    ("^~/.emacs.d" ":EMACS:")
-  	    ("^~/music/" ":MUSIC:")
-  	    ("^~/docs/" ":DOC:")))))
+  )
