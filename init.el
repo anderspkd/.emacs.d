@@ -479,11 +479,17 @@ prepended to the guard."
 	 :map elfeed-search-mode-map
 	 ("x" . elfeed-play-in-mpv)
 	 :map elfeed-show-mode-map
-	 ("w" . visual-line-mode))
+	 ("w" . visual-line-mode)
+	 ("c" . elfeed-save-url-to-clipboard))
   :config
   (setq shr-width 80)
   (set-face-attribute 'variable-pitch nil :family preferred-font)
   (set-face-attribute 'message-header-subject nil :family preferred-font)
+
+  (defun elfeed-save-url-to-clipboard ()
+    (interactive)
+    (let ((link (elfeed-entry-link elfeed-show-entry)))
+      (kill-new link)))
 
   (defun elfeed-play-in-mpv ()
     (interactive)
