@@ -24,6 +24,10 @@
  '(sh-quoted-exec                    ((t (:inherit (default)))))
  '(font-lock-preprocessor-face       ((t (:foreground "red3"))))
 
+ ;; make
+ '(makefile-targets                  ((t (:inherit (font-lock-keyword-face)))))
+
+
  ;; dired
  '(dired-directory-face              ((t (:foreground "blue" :bold t))))
  '(dired-directory                   ((t (:foreground "blue" :bold t))))
