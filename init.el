@@ -341,7 +341,8 @@ prepended to the guard."
   (bind-key "C-c h" 'insert-header-guard c-mode-map))
 
 (use-package python
-  :mode ("\\.py\\'" . python-mode)
+  :mode (("\\.py\\'" . python-mode)
+	 ("\\.mpc\\'". python-mode))
   :interpreter ("python" . python-mode)
   :bind (:map python-mode-map ("C-c b t" . hs-toggle-hiding))
   :init
