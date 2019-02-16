@@ -130,7 +130,19 @@ MODE disable ws trimming."
 
   (defsubst open-file-or-thing-in-mpv (file-or-thing)
     (when (stringp file-or-thing)
-      (start-process "mpv-emacs" nil "mpv" file-or-thing))))
+      (start-process "mpv-emacs" nil "mpv" file-or-thing)))
+
+  (defvar quick-dirs
+	(mapcar (lambda (dir) (cons (car (last (split-string dir "/")))
+				    (expand-file-name dir)))
+		'("~/docs/uni" "~/docs/projects" "~/.emacs.d")))
+
+  (defun quick-find-directory (directory)
+    (interactive
+     (let* ((hist (mapcar 'car quick-dirs))
+	    (choice (completing-read "dir: " hist)))
+       (list (cdr (assoc choice quick-dirs)))))
+    (dired directory)))
 
 ;;; Keys and movement
 
@@ -139,7 +151,7 @@ MODE disable ws trimming."
 
 (bind-key "C-x K" 'kill-all-buffers-and-reopen-scratch)
 (bind-key "C-a" 'back-to-indentation-or-beginning)
-
+(bind-key "C-c q" 'quick-find-directory)
 (bind-key "C-c i" 'imenu-list)
 
 (use-package hydra :ensure t)
