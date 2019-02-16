@@ -351,7 +351,10 @@ prepended to the guard."
   (add-hook 'python-mode-hook 'nlinum-mode)
   (trim-ws-in-mode 'python-mode)
   :config
-  (setq python-indent-offset 4))
+  (elpy-enable)
+  (setq python-shell-interpreter "ipython"
+	python-shell-interpreter-args "-i --simple-prompt"
+	python-indent-offset 4))
 
 (use-package emacs-lisp-mode
   :ensure nil  ; already present
@@ -489,6 +492,7 @@ prepended to the guard."
   (defun elfeed-save-url-to-clipboard ()
     (interactive)
     (let ((link (elfeed-entry-link elfeed-show-entry)))
+      (message "copied to clipboard: %s" link)
       (kill-new link)))
 
   (defun elfeed-play-in-mpv ()
@@ -632,7 +636,5 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
   (add-hook 'prog-mode-hook (lambda () (setq fill-column 80)))
 
   (load-theme 'mostlyblue)
-  ;; (use-package leuven-theme
-  ;;   :init (setq leuven-scale-outline-headlines nil)
-  ;;   :config (load-theme 'leuven t))
+  ;; (load-theme 'mostlydark)
   )
