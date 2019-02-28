@@ -545,6 +545,7 @@ prepended to the guard."
 
   ;; defines `user-full-name' and `private-mail-*' variables used below.
   (load (personal-file "email-private"))
+  (load (personal-file "email-work"))
 
   (add-to-list 'mu4e-view-actions
 	       '("ViewInBrowser" . mu4e-action-view-in-browser))
@@ -572,7 +573,28 @@ prepended to the guard."
 		    (smtpmail-stream-type         . ssl)
 		    (smtpmail-default-smtp-server . ,private-mail-smtp-server)
 		    (smtpmail-smtp-server         . ,private-mail-smtp-server)
-		    (smtpmail-smtp-service        . ,private-mail-smtp-port))))))
+		    (smtpmail-smtp-service        . ,private-mail-smtp-port)))
+	  ,(make-mu4e-context
+	    :name "Work"
+	    :enter-func (lambda () (mu4e-message "Entering work context"))
+	    :leave-func (lambda () (mu4e-message "Leaving work context"))
+	    :match-func (lambda (msg)
+			  (when msg
+			    (string-match private-mail-ctx-rx
+					  (mu4e-message-field msg :maildir))))
+	    :vars `((user-full-name         . ,user-full-name)
+		    (user-mail-address      . ,work-mail-address)
+		    (mu4e-drafts-folder     . ,work-mail-drafts-folder)
+		    (mu4e-sent-folder       . ,work-mail-sent-folder)
+		    (mu4e-trash-folder      . ,work-mail-trash-folder)
+		    (mu4e-compose-signature . ,work-mail-sig)
+
+		    ;; SMTP settings
+		    (message-send-mail-function   . smtpmail-send-it)
+		    (smtpmail-stream-type         . starttls)
+		    (smtpmail-default-smtp-server . ,work-mail-smtp-server)
+		    (smtpmail-smtp-server         . ,work-mail-smtp-server)
+		    (smtpmail-smtp-service        . ,work-mail-smtp-port))))))
 
 (use-package emms
   :ensure nil
