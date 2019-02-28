@@ -9,6 +9,7 @@
  'mostlyblue
  '(default                           ((t (:foreground "black" :background "white"))))
  '(cursor                            ((t (:foreground "white" :background "black"))))
+ '(region                            ((t (:background "PaleTurquoise1"))))
 
  ;; programming related faces
  '(font-lock-comment-face            ((t (:foreground "SlateGray4"))))

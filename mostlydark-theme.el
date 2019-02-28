@@ -8,6 +8,7 @@
    'mostlydark
    `(default ((t (:foreground ,almost-white :background "black"))))
    '(cursor  ((t (:foreground "black" :background "white"))))
+   '(region  ((t (:background "DeepSkyBlue4"))))
 
    '(font-lock-comment-face           ((t (:foreground "#aaaaaa"))))
    '(font-lock-comment-delimiter-face ((t (:foreground "#aaaaaa"))))
