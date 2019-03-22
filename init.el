@@ -142,7 +142,11 @@ MODE disable ws trimming."
      (let* ((hist (mapcar 'car quick-dirs))
 	    (choice (completing-read "dir: " hist)))
        (list (cdr (assoc choice quick-dirs)))))
-    (dired directory)))
+    (dired directory))
+
+  (defun open-todos ()
+    (interactive)
+    (org-agenda nil "c")))
 
 ;;; Keys and movement
 
