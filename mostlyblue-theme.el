@@ -48,6 +48,7 @@
  '(font-latex-string-face            ((t (:inherit (font-lock-string-face)))))
  '(font-latex-sedate-face            ((t (:inherit (font-lock-keyword-face)))))
  '(font-latex-italic-face            ((t (:italic t))))
+ '(font-latex-slide-title-face       ((t (:inherit (font-latex-sectioning-1-face)))))
 
  ;; flyspell
  '(flyspell-incorrect                ((t (:underline (:color "red3")))))
