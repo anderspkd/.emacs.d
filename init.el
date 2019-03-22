@@ -157,6 +157,8 @@ MODE disable ws trimming."
 (bind-key "C-a" 'back-to-indentation-or-beginning)
 (bind-key "C-c q" 'quick-find-directory)
 (bind-key "C-c i" 'imenu-list)
+(bind-key "C-c :" 'avy-goto-line)
+(bind-key "C-c ." 'avy-goto-char-2)
 
 (use-package hydra :ensure t)
 
@@ -173,9 +175,6 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
     ("r" rotate-frame-clockwise)
     ("R" rotate-frame-anticlockwise)
     ("q" nil)))
-
-(use-package ace-window
-  :bind ("C-x o" . ace-window))
 
 (defhydra hydra-resize-windows (global-map "C-c r")
   "Resize buffer"
