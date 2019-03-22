@@ -261,17 +261,18 @@ _q_:quit
 	(up  (lambda (n) (interactive "p")
 	       (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
 
-    (bind-key "C-f"     fwd pdf-view-mode-map)
-    (bind-key "<right>" fwd pdf-view-mode-map)
+    (bind-key "C-f"      fwd pdf-view-mode-map)
+    (bind-key "<right>"  fwd pdf-view-mode-map)
 
-    (bind-key "C-b"     bkw pdf-view-mode-map)
-    (bind-key "<left>"  bkw pdf-view-mode-map)
+    (bind-key "C-b"      bkw pdf-view-mode-map)
+    (bind-key "<left>"   bkw pdf-view-mode-map)
 
-    (bind-key "C-n"     dwn pdf-view-mode-map)
-    (bind-key "<down>"  dwn pdf-view-mode-map)
+    (bind-key "C-n"      dwn pdf-view-mode-map)
+    (bind-key "<down>"   dwn pdf-view-mode-map)
+    (bind-key "<return>" dwn pdf-view-mode-map)
 
-    (bind-key "C-p"     up  pdf-view-mode-map)
-    (bind-key "<up>"    up  pdf-view-mode-map)))
+    (bind-key "C-p"      up  pdf-view-mode-map)
+    (bind-key "<up>"     up  pdf-view-mode-map)))
 
 (use-package yasnippet
   :defer t
