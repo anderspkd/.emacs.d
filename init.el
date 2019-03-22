@@ -461,12 +461,20 @@ prepended to the guard."
   (add-hook 'org-mode-hook 'yas-minor-mode)
   (add-hook 'org-mode-hook (lambda () (setq fill-column 80)))
   :config
+  (defun org-add-timeslot ()
+    (interactive)
+    (let ((ts-string (with-temp-buffer (org-time-stamp nil) (buffer-string))))
+      (org-set-property "WHEN" ts-string)))
+
+  (bind-key "C-c w" #'org-add-timeslot org-mode-map)
   (setq org-capture-templates
 	'(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
 	   "* %?\n :PROPERTIES:\n :ADDED: %U\n :ANNOTATION: %a\n :END:\n %i")))
   (setq org-agenda-files '("~/org/tasks.org")
 	org-log-reschedule t
-	org-log-done t))
+	org-log-done t)
+  (setq org-agenda-custom-commands
+	'(("c" "todo+agenda" ((agenda "") (alltodo ""))))))
 
 (use-package org-ref
   :defer 1
