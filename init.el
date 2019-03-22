@@ -685,3 +685,5 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
   (load-theme 'mostlyblue)
   ;; (load-theme 'mostlydark)
   )
+
+(server-start)
