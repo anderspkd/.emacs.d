@@ -697,4 +697,5 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
   ;; (load-theme 'mostlydark)
   )
 
-(server-start)
+(unless (string= (nth 1 command-line-args) "--no-server")
+  (server-start))
