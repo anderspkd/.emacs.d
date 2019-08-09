@@ -1,9 +1,8 @@
 (deftheme mostlyblue
-  "Somewhat monochrome theme that uses different shades of blue
-  for most colors.")
+  "A somewhat monochrome theme focusing on a white and blue color
+  palette")
 
-(defgroup mostlyblue-theme nil
-  "customization options for the `duck-knight' theme")
+(defgroup mostlyblue-theme nil "")
 
 (custom-theme-set-faces
  'mostlyblue
