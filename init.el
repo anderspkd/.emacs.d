@@ -342,13 +342,15 @@ prepended to the guard."
 	      ("C-c C-c" . compile))
   :init
   (trim-ws-in-mode 'c-mode)
-  (add-hook 'c-mode-hook (lambda () (c-set-style "linux"))))
+  (add-hook 'c-mode-hook (lambda () (c-set-style "linux")))
+  (add-hook 'c-mode-hook 'rtags-start-process-unless-running))
 
 (use-package c++-mode
   :ensure nil
   :mode "\\.cpp\\'"
   :bind (:map c++-mode-map
-	      ([ret] . newline-and-indent))
+	      ([ret] . newline-and-indent)
+	      ("C-c h" . insert-header-guard))
   :init
   (trim-ws-in-mode 'c++-mode)
   (defconst cpp-no-ns-indent
@@ -357,8 +359,7 @@ prepended to the guard."
   (add-hook 'c++-mode-hook (lambda ()
 			     (c-set-style "cpp-no-ns-indent")
 			     (setq c-basic-offset 4)))
-  :config
-  (bind-key "C-c h" 'insert-header-guard c-mode-map))
+  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running))
 
 (use-package python
   :mode (("\\.py\\'" . python-mode)
