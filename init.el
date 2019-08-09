@@ -331,7 +331,10 @@ prepended to the guard."
 	    (insert (format "\n\n#endif %s" (if is-cpp (format "// %s" guard)
 					      (format "/* %s */" guard))))))))))
 
-(require 'rtags)
+(use-package rtags
+  :ensure nil
+  :config
+  (rtags-enable-standard-keybindings c-mode-base-map "\C-x t"))
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
