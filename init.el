@@ -569,6 +569,9 @@ prepended to the guard."
   (add-to-list 'mu4e-view-actions
 	       '("ViewInBrowser" . mu4e-action-view-in-browser))
 
+  (add-to-list 'mu4e-bookmarks '("flag:flagged" "Flagged Messages" ?f))
+
+  (add-hook 'mu4e-compose-mode-hook (lambda () (setq fill-column 70)))
   (setq mu4e-user-mail-address-list `(,private-mail-address ,work-mail-address))
   (setq mail-user-agent 'mu4e-user-agent)
   (setq mu4e-maildir "~/mail")
