@@ -365,14 +365,16 @@ prepended to the guard."
   :mode (("\\.py\\'" . python-mode)
 	 ("\\.mpc\\'". python-mode))
   :interpreter ("python" . python-mode)
-  :bind (:map python-mode-map ("C-c b t" . hs-toggle-hiding))
+  :bind (:map python-mode-map
+	      ("C-c b t" . hs-toggle-hiding)
+	      ("C-." . dabbrev-expand))
   :init
   (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'nlinum-mode)
   (trim-ws-in-mode 'python-mode)
   :config
-  (elpy-enable)
+  ;; (elpy-enable)
   (setq python-shell-interpreter "ipython"
 	python-shell-interpreter-args "-i --simple-prompt"
 	python-indent-offset 4))
