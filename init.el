@@ -664,6 +664,7 @@ _SPC_: %s(if emms-player-paused-p \"play \" \"pause\")
   (add-to-list 'emms-info-functions 'emms-info-cueinfo))
 
 (eval-and-compile
+  (require 'iso-transl)
   (set-face-attribute 'default nil :family preferred-font :height 90)
 
   ;; fun with bitmaps :-)
