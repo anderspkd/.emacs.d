@@ -313,21 +313,25 @@ prepended to the guard."
   (interactive
    (list (when current-prefix-arg (read-string "prefix: "))))
   (let ((ext (file-name-extension (buffer-file-name))))
-    (unless (or (string= ext "hpp")
-		(string= ext "h"))
-      (error "Not in a c or c++ header file ... "))
-    (let* ((filename (file-name-base (buffer-file-name)))
-	   guard)
-      (when (stringp filename)
-	(if prefix
-	    (setq guard (format "_%s_%s_%s" (upcase prefix) (upcase filename) (upcase ext)))
-	  (setq guard (format "_%s_%s" (upcase filename) (upcase ext))))
-	(insert (format "#ifndef %s\n" guard))
-	(insert (format "#define %s\n\n" guard))
-	(forward-line)
-	(save-excursion
-	  (goto-char (point-max))
-	  (insert (format "\n\n#endif /* %s */" guard)))))))
+    (let ((is-cpp (string= ext "hpp"))
+	  (is-c (string= ext "h")))
+      (unless (or is-cpp is-c)
+	(error "Not in a c or c++ header file ... "))
+      (let* ((filename (file-name-base (buffer-file-name)))
+	     guard)
+	(when (stringp filename)
+	  (if prefix
+	      (setq guard (format "_%s_%s_%s" (upcase prefix) (upcase filename) (upcase ext)))
+	    (setq guard (format "_%s_%s" (upcase filename) (upcase ext))))
+	  (insert (format "#ifndef %s\n" guard))
+	  (insert (format "#define %s\n\n" guard))
+	  (forward-line)
+	  (save-excursion
+	    (goto-char (point-max))
+	    (insert (format "\n\n#endif %s" (if is-cpp (format "// %s" guard)
+					      (format "/* %s */" guard))))))))))
+
+(require 'rtags)
 
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
