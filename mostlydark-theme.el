@@ -45,6 +45,15 @@
    ;; Makefile
    '(makefile-targets                  ((t (:inherit (font-lock-keyword-face)))))
 
+   '(org-level-1                       ((t (:foreground "#0000aa" :bold t :background "black"))))
+   '(org-level-2                       ((t (:foreground "#000088" :bold t))))
+   '(org-level-3                       ((t (:foreground "#000066" :bold t))))
+   '(org-level-4                       ((t (:foreground "#000044" :bold t))))
+   '(org-level-5                       ((t (:foreground "#000022" :bold t))))
+   '(org-level-6                       ((t (:foreground "#000022" :bold t))))
+   '(org-level-7                       ((t (:foreground "#000022" :bold t))))
+   '(org-level-8                       ((t (:foreground "#000022" :bold t))))
+
    ))
 
 (provide-theme 'mostlydark)
