@@ -146,7 +146,19 @@ MODE disable ws trimming."
 
   (defun open-todos ()
     (interactive)
-    (org-agenda nil "c")))
+    (org-agenda nil "c"))
+
+  (defun add-number-to-number-at-point (x)
+  (interactive "n")
+  (let ((y (thing-at-point 'number)))
+    (unless y
+      (error "no number at point"))
+    (save-excursion
+      (let ((bounds
+	     (when (thing-at-point-looking-at "-?[0-9]+\\.?[0-9]*" 500)
+	       (cons (match-beginning 0) (match-end 0)))))
+	(kill-region (car bounds) (cdr bounds))
+	(insert (number-to-string (+ y x))))))))
 
 ;;; Keys and movement
 
