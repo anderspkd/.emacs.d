@@ -296,11 +296,6 @@ prepended to the guard."
 	    (insert (format "\n\n#endif %s" (if is-cpp (format "// %s" guard)
 					      (format "/* %s */" guard))))))))))
 
-(use-package rtags
-  :ensure nil
-  :config
-  (rtags-enable-standard-keybindings c-mode-base-map "\C-x t"))
-
 (use-package cc-mode
   :mode (("\\.c\\'" . c-mode)
 	 ("\\.h\\'" . c-mode))
@@ -311,7 +306,8 @@ prepended to the guard."
   :init
   (trim-ws-in-mode 'c-mode)
   (add-hook 'c-mode-hook (lambda () (c-set-style "linux")))
-  (add-hook 'c-mode-hook 'rtags-start-process-unless-running))
+  ;; (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+  )
 
 (use-package c++-mode
   :ensure nil
@@ -327,8 +323,7 @@ prepended to the guard."
   (c-add-style "cpp-no-ns-indent" cpp-no-ns-indent)
   (add-hook 'c++-mode-hook (lambda ()
 			     (c-set-style "cpp-no-ns-indent")
-			     (setq c-basic-offset 4)))
-  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running))
+			     (setq c-basic-offset 4))))
 
 (use-package python
   :mode (("\\.py\\'" . python-mode)
