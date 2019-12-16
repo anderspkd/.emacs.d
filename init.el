@@ -376,18 +376,6 @@ prepended to the guard."
   :init
   (add-hook 'web-mode-hook 'auto-revert-mode))
 
-(use-package go-mode
-  :mode "\\.go\\'"
-  :init
-  (trim-ws-in-mode 'go-mode)
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  ;; (setenv "GOPATH" (expand-file-name "~/code/go"))
-  :config
-  (require 'go-guru)
-  (bind-key "C-c C-k" 'godoc go-mode-map)
-  (bind-key "M-," 'pop-tag-mark go-mode-map)
-  (bind-key "M-." 'godef-jump go-mode-map))
-
 ;; C-x C-q is very handy, but I keep forgetting that it exists lol.
 (use-package dired
   :ensure nil  ; dired is already installed by default
