@@ -48,6 +48,9 @@
   (defsubst personal-file (file-name)
     (emacs-dir (concat "personal/" file-name)))
 
+  ;; load custom directory and folder name variables
+  (load-file (personal-file "folders"))
+
   (setq custom-file (emacs-dir "custom.el"))
   (load custom-file)
 
@@ -73,7 +76,7 @@
   (setq confirm-kill-emacs 'y-or-n-p)
 
   (setq backup-by-copying t
-	backup-directory-alist '(("." . "~/.emacs_backups"))
+	backup-directory-alist `(("." . ,asd::folders::emacs-backups))
 	delete-old-versions t
 	kept-new-versions 6
 	kept-old-versions 2
@@ -132,16 +135,11 @@ MODE disable ws trimming."
     (when (stringp file-or-thing)
       (start-process "mpv-emacs" nil "mpv" file-or-thing)))
 
-  (defvar quick-dirs
-	(mapcar (lambda (dir) (cons (car (last (split-string dir "/")))
-				    (expand-file-name dir)))
-		'("~/docs/uni" "~/docs/projects" "~/.emacs.d")))
-
   (defun quick-find-directory (directory)
     (interactive
-     (let* ((hist (mapcar 'car quick-dirs))
-	    (choice (completing-read "dir: " hist)))
-       (list (cdr (assoc choice quick-dirs)))))
+     (let* ((hist (mapcar 'car asd::folders::quick-dirs))
+	    (choice (completing-read "directory: " hist)))
+       (list (cdr (assoc choice asd::folders::quick-dirs)))))
     (dired directory))
 
   (defun open-todos ()
@@ -433,9 +431,9 @@ prepended to the guard."
 
   (bind-key "C-c w" #'org-add-timeslot org-mode-map)
   (setq org-capture-templates
-	'(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
+	'(("t" "Todo" entry (file+headline asd::folders::agenda-file "Tasks")
 	   "* %?\n :PROPERTIES:\n :ADDED: %U\n :ANNOTATION: %a\n :END:\n %i")))
-  (setq org-agenda-files '("~/org/tasks.org")
+  (setq org-agenda-files (list asd::folders::agenda-file)
 	org-log-reschedule t
 	org-log-done t)
   (setq org-agenda-custom-commands
@@ -447,10 +445,9 @@ prepended to the guard."
 	 ("C-c p b" . goto-org-ref-bib-file)
 	 ("C-c p r" . helm-bibtex))
   :init
-  (defvar org-ref::bib-files '(;; "~/docs/lib/crypto.bib" ;; this guy takes forever to load
-			       "~/docs/lib/bibs/refs.bib"))
-  (defvar org-ref::notes-file "~/docs/lib/notes.org")
-  (defvar org-ref::lib-path "~/docs/lib/pdfs")
+  (defvar org-ref::bib-files asd::folders::org-ref-bib-files)
+  (defvar org-ref::notes-file asd::folders::org-ref-notes-files)
+  (defvar org-ref::lib-path asd::folders::org-ref-lib-path)
   (defun goto-org-ref-bib-file (path)
     (interactive (list
 		  (if (< 1 (length org-ref::bib-files))
