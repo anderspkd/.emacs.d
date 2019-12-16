@@ -241,51 +241,6 @@ _q_:quit
 (use-package nlinum
   :defer t)
 
-(use-package pdf-tools
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (pdf-tools-install)
-  (setq pdf-annot-activate-created-annotations nil)
-  (setq pdf-view-resize-factor 1.1)
-
-  (bind-key "k" (lambda (interactive)) pdf-view-mode-map)
-
-  (bind-key "h" 'pdf-annot-add-highlight-markup-annotation pdf-view-mode-map)
-  (bind-key "t" 'pdf-annot-add-text-annotation pdf-view-mode-map)
-  (bind-key "D" 'pdf-annot-delete pdf-view-mode-map)
-
-  ;; ugly hack to change the default highlight color to LightCyan2 from yellow.
-  (setq pdf-annot-default-annotation-properties
-	`((t (label . ,user-full-name))
-	  (text (icon . "Comment") (color . "#ff0000"))
-	  (highlight (color . "LightCyan2"))
-	  (squiggly (color . "orange"))
-	  (strike-out (color . "red"))
-	  (underline (color . "blue"))))
-
-  ;; default movements are painfully slow
-  (let ((fwd (lambda (n) (interactive "p")
-	       (image-forward-hscroll (if (= n 1) 5 n))))
-	(bkw (lambda (n) (interactive "p")
-	       (image-backward-hscroll (if (= n 1) 5 n))))
-	(dwn (lambda (n) (interactive "p")
-	       (pdf-view-next-line-or-next-page (if (= n 1) 5 n))))
-	(up  (lambda (n) (interactive "p")
-	       (pdf-view-previous-line-or-previous-page (if (= n 1) 5 n)))))
-
-    (bind-key "C-f"      fwd pdf-view-mode-map)
-    (bind-key "<right>"  fwd pdf-view-mode-map)
-
-    (bind-key "C-b"      bkw pdf-view-mode-map)
-    (bind-key "<left>"   bkw pdf-view-mode-map)
-
-    (bind-key "C-n"      dwn pdf-view-mode-map)
-    (bind-key "<down>"   dwn pdf-view-mode-map)
-    (bind-key "<return>" dwn pdf-view-mode-map)
-
-    (bind-key "C-p"      up  pdf-view-mode-map)
-    (bind-key "<up>"     up  pdf-view-mode-map)))
-
 (use-package yasnippet
   :defer t
   :diminish yas-minor-mode
@@ -298,7 +253,7 @@ _q_:quit
   :init
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook
-	    (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
+  	    (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "Okular"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
