@@ -7,7 +7,7 @@
 
 (defun gb-make-entry (file-name &optional key)
   (let ((entry file-name)
-	(key-cmd (when key `(,key . (lambda () (interactive) (find-file ,file))))))
+	(key-cmd (when key `(,key . (lambda () (interactive) (find-file ,file-name))))))
     (if key
 	(setq entry (concat "[" key "] " entry))
       (setq entry (concat "    " entry)))
