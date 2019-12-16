@@ -427,7 +427,7 @@ prepended to the guard."
 
   (bind-key "C-c w" #'org-add-timeslot org-mode-map)
   (setq org-capture-templates
-	'(("t" "Todo" entry (file+headline asd::folders::agenda-file "Tasks")
+	`(("t" "Todo" entry (file+headline ,asd::folders::agenda-file "Tasks")
 	   "* %?\n :PROPERTIES:\n :ADDED: %U\n :ANNOTATION: %a\n :END:\n %i")))
   (setq org-agenda-files (list asd::folders::agenda-file)
 	org-log-reschedule t
