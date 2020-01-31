@@ -427,11 +427,22 @@ prepended to the guard."
 
   (bind-key "C-c w" #'org-add-timeslot org-mode-map)
   (setq org-capture-templates
-	`(("t" "Todo" entry (file+headline ,asd::folders::agenda-file "Tasks")
-	   "* %?\n :PROPERTIES:\n :ADDED: %U\n :ANNOTATION: %a\n :END:\n %i")))
-  (setq org-agenda-files (list asd::folders::agenda-file)
+	`(("t" "Todo" entry (file+headline ,asd::folders::todo-file "Captures")
+	   "* TODO %? %^G\n :PROPERTIES:\n :ADDED: %U\n :END:\n %i")
+	  ("n" "Note" entry (file+headline ,asd::folders::cf-notes "Captures")
+	   "* %?\n :PROPERTIES:\n :ADDED: %U\n :CTX: %F\n %i")))
+  (setq org-agenda-files asd::folders::agenda-files
 	org-log-reschedule t
 	org-log-done t)
+
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "|" "DONE(d)")
+	  (sequence "FOLLOWUP(n@)" "|")
+	  (sequence "|" "CANCELLED(c@)")))
+
+  (setq org-todo-keyword-faces
+	'(("FOLLOWUP" . "orange")))
+
   (setq org-agenda-custom-commands
 	'(("c" "todo+agenda" ((agenda "") (alltodo ""))))))
 
