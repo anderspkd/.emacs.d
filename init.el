@@ -387,7 +387,7 @@ prepended to the guard."
   :config
   (use-package dired-x :ensure nil)  ; so is dired-x
   (setq-default dired-omit-files-p t)
-  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
+  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$\\|__pycache__"))
   (setq dired-auto-revert-buffer t
 	;; no "." and "..", long-list, human readable, classify, dirs first
 	dired-listing-switches "-AlhF --group-directories-first")
