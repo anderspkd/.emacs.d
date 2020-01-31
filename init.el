@@ -450,8 +450,13 @@ prepended to the guard."
 		      (completing-read "bib file: " org-ref::bib-files)
 		    (car org-ref::bib-files))))
     (find-file path))
+
   :config
   (message "loaded org-ref")
+  ;; use okular to open PDFs
+  (setq bibtex-completion-pdf-open-function
+	(lambda (fpath)
+	  (start-process "okular" "*okular*" "okular" fpath)))
   (setq org-ref-bibliography-notes org-ref::notes-file
 	org-ref-default-bibliography org-ref::bib-files
 	org-ref-pdf-directory org-ref::lib-path)
