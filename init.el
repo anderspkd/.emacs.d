@@ -156,7 +156,46 @@ MODE disable ws trimming."
 	     (when (thing-at-point-looking-at "-?[0-9]+\\.?[0-9]*" 500)
 	       (cons (match-beginning 0) (match-end 0)))))
 	(kill-region (car bounds) (cdr bounds))
-	(insert (number-to-string (+ y x))))))))
+	(insert (number-to-string (+ y x)))))))
+
+  ;; https://emacs.stackexchange.com/a/37648
+
+  (defun replace-or-delete-pair (open)
+    "Replace pair at point by OPEN and its corresponding closing character.
+The closing character is lookup in the syntax table or asked to
+the user if not found."
+    (interactive
+     (list
+      (read-char
+       (format "Replacing pair %c%c by (or hit RET to delete pair):"
+	       (char-after)
+	       (save-excursion
+		 (forward-sexp 1)
+		 (char-before))))))
+    (if (memq open '(?\n ?\r))
+	(delete-pair)
+      (let ((close (cdr (aref (syntax-table) open))))
+	(when (not close)
+	  (setq close
+		(read-char
+		 (format "Don't know how to close character %s (#%d) ; please provide a closing character: "
+			 (single-key-description open 'no-angles)
+			 open))))
+	(replace-pair open close))))
+
+  (defun replace-pair (open close)
+    "Replace pair at point by respective chars OPEN and CLOSE.
+If CLOSE is nil, lookup the syntax table. If that fails, signal
+an error."
+    (let ((close (or close
+		     (cdr-safe (aref (syntax-table) open))
+		     (error "No matching closing char for character %s (#%d)"
+			    (single-key-description open t)
+			    open)))
+	  (parens-require-spaces))
+      (insert-pair 1 open close))
+    (delete-pair)
+    (backward-char 1)))
 
 ;;; Keys and movement
 
@@ -169,6 +208,7 @@ MODE disable ws trimming."
 (bind-key "C-c i" 'imenu-list)
 (bind-key "C-c :" 'avy-goto-line)
 (bind-key "C-c ." 'avy-goto-char-2)
+(bind-key "C-c e" 'replace-or-delete-pair)
 
 (use-package hydra :ensure t)
 
