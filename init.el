@@ -1,5 +1,6 @@
 (defvar old-file-name-handler-alist file-name-handler-alist)
-(defvar preferred-font "DejaVu Sans Mono")
+;; (defvar preferred-font "DejaVu Sans Mono")
+(defvar preferred-font "PxPlus IBM VGA9")
 
 (setq gc-cons-threshold 64000000
       auto-save-list-file-prefix nil
@@ -560,7 +561,7 @@ prepended to the guard."
 
 (eval-and-compile
   (require 'iso-transl)
-  (set-face-attribute 'default nil :family preferred-font :height 90)
+  (set-face-attribute 'default nil :family preferred-font :height 110)
 
   ;; fun with bitmaps :-)
   (define-fringe-bitmap 'right-curly-arrow
@@ -585,7 +586,8 @@ prepended to the guard."
 
   (add-hook 'prog-mode-hook (lambda () (setq fill-column 80)))
 
-  (load-theme 'mostlyblue)
+  ;; (load-theme 'mostlyblue)
+  (color-theme-sanityinc-tomorrow-blue)
   ;; (load-theme 'mostlydark)
   )
 
