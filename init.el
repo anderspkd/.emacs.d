@@ -1,6 +1,6 @@
 (defvar old-file-name-handler-alist file-name-handler-alist)
-;; (defvar preferred-font "DejaVu Sans Mono")
-(defvar preferred-font "PxPlus IBM VGA9")
+(defvar preferred-font "DejaVu Sans Mono")
+;; (defvar preferred-font "PxPlus IBM VGA9")
 
 (setq gc-cons-threshold 64000000
       auto-save-list-file-prefix nil
@@ -585,6 +585,16 @@ prepended to the guard."
      #b00000000])
 
   (add-hook 'prog-mode-hook (lambda () (setq fill-column 80)))
+
+  (defvar asd-light-theme nil)
+
+  (defsubst switch-theme ()
+    (interactive)
+    (if asd-light-theme
+	(progn (color-theme-sanityinc-tomorrow-blue)
+	       (setq asd-light-theme nil))
+      (progn (color-theme-sanityinc-tomorrow-day)
+	     (setq asd-light-theme t))))
 
   ;; (load-theme 'mostlyblue)
   (color-theme-sanityinc-tomorrow-blue)

@@ -12,18 +12,18 @@
 
 (require 'ox-publish)
 (require 'ox-html)
-(require 'ox-rss)
+;; (require 'ox-rss)
 
 (setq org-export-html-coding-system 'utf-8-unix)
 (setq org-html-viewport nil)
 
-(defvar asd-blog:base-dir (expand-file-name "~/docs/blog/"))
+(defvar asd-blog:base-dir (expand-file-name asd::folders::personal-blog-dir))
 (defvar asd-blog:default-sitemap-filename "index.org")
 
 (defvar asd-blog:header-links
   '(("/" . "Front")
     ("/blog" . "Blog")
-    ("/contact.html" . "Contact")
+    ("/research.html" . "Research")
     ("/links.html" . "Links")))
 
 ;; small hack that stops `org-publish' from polluting `recentf-list'.
@@ -57,12 +57,16 @@
   (insert (org-timestamp-format (car obj)
 	   "<p class=\"date\">Published: %Y-%m-%d</p>")))
 
+(defsubst asd-blog:insert-cc-license-html ()
+  (insert "<p class=\"license\">CC BY-SA</p>"))
+
 ;; construct the postamble (thing at bottom of the page)
 (defun asd-blog:postamble (options)
   (let ((author (plist-get options :author))
 	(published (plist-get options :date)))
     (with-temp-buffer
       (insert "<hr>")
+      (asd-blog:insert-cc-license-html)
       (when author
 	(asd-blog:insert-author-html author))
       (when published
@@ -117,7 +121,7 @@
 
 (setq org-publish-project-alist
       `(("blog"
-	 :components ("B-posts" "B-image" "B-video" "B-static" "B-audio" "B-drafts"))
+	 :components ("B-posts" "B-image" "B-video" "B-static" "B-audio" "B-files"))
 
 	("B-posts" ;; posts
 	 :base-directory ,(asd-blog:df "blog")
@@ -155,30 +159,7 @@
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-function asd-blog:sitemap)
 
-	("B-drafts"
-	 :base-directory ,(asd-blog:df "drafts")
-	 :publishing-directory ,(asd-blog:pub-df "drafts")
-	 :base-extension "org"
-	 :recursive t
-	 :htmlized-source t
-	 :with-author t
-	 :with-date nil
-	 :with-toc nil
-	 :with-creator nil
-	 :html-doctype "html5"
-	 :html-link-home ""
-	 :html-link-up ""
-	 :html-postamble asd-blog:postamble
-	 :html-preamble asd-blog:preamble
-	 :html-head "<link rel=\"stylesheet\" href=\"/res/style.css\" type=\"text/css\"/>"
-	 :html-mathjax-template "<script type=\"text/javascript\" src=\"%PATH\"></script>"
-	 :publishing-function org-html-publish-to-html
-	 :headline-levels 4
-	 :todo-keywords nil
-	 :section-numbers nil
-	 )
-
-	("B-static" ;; contact, links, and so on
+	("B-static" ;; static pages
 	 :base-directory ,(asd-blog:df "pages")
 	 :publishing-directory ,(asd-blog:pub-df)
 	 :base-extension "org"
@@ -195,7 +176,7 @@
 
 	 :html-doctype "html5"
 	 :html-html5-fancy t
-	 :html-postamble nil
+	 :html-postamble asd-blog:postamble
 	 :html-preamble asd-blog:preamble
 	 :html-head "<link rel=\"stylesheet\" href=\"/res/style.css\" type=\"text/css\"/>"
 
@@ -221,6 +202,14 @@
 	 :base-extension "ogg"
 	 :publishing-function org-publish-attachment
 	 :recursive t)
+
+	("B-files" ;; files
+	 :base-directory ,(asd-blog:df "res" "files")
+	 :publishing-directory ,(asd-blog:pub-df "res" "files")
+	 :base-extension "pdf\||txt"
+	 :publishing-function org-publish-attachment
+	 :recursive t)
+
 	))
 
 (provide 'asd-blog)
