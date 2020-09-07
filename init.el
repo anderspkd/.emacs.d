@@ -561,7 +561,7 @@ prepended to the guard."
 
 (eval-and-compile
   (require 'iso-transl)
-  (set-face-attribute 'default nil :family preferred-font :height 110)
+  (set-face-attribute 'default nil :family preferred-font :height 100)
 
   ;; fun with bitmaps :-)
   (define-fringe-bitmap 'right-curly-arrow
