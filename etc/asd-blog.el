@@ -94,6 +94,14 @@
 		      (match-beginning 0))))
       (buffer-substring beg end))))
 
+(defun asd-blog:get-tags (file)
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (let ((beg (re-search-forward "^#\\+TAGS:"))
+	  (end (search-forward "\n")))
+      (split-string (buffer-substring beg end)))))
+
 (defsubst asd-blog:insert-sitemap-title-html (title-string)
   (insert "#+TITLE: " title-string "\n\n"))
 
@@ -108,8 +116,9 @@
 	       (s3 (split-string (cadr s1) "\\]\\]"))
 	       (filename (asd-blog:df "blog" (cadr s2)))
 	       (entry-title (car s3))
-	       (preview (asd-blog:get-preview filename)))
-	  (insert "* " entry-title "\n")
+	       (preview (asd-blog:get-preview filename))
+	       (tags (asd-blog:get-tags filename)))
+	  (insert "* " entry-title " :" (reduce (lambda (x y) (concat x ":" y)) tags) ":\n")
 	  (insert preview " ")
 	  (insert "[[file:" (cadr s2) "][... read more]]\n" )
 	  (unless (null flist)
