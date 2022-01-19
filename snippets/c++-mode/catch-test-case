@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: catch-test-case
+# key: tc
+# --
+TEST_CASE("$1") {
+    $0
+}

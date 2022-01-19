@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: doxy-tparam
+# condition: (nth 4 (syntax-ppss))
+# key: dtp
+# --
+@tparam $0

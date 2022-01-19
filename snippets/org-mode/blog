@@ -4,6 +4,7 @@
 # --
 #+TITLE: $1
 #+AUTHOR: ${2:Anders Dalskov}
+#+TAGS $3
 #+BEGIN_PREVIEW
 $0
 #+END_PREVIEW

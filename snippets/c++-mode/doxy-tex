@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: doxy-tex
+# key: tex
+# --
+\f\$$0\f\$

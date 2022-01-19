@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: err1
-# key: err1
-# --
-err = $1;
-if (err)
-	${0:return err;}

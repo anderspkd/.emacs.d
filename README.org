@@ -1,3 +1,0 @@
-#+TITLE: .emacs.d
-
-Configuration file(s) for emacs.

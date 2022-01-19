@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: python
-# key: python_
-# --
-#+begin_src python ${1::results output}
-$0
-#+end_src

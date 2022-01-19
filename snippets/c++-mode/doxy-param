@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: doxy-param
+# condition: (nth 4 (syntax-ppss))
+# key: dp
+# --
+@param $0

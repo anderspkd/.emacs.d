@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: catch-require
+# key: tr
+# --
+REQUIRE($0);
