@@ -48,7 +48,7 @@
     (emacs-dir (concat "personal/" file-name)))
 
   ;; load custom directory and folder name variables
-  (load-file (personal-file "folders"))
+  (load-file (personal-file "folders.el"))
 
   (setq custom-file (emacs-dir "custom.el"))
   (load custom-file)
@@ -192,18 +192,22 @@ an error."
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
-	 ("C-c l" . org-store-link)
+	 ("C-c C-l" . org-store-link)
 	 ("C-c c" . org-capture)
-	 ("C-c C-l" . org-insert-link))
+	 ("C-c i" . org-insert-link))
   :config
   (yas-minor-mode)
   (enable-automatic-whitespace-trimming 'org-mode)
 	     
-  (setq org-agenda-files '("~/Documents/Org/privat.org"
-                           "~/Documents/Org/arbejde.org"
-                           "~/Documents/Org/forskning.org")
+  (setq org-agenda-files '("~/docs/org/agenda.org")
 	org-log-reschedule t
-	org-log-done t))
+	org-log-done t)
+  (setq org-capture-templates '(("t" "Todo" entry
+                                 (file+headline "~/docs/org/agenda.org" "Ting og sager")
+                                 "* TODO %?\n %i")
+                                ("j" "Journal" entry
+                                 (file+datetree "~/docs/org/journal.org")
+                                 "* %?\nEntered on %U\n %i"))))
 
 (use-package projectile
   :ensure t
@@ -281,6 +285,8 @@ Mark multiple things (_n_) next item, (_p_) previous item. (_q_) quit"
 (defun colorize-compilation-buffer ()
   (ansi-color-apply-on-region compilation-filter-start (point)))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+(setq ansi-color-names-vector
+      ["#1d1f21" "#cc6666" "#b5bd68" "#f0c674" "#81a2be" "#b294bb" "#8abeb7" "#c5c8c6"])
 
 (defun insert-header-guard (&optional prefix)
   "Insert a C/C++ style header guard with a name derived from the
@@ -304,8 +310,8 @@ prepended to the guard."
 	  (forward-line)
 	  (save-excursion
 	    (goto-char (point-max))
-	    (insert (format "\n\n#endif %s" (if is-cpp (format "// %s" guard)
-					      (format "/* %s */" guard))))))))))
+	    (insert (format "\n\n#endif %s" (format "// %s" guard)))))))))
+
 (defconst clang-format-file-of-buffer-p t)
 
 (defun clang-format-file-of-buffer ()
@@ -328,7 +334,6 @@ prepended to the guard."
   :bind (:map c++-mode-map              
 	      ([ret] . newline-and-indent))
   :init
-  
   (require 'modern-cpp-font-lock)
   (projectile-mode 1)
   (modern-c++-font-lock-global-mode t)
@@ -345,23 +350,41 @@ prepended to the guard."
 			     (setq c-basic-offset 2)
                              (setq indent-tabs-mode nil)
                              (define-key c++-mode-map (kbd "C-c C-d") nil)))
+  (setq lsp-clients-clangd-args '("--fallback-style=Google"))
+  (add-hook 'c++-mode-hook 'lsp)
   (add-hook 'c++-mode-hook (lambda () (setq fill-column 80)))
-  (add-hook 'c++-mode-hook (lambda () (yas-global-mode 1))))
-
-(use-package slime
-  :bind (("C-c s h" . slime-documentation-lookup))
-  :init
-  (require 'slime-autoloads)
-  (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
-  (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
-  (load (expand-file-name "~/Applications/ql/slime-helper.el"))
-  (setq inferior-lisp-program "/usr/bin/sbcl")
   :config
-  (slime-setup '(slime-fancy slime-asdf)))
+  (setq lsp-enable-on-type-formatting nil))
+
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :config
+  (setq lsp-enable-semantic-highlighting nil)
+  (setq rustic-ansi-faces ["#1d1f21" "#cc6666" "#b5bd68" "#f0c674" "#81a2be" "#b294bb" "#8abeb7" "#c5c8c6"]))
+
+(use-package lsp
+  :ensure nil
+  :init
+  (add-hook 'lsp-mode-hook (lambda ()
+                             (let ((lsp-keymap-prefix "C-c l"))
+                               'lsp-enable-which-key-integration)))
+  (require 'dap-cpptools)
+  (yas-global-mode)
+  :config
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map))
 
 (eval-and-compile
   (require 'iso-transl)
   (set-face-attribute 'default nil :height 90 :font "DejaVu Sans Mono")
+  ;; (set-face-attribute 'default nil :height 90 :font "Terminus")
 
   (require 'color-theme-sanityinc-tomorrow)
   (color-theme-sanityinc-tomorrow 'night)
