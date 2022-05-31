@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: html-paragraph
+# condition: (nth 4 (syntax-ppss))
+# key: pp
+# --
+<p>$0</p>

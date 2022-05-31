@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: iter
+# key: iter
+# --
+for (const ${1:auto} ${2:v} : $3) {$0}
