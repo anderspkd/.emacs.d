@@ -189,6 +189,9 @@ an error."
     (with-current-buffer "*Shell Command Output*"
       (copy-region-as-kill (point-min) (point-max)))))
 
+(use-package yasnippet
+  :ensure t)
+
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
@@ -199,9 +202,7 @@ an error."
   (yas-minor-mode)
   (enable-automatic-whitespace-trimming 'org-mode)
 	     
-  (setq org-agenda-files '("~/Documents/Org/privat.org"
-                           "~/Documents/Org/arbejde.org"
-                           "~/Documents/Org/forskning.org")
+  (setq org-agenda-files asd::folders::org-files
 	org-log-reschedule t
 	org-log-done t))
 
@@ -251,7 +252,13 @@ Mark multiple things (_n_) next item, (_p_) previous item. (_q_) quit"
 	python-shell-interpreter-args "-i --simple-prompt"
 	python-indent-offset 4))
 
-(pdf-loader-install)
+;; (pdf-tools-install :no-query)
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page))
 
 (use-package auctex
   :mode ("\\.tex\\'" . tex-mode)
@@ -266,13 +273,13 @@ Mark multiple things (_n_) next item, (_p_) previous item. (_q_) quit"
   (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
-  :config
   (setq TeX-source-correlate-method-active 'synctex
 	TeX-electric-sub-and-superscript t
 	TeX-auto-save t
 	TeX-parse-self t
 	TeX-source-correlate-start-server t
 	ispell-list-command "--list")
+  :config
   (setq-default TeX-master nil)
   (setq reftex-plug-into-AUCTeX t
 	reftex-ref-style-default-list '("Default" "Hyperref")))
@@ -282,12 +289,11 @@ Mark multiple things (_n_) next item, (_p_) previous item. (_q_) quit"
   (ansi-color-apply-on-region compilation-filter-start (point)))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-(defun insert-header-guard (&optional prefix)
+(defun insert-header-guard (prefix)
   "Insert a C/C++ style header guard with a name derived from the
-filename. If `prefix' is supplied, prompt for a string which is
-prepended to the guard."
+filename."
   (interactive
-   (list (when current-prefix-arg (read-string "prefix: "))))
+   (list (read-string "prefix: ")))
   (let ((ext (file-name-extension (buffer-file-name))))
     (let ((is-cpp (string= ext "hpp"))
 	  (is-c (string= ext "h")))
@@ -297,8 +303,8 @@ prepended to the guard."
 	     guard)
 	(when (stringp filename)
 	  (if prefix
-	      (setq guard (format "_%s_%s_%s" (upcase prefix) (upcase filename) (upcase ext)))
-	    (setq guard (format "_%s_%s" (upcase filename) (upcase ext))))
+	      (setq guard (format "%s_%s_%s" (upcase prefix) (upcase filename) (upcase ext)))
+	    (setq guard (format "%s_%s" (upcase filename) (upcase ext))))
 	  (insert (format "#ifndef %s\n" guard))
 	  (insert (format "#define %s\n\n" guard))
 	  (forward-line)
@@ -318,9 +324,12 @@ prepended to the guard."
 
 (bind-key "C-c f" 'clang-format-file-of-buffer)
 
-(require 'ivy)
-(ivy-mode 1)
-(setq ivy-use-selectable-prompt t)
+(use-package ivy
+  :ensure t
+  :init
+  (setq ivy-use-selectable-prompt t))
+
+(ivy-mode t)
 
 (use-package c++-mode
   :ensure nil
@@ -328,8 +337,7 @@ prepended to the guard."
   :bind (:map c++-mode-map              
 	      ([ret] . newline-and-indent))
   :init
-  
-  (require 'modern-cpp-font-lock)
+  (use-package modern-cpp-font-lock :ensure t)
   (projectile-mode 1)
   (modern-c++-font-lock-global-mode t)
   (enable-automatic-whitespace-trimming 'c++-mode)
@@ -345,28 +353,51 @@ prepended to the guard."
 			     (setq c-basic-offset 2)
                              (setq indent-tabs-mode nil)
                              (define-key c++-mode-map (kbd "C-c C-d") nil)))
+  (setq lsp-clients-clangd-args '("--fallback-style=Google"))
+  (add-hook 'c++-mode-hook 'lsp)
   (add-hook 'c++-mode-hook (lambda () (setq fill-column 80)))
-  (add-hook 'c++-mode-hook (lambda () (yas-global-mode 1))))
-
-(use-package slime
-  :bind (("C-c s h" . slime-documentation-lookup))
-  :init
-  (require 'slime-autoloads)
-  (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
-  (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
-  (load (expand-file-name "~/Applications/ql/slime-helper.el"))
-  (setq inferior-lisp-program "/usr/bin/sbcl")
+  (add-hook 'c++-mode-hook (lambda () (yas-global-mode 1)))
   :config
-  (slime-setup '(slime-fancy slime-asdf)))
+  (setq lsp-enable-on-type-formatting nil))
+
+(use-package lsp
+  :ensure nil
+  :init
+  (add-hook 'lsp-mode-hook (lambda ()
+                             (let ((lsp-keymap-prefix "C-c l"))
+                               'lsp-enable-which-key-integration)))
+  (require 'dap-cpptools)
+  (yas-global-mode)
+  :config
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map))
 
 (eval-and-compile
   (require 'iso-transl)
   (set-face-attribute 'default nil :height 90 :font "DejaVu Sans Mono")
-
-  (require 'color-theme-sanityinc-tomorrow)
-  (color-theme-sanityinc-tomorrow 'night)
   
-  ;; fun with bitmaps :-)
+  ;; (require 'color-theme-sanityinc-tomorrow)
+  ;; (color-theme-sanityinc-tomorrow 'night)
+
+  ;; (setq leuven-scale-outline-headlines nil
+  ;;       leuven-scale-org-agenda-structure nil
+  ;;       leuven-scale-org-document-title nil
+  ;;       leuven-scale-volatile-highlight nil)
+  ;; (load-theme 'leuven t)
+
+  (setq solarized-use-variable-pitch nil
+        solarized-scale-org-headlines nil)
+
+  (setq solarized-height-minus-1 1.0
+        solarized-height-plus-1 1.0
+        solarized-height-plus-2 1.0
+        solarized-height-plus-3 1.0
+        solarized-height-plus-4 1.0)
+
+  (load-theme 'solarized-dark t)
+  
+  (setq frame-background-mode nil)
+  
+  ;; Fun with bitmaps :-)
   (define-fringe-bitmap 'right-curly-arrow
     [#b00000000
      #b00000000
