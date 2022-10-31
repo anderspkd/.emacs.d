@@ -48,7 +48,7 @@
     (emacs-dir (concat "personal/" file-name)))
 
   ;; load custom directory and folder name variables
-  (load-file (personal-file "folders.el"))
+  (load-file (personal-file "folders"))
 
   (setq custom-file (emacs-dir "custom.el"))
   (load custom-file)
@@ -204,13 +204,7 @@ an error."
 	     
   (setq org-agenda-files asd::folders::org-files
 	org-log-reschedule t
-	org-log-done t)
-  (setq org-capture-templates '(("t" "Todo" entry
-                                 (file+headline "~/docs/org/agenda.org" "Ting og sager")
-                                 "* TODO %?\n %i")
-                                ("j" "Journal" entry
-                                 (file+datetree "~/docs/org/journal.org")
-                                 "* %?\nEntered on %U\n %i"))))
+	org-log-done t))
 
 (use-package projectile
   :ensure t
@@ -368,21 +362,6 @@ filename."
   :config
   (setq lsp-enable-on-type-formatting nil))
 
-(use-package rustic
-  :ensure
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("M-?" . lsp-find-references)
-              ("C-c C-c a" . lsp-execute-code-action)
-              ("C-c C-c r" . lsp-rename)
-              ("C-c C-c q" . lsp-workspace-restart)
-              ("C-c C-c Q" . lsp-workspace-shutdown)
-              ("C-c C-c s" . lsp-rust-analyzer-status))
-  :config
-  (setq lsp-enable-semantic-highlighting nil)
-  (setq rustic-ansi-faces ["#1d1f21" "#cc6666" "#b5bd68" "#f0c674" "#81a2be" "#b294bb" "#8abeb7" "#c5c8c6"]))
-
->>>>>>> origin/master
 (use-package lsp
   :ensure nil
   :init
