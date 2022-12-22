@@ -14,7 +14,7 @@
  '(fci-rule-color "#003f8e")
  '(frame-background-mode 'dark)
  '(package-selected-packages
-   '(rustic dap-mode lsp-ivy company lsp-mode ivy pdf-tools auto-complete modern-cpp-font-lock slime-autoloads slime tex auctex yasnippet yaml-mode use-package solarized-theme projectile multiple-cursors magit leuven-theme hydra ggtags ess diminish company-ctags company-c-headers))
+   '(clang-capf elfeed color-theme-sanityinc-tomorrow rustic dap-mode lsp-ivy company lsp-mode ivy pdf-tools auto-complete modern-cpp-font-lock slime-autoloads slime tex auctex yasnippet yaml-mode use-package solarized-theme projectile multiple-cursors magit leuven-theme hydra ggtags ess diminish company-ctags company-c-headers))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    '((20 . "#ff9da4")

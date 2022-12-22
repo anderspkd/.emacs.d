@@ -44,11 +44,8 @@
   (defsubst emacs-dir (&optional file-name)
     (expand-file-name (concat user-emacs-directory file-name)))
 
-  (defsubst personal-file (file-name)
-    (emacs-dir (concat "personal/" file-name)))
-
   ;; load custom directory and folder name variables
-  (load-file (personal-file "folders"))
+  (load-file (emacs-dir (concat "personal/settings")))
 
   (setq custom-file (emacs-dir "custom.el"))
   (load custom-file)
@@ -158,6 +155,17 @@ an error."
 
 (bind-key "C-c e" 'replace-or-delete-pair)
 
+(use-package ace-window
+  :ensure t
+  :config
+  (bind-key "C-x o" 'ace-window))
+
+(use-package elfeed
+  :ensure t
+  :defer t
+  :config
+  (setq elfeed-feeds asd::rss-feeds))
+
 (use-package dired
   :ensure nil  ; dired is already installed by default
   :defer t
@@ -188,6 +196,9 @@ an error."
     (dired-do-shell-command command arg file-list)
     (with-current-buffer "*Shell Command Output*"
       (copy-region-as-kill (point-min) (point-max)))))
+
+(use-package magit
+  :ensure t)
 
 (use-package yasnippet
   :ensure t)
@@ -377,26 +388,9 @@ filename."
   (require 'iso-transl)
   (set-face-attribute 'default nil :height 90 :font "DejaVu Sans Mono")
   
-  ;; (require 'color-theme-sanityinc-tomorrow)
-  ;; (color-theme-sanityinc-tomorrow 'night)
+  (require 'color-theme-sanityinc-tomorrow)
+  (color-theme-sanityinc-tomorrow 'night)
 
-  ;; (setq leuven-scale-outline-headlines nil
-  ;;       leuven-scale-org-agenda-structure nil
-  ;;       leuven-scale-org-document-title nil
-  ;;       leuven-scale-volatile-highlight nil)
-  ;; (load-theme 'leuven t)
-
-  (setq solarized-use-variable-pitch nil
-        solarized-scale-org-headlines nil)
-
-  (setq solarized-height-minus-1 1.0
-        solarized-height-plus-1 1.0
-        solarized-height-plus-2 1.0
-        solarized-height-plus-3 1.0
-        solarized-height-plus-4 1.0)
-
-  (load-theme 'solarized-dark t)
-  
   (setq frame-background-mode nil)
   
   ;; Fun with bitmaps :-)

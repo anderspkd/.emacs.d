@@ -17,8 +17,8 @@
 (setq org-export-html-coding-system 'utf-8-unix)
 (setq org-html-viewport nil)
 
-(setq blog::url "anderspkd.github.io")
-(setq blog::base-directory (expand-file-name "~/Documents/Homepage"))
+(setq blog::url "../anderspkd.github.io")
+(setq blog::base-directory (expand-file-name "~/docs/hjemmeside/src/"))
 (setq blog::base-publishing-directory blog::url)
 (setq blog::default-sitemap-filename "index.org")
 
@@ -124,7 +124,7 @@
 	       (entry-title (car s3))
 	       (preview (blog::get-preview filename))
 	       (tags (blog::get-tags filename)))
-	  (insert "* " entry-title " :" (reduce (lambda (x y) (concat x ":" y)) tags) ":\n")
+	  (insert "* " entry-title " :" (cl-reduce (lambda (x y) (concat x ":" y)) tags) ":\n")
 	  (insert preview " ")
 	  (insert "[[file:" (cadr s2) "][... read more]]\n" )
 	  (unless (null flist)
