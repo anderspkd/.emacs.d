@@ -1,12 +1,16 @@
+# ignore compiled files
 *.elc
-.mc-lists.el
-bookmarks
-elpa/
-eshell/
-personal/
-projectile-bookmarks.eld
-projectile.cache
-recentf
-ac-comphist.dat
-emacs_backups/
+
+# settings file
+settings.el
+custom.el
+
+# folders
 transient/
+elpa/
+backups/
+auto-save-list/
+
+# project/projectile stuff
+projectile-bookmarks.eld
+projects
