@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: test-section
+# key: ts
+# --
+SECTION("$1") {
+  $0
+}

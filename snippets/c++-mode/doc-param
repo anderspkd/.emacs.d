@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: doc-param
+# key: dp
+# condition: (nth 4 (syntax-ppss))
+# --
+@param $0
