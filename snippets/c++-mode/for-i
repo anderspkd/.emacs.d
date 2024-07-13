@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: for-i
+# key: fori
+# --
+for (std::size_t ${1:i} = 0; $1 < $2; $1++) {
+  $0
+}

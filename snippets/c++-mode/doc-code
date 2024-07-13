@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: doc-code
+# key: <code
+# condition: (nth 4 (syntax-ppss))
+# --
+<code>$0</code>
