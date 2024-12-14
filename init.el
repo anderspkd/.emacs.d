@@ -328,7 +328,6 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
   :ensure t)
 
 (use-package c++-mode
-  :defer nil
   :mode ("\\.cpp\\'" "\\.h\\'")
   :bind (:map c++-mode-map
 	      ([ret] . newline-and-indent)
@@ -341,6 +340,7 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 		       (c-set-style "apkd-cpp-no-namespace-indent")
 		       (setq c-basic-offset 2)))
 	 (c++-mode . eglot-ensure)
+	 (c++-mode . company-mode)
 	 (c++-mode . yas-global-mode))
   :init
   (modern-c++-font-lock-global-mode t))
