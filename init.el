@@ -16,7 +16,7 @@
 (setq custom-file (apkd-emacs-dir "custom.el"))
 (load custom-file)
 
-;; settings.el is a file which defiles a plist and a single helper function. It
+;; settings.el is a file which defines a plist and a single helper function. It
 ;; is equivalent to
 ;;
 ;;  (setq apkd-settings nil)
