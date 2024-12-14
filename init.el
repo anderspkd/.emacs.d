@@ -290,6 +290,10 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 100)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
+
+  ;; disable auto-indent in algorithmic blocks
+  (add-hook 'LaTeX-mode-hook (lambda ()
+			       (add-to-list 'LaTeX-indent-environment-list '("algorithmic" current-indentation))))
   :config
   (setq TeX-source-correlate-method-active 'synctex
 	TeX-electric-sub-and-superscript t
