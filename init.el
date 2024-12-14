@@ -60,7 +60,7 @@
 (setq initial-scratch-message nil
       inhibit-startup-screen t)
 
-;; ding!
+;; no ding!
 (setq ring-bell-function 'ignore)
 
 ;; set the scroll step to 1. Makes scrolling behave a bit more sanely
