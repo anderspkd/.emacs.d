@@ -49,6 +49,9 @@
 ;; always indent with spaces
 (setq indent-tabs-mode nil)
 
+;; perform completion instead of tab, if tabbing is not possible
+(setq tab-always-indent 'complete)
+
 ;; default to 80 character wide columns when wrapping is performed.
 ;; customize with C-x f
 (setq-default fill-column 80)
