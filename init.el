@@ -208,6 +208,21 @@ an error."
   ("-" text-scale-decrease "out")
   ("0" (lambda () (interactive) (text-scale-adjust 0))))
 
+(use-package transpose-frame
+  :ensure t
+  :bind ("C-c f" . hydra-flop-frame/body)
+  :config
+  (defhydra hydra-flop-frame (:hint nil)
+    "
+Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
+(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit."
+    ("s" transpose-frame)
+    ("f" flip-frame)
+    ("F" flop-frame)
+    ("r" rotate-frame-clockwise)
+    ("R" rotate-frame-anticlockwise)
+    ("q" nil)))
+
 (use-package projectile
   :ensure t
   :defer nil
