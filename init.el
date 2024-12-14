@@ -1,5 +1,6 @@
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
+	("elpa" . "https://elpa.gnu.org/packages/")
 	("org" . "https://orgmode.org/elpa/")))
 
 (package-initialize)
@@ -48,6 +49,9 @@
 ;; always indent with spaces
 (setq indent-tabs-mode nil)
 
+;; perform completion instead of tab, if tabbing is not possible
+(setq tab-always-indent 'complete)
+
 ;; default to 80 character wide columns when wrapping is performed.
 ;; customize with C-x f
 (setq-default fill-column 80)
@@ -56,7 +60,7 @@
 (setq initial-scratch-message nil
       inhibit-startup-screen t)
 
-;; ding!
+;; no ding!
 (setq ring-bell-function 'ignore)
 
 ;; set the scroll step to 1. Makes scrolling behave a bit more sanely
@@ -204,6 +208,21 @@ an error."
   ("-" text-scale-decrease "out")
   ("0" (lambda () (interactive) (text-scale-adjust 0))))
 
+(use-package transpose-frame
+  :ensure t
+  :bind ("C-c f" . hydra-flop-frame/body)
+  :config
+  (defhydra hydra-flop-frame (:hint nil)
+    "
+Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
+(_s_)wap, (_f_)lip, (_F_)flop, (_r_)otate, (_R_)otate, (_q_)uit."
+    ("s" transpose-frame)
+    ("f" flip-frame)
+    ("F" flop-frame)
+    ("r" rotate-frame-clockwise)
+    ("R" rotate-frame-anticlockwise)
+    ("q" nil)))
+
 (use-package projectile
   :ensure t
   :defer nil
@@ -221,8 +240,6 @@ an error."
   (setq pdf-view-display-size 'fit-page)
   (setq pdf-view-resize-factor 1.1)
   
-  (bind-key "k" (lambda (interactive)) pdf-view-mode-map)
-
   (bind-key "h" 'pdf-annot-add-highlight-markup-annotation pdf-view-mode-map)
   (bind-key "t" 'pdf-annot-add-text-annotation pdf-view-mode-map)
   (bind-key "D" 'pdf-annot-delete pdf-view-mode-map)
@@ -273,6 +290,10 @@ an error."
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 100)))
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer)
+
+  ;; disable auto-indent in algorithmic blocks
+  (add-hook 'LaTeX-mode-hook (lambda ()
+			       (add-to-list 'LaTeX-indent-environment-list '("algorithmic" current-indentation))))
   :config
   (setq TeX-source-correlate-method-active 'synctex
 	TeX-electric-sub-and-superscript t
@@ -307,7 +328,6 @@ an error."
   :ensure t)
 
 (use-package c++-mode
-  :defer nil
   :mode ("\\.cpp\\'" "\\.h\\'")
   :bind (:map c++-mode-map
 	      ([ret] . newline-and-indent)
@@ -320,6 +340,7 @@ an error."
 		       (c-set-style "apkd-cpp-no-namespace-indent")
 		       (setq c-basic-offset 2)))
 	 (c++-mode . eglot-ensure)
+	 (c++-mode . company-mode)
 	 (c++-mode . yas-global-mode))
   :init
   (modern-c++-font-lock-global-mode t))
