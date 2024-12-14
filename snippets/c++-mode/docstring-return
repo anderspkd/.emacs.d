@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: doc-return
-# key: dr
+# name: docstring-return
 # condition: (nth 4 (syntax-ppss))
+# key: dr
 # --
 @return $0

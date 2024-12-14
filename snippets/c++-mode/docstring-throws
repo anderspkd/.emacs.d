@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: doc-code
-# key: <code
+# name: docstring-throws
 # condition: (nth 4 (syntax-ppss))
+# key: dt
 # --
-<code>$0</code>
+@throws $0

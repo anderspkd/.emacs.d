@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: include_local
-# key: incll
-# --
-#include "$0"

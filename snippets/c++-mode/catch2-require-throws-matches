@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: test-throws
-# key: trt
-# --
-REQUIRE_THROWS_MATCHES(
-  $1,
-  $2,
-  Catch::Matchers::Message("$0"));

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: catch-section
-# key: ts
-# --
-SECTION("$1") {$0}

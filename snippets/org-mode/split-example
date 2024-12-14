@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: split-example
-# key: <se
-# --
-#+END_EXAMPLE
-$0
-#+BEGIN_EXAMPLE

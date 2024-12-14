@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: scl-debug
-# key: debug
-# --
-SCL_DEBUG << $0 << "\n";

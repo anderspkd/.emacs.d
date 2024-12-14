@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: doxy-brief
+# name: docstring-param
 # condition: (nth 4 (syntax-ppss))
-# key: db
+# key: dp
 # --
-@brief $0
+@param $0

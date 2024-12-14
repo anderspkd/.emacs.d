@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
-# name: doc
+# name: docstring
 # key: doc
 # --
 /**
- * @brief $0
+ * $0
  */

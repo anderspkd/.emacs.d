@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: html-italic
-# condition: (nth 4 (syntax-ppss))
-# key: ii
-# --
-<i>$0</i>

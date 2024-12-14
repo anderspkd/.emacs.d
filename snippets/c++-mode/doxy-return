@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: doxy-return
-# condition: (nth 4 (syntax-ppss))
-# key: dr
-# --
-@return $0

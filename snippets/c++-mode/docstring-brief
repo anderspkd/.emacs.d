@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: doxy-tparam
+# name: docstring-brief
 # condition: (nth 4 (syntax-ppss))
-# key: dtp
+# key: db
 # --
-@tparam $0
+@brief $0

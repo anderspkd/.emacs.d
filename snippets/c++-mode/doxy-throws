@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: doxy-throws
-# condition: (nth 4 (syntax-ppss))
-# key: dt
-# --
-@throws $0
