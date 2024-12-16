@@ -1,12 +1,31 @@
-(setq package-archives
-      '(("melpa" . "https://melpa.org/packages/")
-	("elpa" . "https://elpa.gnu.org/packages/")
-	("org" . "https://orgmode.org/elpa/")))
+(defvar old-file-name-handler-alist file-name-handler-alist)
 
-(package-initialize)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+(setq gc-cons-threshold 64000000
+      auto-save-list-file-prefix nil
+      package-enable-at-startup nil
+      package--init-file-ensured t
+      file-name-handler-alist nil
+      package-user-dir "~/.emacs.d/elpa/"
+      package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("gnu" . "https://elpa.gnu.org/packages/")
+			 ("org" . "https://orgmode.org/elpa/")))
+
+(mapc #'(lambda (add) (add-to-list 'load-path add))
+      (eval-when-compile
+        (package-initialize)
+        (unless (package-installed-p 'use-package)
+          (package-refresh-contents)
+          (package-install 'use-package))
+        (let ((package-user-dir-real (file-truename package-user-dir)))
+          ;; The reverse is necessary, because outside we mapc
+          ;; add-to-list element-by-element, which reverses.
+          (nreverse (apply #'nconc
+                           ;; Only keep package.el provided loadpaths.
+                           (mapcar #'(lambda (path)
+                                       (if (string-prefix-p package-user-dir-real path)
+                                           (list path)
+                                         nil))
+                                   load-path))))))
 
 (require 'use-package)
 (require 'bind-key)
