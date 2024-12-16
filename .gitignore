@@ -13,8 +13,10 @@ transient/
 elpa/
 backups/
 auto-save-list/
+url/
 
 # project/projectile stuff
 projectile-bookmarks.eld
 projects
+
 
