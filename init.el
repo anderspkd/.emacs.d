@@ -128,9 +128,9 @@ the user if not found."
 	       (format "Don't know how to close character %s (#%d) ; please provide a closing character: "
 		       (single-key-description open 'no-angles)
 		       open))))
-      (replace-pair open close))))
+      (apkd-replace-pair open close))))
 
-(defun replace-pair (open close)
+(defun apkd-replace-pair (open close)
   "Replace pair at point by respective chars OPEN and CLOSE.
 If CLOSE is nil, lookup the syntax table. If that fails, signal
 an error."
