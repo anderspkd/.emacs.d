@@ -17,23 +17,20 @@
 (setq custom-file (apkd-emacs-dir "custom.el"))
 (load custom-file)
 
-;; settings.el is a file which defines a plist and a single helper function. It
-;; is equivalent to
-;;
-;;  (setq apkd-settings nil)
-;;
-;;  (defun apkd-setting (key value)
-;;   (setq apkd-settings (plist-put apkd-settings key value)))
-;;
-;;  (defun apkd-get-setting (key)
-;;   (plist-get apkd-settings key))
-;;
-;; Settings are then defined in the settings.el file as
-;;
-;;  (apkd-setting :key value)
-;;
-;; and read using the APKD-GET-SETTING function below.
-(load (apkd-emacs-dir "settings.el"))
+;; tracks "settings" like things that I don't want directly exposed in init.el
+;; since it goes on github. APKD-SETTINGS is a plist.
+(setq apkd-settings nil)
+
+(defun apkd-setting (key setting)
+  "Add a new SETTING under KEY"
+  (setq apkd-settings (plist-put apkd-settings key setting)))
+
+(defun apkd-get-setting (key)
+  "Get the settings associated with KEY"
+  (plist-get apkd-settings key))
+
+;; load some settings. Has to be placed after the three definitions above
+(load (apkd-emacs-dir "settings"))
 
 ;; some general look-and-feel
 (tool-bar-mode -1)
@@ -83,8 +80,12 @@
   (setq solarized-scale-org-headlines nil)
   (setq solarized-use-variable-pitch nil)
 
-  (load-theme 'solarized-dark-high-contrast)
-  (enable-theme 'solarized-dark-high-contrast))
+  (if (apkd-get-setting :use-light-theme)
+      (setq apkd-current-theme 'solarized-light-high-contrast)
+    (setq apkd-current-theme 'solarized-dark-high-contrast))
+
+  (load-theme apkd-current-theme)
+  (enable-theme apkd-current-theme))
 
 ;; https://emacs.stackexchange.com/a/37648
 (defun apkd-replace-or-delete-pair (open)
