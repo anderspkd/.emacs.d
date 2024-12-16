@@ -31,6 +31,7 @@
 (require 'bind-key)
 
 (defun apkd-emacs-dir (&optional file-name)
+  "fill path to ~/.emacs.d. If FILE-NAME Is provided, then it is appened to the returned path"
   (expand-file-name (concat user-emacs-directory file-name)))
 
 (setq custom-file (apkd-emacs-dir "custom.el"))
@@ -146,10 +147,10 @@ an error."
 
 (bind-key "C-c e" 'apkd-replace-or-delete-pair)
 
-(use-package ace-window
+(use-package avy
   :ensure t
-  :config
-  (bind-key "C-x o" 'ace-window))
+  :bind (("C-:" . avy-goto-char)
+	 ("C-M-:" . avy-goto-line)))
 
 (use-package yasnippet
   :ensure t)
@@ -157,12 +158,21 @@ an error."
 (use-package magit
   :ensure t)
 
-(use-package ivy
+(use-package savehist
+  :init
+  (savehist-mode))
+
+(use-package marginalia
+  :ensure t
+  :bind (:map minibuffer-local-map
+	      ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode))
+
+(use-package vertico
   :ensure t
   :init
-  (setq ivy-use-selectable-prompt t)
-  :config
-  (ivy-mode t))
+  (vertico-mode))
 
 (defun apkd-do-shell-and-copy (command &optional arg file-list)
   "Executes COMMAND on a file. Useful in dired mode."
