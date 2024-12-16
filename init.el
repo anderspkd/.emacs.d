@@ -177,9 +177,12 @@ an error."
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c C-l" . org-store-link)
-         ("C-c l" . org-insert-link))
+         ("C-c l" . org-insert-link)
+	 ("C-c c" . org-capture))
   :hook ((org-mode . yas-minor-mode))
   :config
+
+  (setq org-capture-templates (apkd-get-setting :org-capture-templates))
 
   (setq org-agenda-files (apkd-get-setting :org-agenda-files)
         org-log-reschedule t
