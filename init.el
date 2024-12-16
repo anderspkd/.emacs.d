@@ -66,7 +66,7 @@
 ;; set the scroll step to 1. Makes scrolling behave a bit more sanely
 (setq scroll-step 1)
 
-;; place all #filename backup files in .emacs.d/backups. Generates less clutter 
+;; place all #filename backup files in .emacs.d/backups. Generates less clutter
 ;; on the file system.
 (setq backup-by-copying t
       backup-directory-alist `(("." . ,(apkd-emacs-dir "backups")))
@@ -239,7 +239,7 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 
   (setq pdf-view-display-size 'fit-page)
   (setq pdf-view-resize-factor 1.1)
-  
+
   (bind-key "h" 'pdf-annot-add-highlight-markup-annotation pdf-view-mode-map)
   (bind-key "t" 'pdf-annot-add-text-annotation pdf-view-mode-map)
   (bind-key "D" 'pdf-annot-delete pdf-view-mode-map)
