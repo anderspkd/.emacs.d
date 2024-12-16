@@ -232,8 +232,7 @@ an error."
   (dolist (tag-and-face (apkd-get-setting :feeds-tag-faces))
     (let ((tag (car tag-and-face))
           (face (cdr tag-and-face)))
-      (elfeed-extras-defface-for-tag tag face)))
-  (setq elfeed-feeds (apkd-get-setting :feeds)))
+      (elfeed-extras-defface-for-tag tag face))))
 
 (use-package hydra
   :ensure t)
