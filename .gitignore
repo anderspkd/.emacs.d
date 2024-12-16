@@ -1,6 +1,9 @@
 # ignore compiled files
 *.elc
 
+# history
+history
+
 # settings file
 settings.el
 custom.el
@@ -14,4 +17,4 @@ auto-save-list/
 # project/projectile stuff
 projectile-bookmarks.eld
 projects
-/history
+
