@@ -34,6 +34,8 @@
   "fill path to ~/.emacs.d. If FILE-NAME Is provided, then it is appened to the returned path"
   (expand-file-name (concat user-emacs-directory file-name)))
 
+(add-to-list 'load-path (apkd-emacs-dir "etc"))
+
 (setq custom-file (apkd-emacs-dir "custom.el"))
 (load custom-file)
 
@@ -221,8 +223,17 @@ an error."
 (use-package elfeed
   :ensure t
   :init
-  (setq elfeed-feeds (apkd-get-setting :feeds))
-  (setq elfeed-search-title-max-width 160))
+  (setq elfeed-search-title-max-width 160)
+  (setq elfeed-feeds (apkd-get-setting :feeds)))
+
+(use-package elfeed-extras
+  :after elfeed
+  :config
+  (dolist (tag-and-face (apkd-get-setting :feeds-tag-faces))
+    (let ((tag (car tag-and-face))
+          (face (cdr tag-and-face)))
+      (elfeed-extras-defface-for-tag tag face)))
+  (setq elfeed-feeds (apkd-get-setting :feeds)))
 
 (use-package hydra
   :ensure t)
