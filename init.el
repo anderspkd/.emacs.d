@@ -181,7 +181,7 @@ an error."
   :hook ((org-mode . yas-minor-mode))
   :config
 
-  (setq org-agenda-files (apkd-get-setting :org-folder)
+  (setq org-agenda-files (apkd-get-setting :org-agenda-files)
         org-log-reschedule t
 	org-adapt-indentation nil
         org-log-done t))
