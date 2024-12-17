@@ -176,6 +176,13 @@ an error."
   :init
   (vertico-mode))
 
+(use-package orderless
+  :ensure t
+  :config
+  (setq completion-styles '(orderless basic))
+  (setq completion-category-defaults nil)
+  (setq completion-category-overrides nil))
+
 (defun apkd-do-shell-and-copy (command &optional arg file-list)
   "Executes COMMAND on a file. Useful in dired mode."
   (interactive
