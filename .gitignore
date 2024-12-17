@@ -1,22 +1,19 @@
 # ignore compiled files
 *.elc
 
-# history
-history
-
 # settings file
 settings.el
 custom.el
 
-# folders
+# machine specific stuff
 transient/
 elpa/
 backups/
 auto-save-list/
 url/
+history
+bookmarks
 
 # project/projectile stuff
 projectile-bookmarks.eld
 projects
-
-
