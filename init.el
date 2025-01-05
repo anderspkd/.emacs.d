@@ -360,6 +360,10 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 
 (use-package eglot
   :ensure t
+  :bind (:map eglot-mode-map
+	      ("C-c l f" . eglot-format)
+	      ("C-c l r" . eglot-rename)
+	      ("C-c l d" . eglot-find-declaration))
   :init
   (add-hook 'eglot-managed-mode-hook
 	    (lambda () (eglot-inlay-hints-mode -1))))
@@ -378,14 +382,11 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
   :ensure t)
 
 (use-package c++-mode
-  :mode ("\\.cpp\\'" "\\.h\\'")
+  :mode ("\\.cc\\'" "\\.h\\'")
   :bind (:map c++-mode-map
 	      ([ret] . newline-and-indent)
-	      ("C-c C-f" . eglot-format)
-	      ("C-c C-r" . eglot-rename)
 	      ("C-c f n" . flymake-goto-next-error)
-	      ("C-c f p" . flymake-goto-prev-error)
-	      ("C-c f d" . eglot-find-declaration))
+	      ("C-c f p" . flymake-goto-prev-error))
   :hook ((c++-mode . (lambda ()
 		       (c-set-style "apkd-cpp-no-namespace-indent")
 		       (setq c-basic-offset 2)))
