@@ -211,13 +211,17 @@ an error."
         dired-auto-revert-buffer t
         dired-listing-switches "-AlhF --group-directories-first"))
 
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode))
+
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c o a" . org-agenda)
          ("C-c o C-l" . org-store-link)
          ("C-c o l" . org-insert-link)
 	 ("C-c o c" . org-capture))
-  :hook ((org-mode . yas-minor-mode))
   :config
 
   (setq org-capture-templates (apkd-get-setting :org-capture-templates))
@@ -335,7 +339,6 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 	    (lambda () (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Tools"))))
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-  (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'visual-line-mode)
   (add-hook 'LaTeX-mode-hook (lambda () (setq fill-column 100)))
@@ -391,10 +394,13 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 		       (c-set-style "apkd-cpp-no-namespace-indent")
 		       (setq c-basic-offset 2)))
 	 (c++-mode . eglot-ensure)
-	 (c++-mode . company-mode)
-	 (c++-mode . yas-global-mode))
+	 (c++-mode . company-mode))
   :init
   (modern-c++-font-lock-global-mode t))
+
+(use-package python
+  :hook ((python-mode . eglot-ensure)
+	 (python-mode . company-mode)))
 
 (use-package slime
   :ensure t
