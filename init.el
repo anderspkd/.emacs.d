@@ -154,9 +154,6 @@ an error."
   :bind (("C-:" . avy-goto-char)
 	 ("C-M-:" . avy-goto-line)))
 
-(use-package yasnippet
-  :ensure t)
-
 (use-package magit
   :ensure t)
 
