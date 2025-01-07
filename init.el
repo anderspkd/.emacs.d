@@ -373,11 +373,13 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 (use-package modern-cpp-font-lock
   :ensure t)
 
+;;; C++ style with namespaces do not change indentation.
 (defconst apkd-cpp-no-namespace-indent
   '("linux" (c-offsets-alist . ((innamespace . [0])
                                 (topmost-intro-cont 0 nil)
                                 (access-label -1)
 				(inlambda . 0)))))
+
 (c-add-style "apkd-cpp-no-namespace-indent" apkd-cpp-no-namespace-indent)
 
 (use-package cmake-mode
