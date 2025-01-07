@@ -12,16 +12,6 @@
 (defun elfeed-extras-toggle-favorite ()
   "toggle 'favorite tag on entry under point"
   (interactive)
-  (let ((entry (elfeed-search-selected :single))
-	(favorite-tag (apkd-get-setting :feeds-favorite-tag-name)))
-    (if (member favorite-tag (elfeed-entry-tags entry))
-	(elfeed-untag-1 entry favorite-tag)
-      (elfeed-tag-1 entry favorite-tag))
-    (elfeed-search-update-entry entry)))
-
-(defun elfeed-extras-show-favorites ()
-  "show all entries marked with the 'favorite tag"
-  (interactive)
-  (elfeed-toggle-tag (symbol-name (apkd-get-setting :feeds-favorite-tag-name))))
+  (elfeed-search-toggle-all (apkd-get-setting :feeds-favorite-tag-name)))
 
 (provide 'elfeed-extras)
