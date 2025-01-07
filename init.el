@@ -154,9 +154,6 @@ an error."
   :bind (("C-:" . avy-goto-char)
 	 ("C-M-:" . avy-goto-line)))
 
-(use-package yasnippet
-  :ensure t)
-
 (use-package magit
   :ensure t)
 
@@ -222,13 +219,15 @@ an error."
          ("C-c o C-l" . org-store-link)
          ("C-c o l" . org-insert-link)
 	 ("C-c o c" . org-capture))
+  :hook ((org-mode . yas-minor-mode)
+         (org-mode . visual-line-mode))
   :config
-
-  (setq org-capture-templates (apkd-get-setting :org-capture-templates))
-
   (setq org-agenda-files (apkd-get-setting :org-agenda-files)
+	org-capture-templates (apkd-get-setting :org-capture-templates)
         org-log-reschedule t
 	org-adapt-indentation nil
+        org-todo-keyword-faces (apkd-get-setting :org-todo-key-keyword-faces)
+        org-hide-emphasis-markers t
         org-log-done t))
 
 (use-package elfeed
@@ -246,24 +245,28 @@ an error."
       (elfeed-extras-defface-for-tag tag face))))
 
 (use-package hydra
-  :ensure t)
+  :ensure t
+  :defer nil
+  :config
 
-(defhydra hydra-resize-windows (global-map "C-c r")
-  "Resize buffer"
-  ("h" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3 t))))
-  ("l" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3 t))))
-  ("j" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3))))
-  ("k" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3))))
-  ("q" nil))
+  (defhydra hydra-resize-windows (global-map "C-c r")
+    "Resize buffer"
+    ("h" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3 t))))
+    ("l" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3 t))))
+    ("j" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3))))
+    ("k" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3))))
+    ("q" nil))
 
-(defhydra hydra-zoom (global-map "<f2>")
-  "zoom"
-  ("+" text-scale-increase "in")
-  ("-" text-scale-decrease "out")
-  ("0" (lambda () (interactive) (text-scale-adjust 0))))
+  (defhydra hydra-zoom (global-map "<f2>")
+    "zoom"
+    ("+" text-scale-increase "in")
+    ("-" text-scale-decrease "out")
+    ("0" (lambda () (interactive) (text-scale-adjust 0)))))
 
 (use-package transpose-frame
   :ensure t
+  :defer nil
+  :after hydra
   :bind ("C-c f" . hydra-flop-frame/body)
   :config
   (defhydra hydra-flop-frame (:hint nil)
@@ -378,11 +381,13 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 (use-package modern-cpp-font-lock
   :ensure t)
 
+;;; C++ style with namespaces do not change indentation.
 (defconst apkd-cpp-no-namespace-indent
   '("linux" (c-offsets-alist . ((innamespace . [0])
                                 (topmost-intro-cont 0 nil)
                                 (access-label -1)
 				(inlambda . 0)))))
+
 (c-add-style "apkd-cpp-no-namespace-indent" apkd-cpp-no-namespace-indent)
 
 (use-package cmake-mode
