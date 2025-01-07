@@ -216,6 +216,7 @@ an error."
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c o a" . org-agenda)
+	 ("C-c o t" . org-todo-list)
          ("C-c o C-l" . org-store-link)
          ("C-c o l" . org-insert-link)
 	 ("C-c o c" . org-capture))
