@@ -218,10 +218,10 @@ an error."
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-         ("C-c C-l" . org-store-link)
-         ("C-c l" . org-insert-link)
-	 ("C-c c" . org-capture))
+  :bind (("C-c o a" . org-agenda)
+         ("C-c o C-l" . org-store-link)
+         ("C-c o l" . org-insert-link)
+	 ("C-c o c" . org-capture))
   :hook ((org-mode . yas-minor-mode)
          (org-mode . visual-line-mode))
   :config
