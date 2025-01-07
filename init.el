@@ -217,12 +217,15 @@ an error."
          ("C-c C-l" . org-store-link)
          ("C-c l" . org-insert-link)
 	 ("C-c c" . org-capture))
-  :hook ((org-mode . yas-minor-mode))
+  :hook ((org-mode . yas-minor-mode)
+         (org-mode . visual-line-mode))
   :config
   (setq org-agenda-files (apkd-get-setting :org-agenda-files)
 	org-capture-templates (apkd-get-setting :org-capture-templates)
         org-log-reschedule t
 	org-adapt-indentation nil
+        org-todo-keyword-faces (apkd-get-setting :org-todo-key-keyword-faces)
+        org-hide-emphasis-markers t
         org-log-done t))
 
 (use-package elfeed
