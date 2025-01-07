@@ -230,20 +230,6 @@ an error."
         org-hide-emphasis-markers t
         org-log-done t))
 
-(use-package elfeed
-  :ensure t
-  :init
-  (setq elfeed-search-title-max-width 160)
-  (setq elfeed-feeds (apkd-get-setting :feeds)))
-
-(use-package elfeed-extras
-  :after elfeed
-  :config
-  (dolist (tag-and-face (apkd-get-setting :feeds-tag-faces))
-    (let ((tag (car tag-and-face))
-          (face (cdr tag-and-face)))
-      (elfeed-extras-defface-for-tag tag face))))
-
 (use-package hydra
   :ensure t
   :defer nil
