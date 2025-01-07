@@ -245,24 +245,28 @@ an error."
       (elfeed-extras-defface-for-tag tag face))))
 
 (use-package hydra
-  :ensure t)
+  :ensure t
+  :defer nil
+  :config
 
-(defhydra hydra-resize-windows (global-map "C-c r")
-  "Resize buffer"
-  ("h" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3 t))))
-  ("l" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3 t))))
-  ("j" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3))))
-  ("k" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3))))
-  ("q" nil))
+  (defhydra hydra-resize-windows (global-map "C-c r")
+    "Resize buffer"
+    ("h" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3 t))))
+    ("l" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3 t))))
+    ("j" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window -3))))
+    ("k" (lambda (n) (interactive "p") (dotimes (i n) (shrink-window 3))))
+    ("q" nil))
 
-(defhydra hydra-zoom (global-map "<f2>")
-  "zoom"
-  ("+" text-scale-increase "in")
-  ("-" text-scale-decrease "out")
-  ("0" (lambda () (interactive) (text-scale-adjust 0))))
+  (defhydra hydra-zoom (global-map "<f2>")
+    "zoom"
+    ("+" text-scale-increase "in")
+    ("-" text-scale-decrease "out")
+    ("0" (lambda () (interactive) (text-scale-adjust 0)))))
 
 (use-package transpose-frame
   :ensure t
+  :defer nil
+  :after hydra
   :bind ("C-c f" . hydra-flop-frame/body)
   :config
   (defhydra hydra-flop-frame (:hint nil)
