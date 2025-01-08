@@ -400,7 +400,7 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 
 (use-package slime
   :ensure t
-  :mode ("\\.lisp" . lisp-mode)
+  :mode ("\\.lisp\\'" . lisp-mode)
   :hook ((lisp-mode . (lambda ()
 			(setq inferior-lisp-program "/usr/bin/sbcl"))))
   :config
@@ -414,10 +414,14 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 
 (use-package clojure-mode
   :ensure t
-  :mode ("\\.clj" . clojure-mode))
+  :mode ("\\.clj\\'" . clojure-mode))
 
 (use-package cider
   :ensure t
   :after clojure-mode
   :config
   (setq cider-preferred-build-tool 'lein))
+
+(use-package java
+  :mode ("\\.java\\'" . java-mode)
+  :hook ((java-mode . eglot-ensure))
