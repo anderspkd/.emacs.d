@@ -359,7 +359,11 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 	      ("C-c l d" . eglot-find-declaration))
   :init
   (add-hook 'eglot-managed-mode-hook
-	    (lambda () (eglot-inlay-hints-mode -1))))
+	    (lambda () (eglot-inlay-hints-mode -1)))
+  :config
+  (add-to-list 'eglot-server-programs '(c++-mode . ("clangd"
+						    "--completion-style=detailed"
+						    "--cross-file-rename"))))
 
 (use-package modern-cpp-font-lock
   :ensure t)
