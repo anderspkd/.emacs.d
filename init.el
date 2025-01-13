@@ -62,6 +62,9 @@
 (column-number-mode t)
 (electric-pair-mode t)
 
+(setq split-height-threshold 120
+      split-width-threshold 160)
+
 ;; use 'y' or 'n' instead of 'yes' or 'no' for selections
 (fset 'yes-or-no-p 'y-or-n-p)
 
