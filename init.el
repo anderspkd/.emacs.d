@@ -366,7 +366,9 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 						    "--cross-file-rename"))))
 
 (use-package modern-cpp-font-lock
-  :ensure t)
+  :ensure t
+  :init
+  (modern-c++-font-lock-global-mode t))
 
 ;;; C++ style with namespaces do not change indentation.
 (defconst apkd-cpp-no-namespace-indent
@@ -390,9 +392,7 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
 		       (c-set-style "apkd-cpp-no-namespace-indent")
 		       (setq c-basic-offset 2)))
 	 (c++-mode . eglot-ensure)
-	 (c++-mode . company-mode))
-  :init
-  (modern-c++-font-lock-global-mode t))
+	 (c++-mode . company-mode)))
 
 (use-package python
   :hook ((python-mode . eglot-ensure)
