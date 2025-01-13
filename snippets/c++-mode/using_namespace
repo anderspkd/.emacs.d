@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: using namespace
+# key: uns
+# --
+using namespace $0;
