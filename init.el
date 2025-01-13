@@ -425,6 +425,6 @@ Capitalization is the inverse; e.g., flip is vertical, flop is horizontal.
   :config
   (setq cider-preferred-build-tool 'lein))
 
-(use-package java
-  :mode ("\\.java\\'" . java-mode)
-  :hook ((java-mode . eglot-ensure))
+(use-package java-mode
+  :hook ((java-mode . eglot-ensure)
+	 (java-mode . company-mode)))
