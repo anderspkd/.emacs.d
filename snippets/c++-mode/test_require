@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: tr
+# key: tr
+# --
+REQUIRE($0);

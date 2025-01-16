@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: fore
+# key: fore
+# --
+for (${1:const auto&} ${2:v} : $3) {
+  $0
+}
