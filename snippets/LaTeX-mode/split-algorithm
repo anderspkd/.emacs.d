@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: split-algorithm
+# key: split
+# --
+\algstore{${1:x}}
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}
+\begin{algorithmic}[1]
+\algrestore{$1}$0
